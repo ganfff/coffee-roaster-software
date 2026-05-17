@@ -1,6 +1,7 @@
 import json
 import csv
 import io
+import re
 from pathlib import Path
 from typing import List, Optional
 from uuid import uuid4
@@ -14,8 +15,25 @@ from src.core.models import (
     RoastRecord,
     RecordSummary,
     RoastEvent,
-    ProfileNode,
 )
+
+
+_PROFILE_ID_RE = re.compile(r"^[0-9a-fA-F-]{1,64}$")
+
+
+def _safe_profile_path(base: Path, profile_id: str) -> Optional[Path]:
+    """校验 profile_id 仅含 UUID/十六进制字符，并验证拼接后的路径未越界。
+    返回 None 表示拒绝。
+    """
+    if not isinstance(profile_id, str) or not _PROFILE_ID_RE.match(profile_id):
+        return None
+    base_resolved = base.resolve()
+    candidate = (base / f"{profile_id}.json").resolve()
+    try:
+        candidate.relative_to(base_resolved)
+    except ValueError:
+        return None
+    return candidate
 
 
 class DataManager:
@@ -55,24 +73,29 @@ class DataManager:
             await db.commit()
 
     async def load_profile(self, profile_id: str) -> Optional[RoastProfile]:
-        path = self.profiles_dir / f"{profile_id}.json"
-        if not path.exists():
+        path = _safe_profile_path(self.profiles_dir, profile_id)
+        if path is None or not path.exists():
             return None
         async with aiofiles.open(path, "r", encoding="utf-8") as f:
             content = await f.read()
-        return RoastProfile.model_validate_json(content)
+        try:
+            return RoastProfile.model_validate_json(content)
+        except Exception:
+            return None
 
     async def save_profile(self, profile: RoastProfile) -> None:
-        path = self.profiles_dir / f"{profile.id}.json"
+        path = _safe_profile_path(self.profiles_dir, profile.id)
+        if path is None:
+            raise ValueError("非法的曲线 ID")
         async with aiofiles.open(path, "w", encoding="utf-8") as f:
             await f.write(profile.model_dump_json(indent=2))
 
     async def delete_profile(self, profile_id: str) -> bool:
-        path = self.profiles_dir / f"{profile_id}.json"
-        if path.exists():
-            path.unlink()
-            return True
-        return False
+        path = _safe_profile_path(self.profiles_dir, profile_id)
+        if path is None or not path.exists():
+            return False
+        path.unlink()
+        return True
 
     async def list_profiles(self) -> List[ProfileSummary]:
         summaries = []
@@ -95,40 +118,45 @@ class DataManager:
 
     async def save_record(self, record: RoastRecord) -> None:
         async with aiosqlite.connect(self.db_path) as db:
-            # 分配自增 seq_no（与 PRIMARY KEY 解耦，老记录 seq_no 为 NULL 也不影响）
-            async with db.execute(
-                "SELECT COALESCE(MAX(seq_no), 0) + 1 FROM records"
-            ) as cursor:
-                row = await cursor.fetchone()
-                seq_no = int(row[0]) if row and row[0] is not None else 1
-            display_name = f"log{seq_no:03d}"
-            duration_sec = float(record.data[-1][0]) if record.data else 0.0
-            snapshot_json = (
-                record.profile_snapshot.model_dump_json()
-                if record.profile_snapshot is not None
-                else None
-            )
-            await db.execute(
-                """
-                INSERT OR REPLACE INTO records
-                (session_id, started_at, ended_at, profile_id, events_json, data_json,
-                 seq_no, display_name, profile_snapshot_json, duration_sec)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                """,
-                (
-                    record.session_id,
-                    record.started_at.isoformat() if record.started_at else None,
-                    record.ended_at.isoformat() if record.ended_at else None,
-                    record.profile_id,
-                    json.dumps([e.model_dump() for e in record.events]),
-                    json.dumps(record.data),
-                    seq_no,
-                    display_name,
-                    snapshot_json,
-                    duration_sec,
-                ),
-            )
-            await db.commit()
+            # BEGIN IMMEDIATE 锁住表，避免并发 save_record 取到相同 MAX(seq_no)+1
+            await db.execute("BEGIN IMMEDIATE")
+            try:
+                async with db.execute(
+                    "SELECT COALESCE(MAX(seq_no), 0) + 1 FROM records"
+                ) as cursor:
+                    row = await cursor.fetchone()
+                    seq_no = int(row[0]) if row and row[0] is not None else 1
+                display_name = f"log{seq_no:03d}"
+                duration_sec = float(record.data[-1][0]) if record.data else 0.0
+                snapshot_json = (
+                    record.profile_snapshot.model_dump_json()
+                    if record.profile_snapshot is not None
+                    else None
+                )
+                await db.execute(
+                    """
+                    INSERT OR REPLACE INTO records
+                    (session_id, started_at, ended_at, profile_id, events_json, data_json,
+                     seq_no, display_name, profile_snapshot_json, duration_sec)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    """,
+                    (
+                        record.session_id,
+                        record.started_at.isoformat() if record.started_at else None,
+                        record.ended_at.isoformat() if record.ended_at else None,
+                        record.profile_id,
+                        json.dumps([e.model_dump() for e in record.events]),
+                        json.dumps(record.data),
+                        seq_no,
+                        display_name,
+                        snapshot_json,
+                        duration_sec,
+                    ),
+                )
+                await db.commit()
+            except Exception:
+                await db.rollback()
+                raise
         # 写回到内存对象，方便调用方读到刚生成的标识
         record.seq_no = seq_no
         record.display_name = display_name
@@ -219,7 +247,11 @@ class DataManager:
         started_at = datetime.fromisoformat(started_at_str) if started_at_str else None
         ended_at = datetime.fromisoformat(ended_at_str) if ended_at_str else None
         events = [RoastEvent(**e) for e in json.loads(events_json or "[]")]
-        data = [tuple(item) for item in json.loads(data_json or "[]")]
+        # 老数据里 pv/sv 可能为 None,显式兜底为 0.0 以满足 Pydantic 2 strict tuple 校验
+        data = [
+            tuple(0.0 if x is None else float(x) for x in item)
+            for item in json.loads(data_json or "[]")
+        ]
         snapshot: Optional[RoastProfile] = None
         if profile_snapshot_json:
             try:

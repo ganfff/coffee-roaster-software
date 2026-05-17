@@ -4,10 +4,15 @@ from typing import List, Optional
 from uuid import uuid4
 
 
+# 安全输入约束
+PROFILE_ID_PATTERN = r"^[0-9a-fA-F-]{1,64}$"
+EVENT_TYPE_PATTERN = r"^[a-z_]{1,32}$"
+
+
 class ProfileNode(BaseModel):
     """温度曲线节点：时间点与目标温度"""
 
-    time: float = Field(..., ge=0, description="距离起点的秒数")
+    time: float = Field(..., ge=0, le=86400, description="距离起点的秒数")
     temperature: float = Field(..., ge=0, le=300, description="目标温度 °C")
 
 
@@ -16,10 +21,14 @@ class RoastProfile(BaseModel):
 
     model_config = ConfigDict(extra="ignore")
 
-    id: str = Field(default_factory=lambda: str(uuid4()))
-    name: str
-    description: str = ""
-    nodes: List[ProfileNode] = []              # 温度曲线（向后兼容字段名）
+    id: str = Field(
+        default_factory=lambda: str(uuid4()),
+        pattern=PROFILE_ID_PATTERN,
+        max_length=64,
+    )
+    name: str = Field(..., min_length=1, max_length=100)
+    description: str = Field("", max_length=500)
+    nodes: List[ProfileNode] = Field(default_factory=list, max_length=500)
     end_temp: float = Field(0, ge=0, le=300, description="结束温度 °C，到达后自动结束烘焙")
     created_at: datetime = Field(default_factory=datetime.now)
     updated_at: datetime = Field(default_factory=datetime.now)
@@ -80,10 +89,10 @@ class ProfileSummary(BaseModel):
 class RoastEvent(BaseModel):
     """烘焙事件：入豆、转黄、一爆等关键节点"""
 
-    time: float
-    type: str
-    note: str = ""
-    temperature: Optional[float] = None
+    time: float = Field(..., ge=0, le=86400)
+    type: str = Field(..., pattern=EVENT_TYPE_PATTERN, max_length=32)
+    note: str = Field("", max_length=500)
+    temperature: Optional[float] = Field(None, ge=0, le=300)
 
 
 class PIDParams(BaseModel):

@@ -1,13 +1,31 @@
 import json
+import re
+import urllib.parse
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect, HTTPException, Response
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect, HTTPException, Response, Query
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import PlainTextResponse, JSONResponse, FileResponse
 
 from src.core.roaster_controller import RoasterController
 from src.services.data_manager import DataManager
 from src.core.models import RoastProfile
+
+
+_PROFILE_ID_RE = re.compile(r"^[0-9a-fA-F-]{1,64}$")
+
+
+def _check_profile_id(profile_id: str) -> str:
+    """对外部传入的 profile_id 做严格白名单校验,防路径穿越。"""
+    if not isinstance(profile_id, str) or not _PROFILE_ID_RE.match(profile_id):
+        raise HTTPException(status_code=400, detail="非法的曲线 ID")
+    return profile_id
+
+
+def _sanitize_filename(name: str) -> str:
+    """清理 Content-Disposition filename:去掉控制字符、引号、CRLF,长度上限 100。"""
+    safe = re.sub(r"[\x00-\x1f\x7f\"\\/]", "_", name or "profile")
+    return safe[:100] or "profile"
 
 
 class ConnectionManager:
@@ -88,11 +106,12 @@ async def websocket_endpoint(websocket: WebSocket):
 async def _handle_ws_command(data: dict, controller: RoasterController, websocket: WebSocket):
     cmd = data.get("cmd")
     try:
+        if cmd == "__ping":
+            # 心跳保活:前端定期发送,服务端直接 ack,不触碰 controller
+            await websocket.send_json({"ok": True})
+            return
         if cmd == "start":
             await controller.start_roast(data.get("profile_id"))
-        elif cmd == "end":
-            # 兼容入口：出豆事件会自动触发 end_roast，此处保留供老客户端/测试调用。
-            await controller.end_roast()
         elif cmd == "save_and_clear":
             await controller.save_and_clear()
         elif cmd == "discard_and_clear":
@@ -101,14 +120,6 @@ async def _handle_ws_command(data: dict, controller: RoasterController, websocke
             await controller.emergency_stop()
         elif cmd == "event":
             await controller.log_event(data.get("type", ""), data.get("note", ""))
-        elif cmd == "set_lookahead":
-            params = data.get("params") or {}
-            value = params.get("value", data.get("value"))
-            if value is None:
-                await websocket.send_json({"error": "set_lookahead 缺少 value"})
-                return
-            controller.update_lookahead(float(value))
-            await manager.broadcast(controller.get_state_payload())
         elif cmd == "set_phase_lookahead":
             params = data.get("params") or {}
             phase = params.get("phase", data.get("phase"))
@@ -129,7 +140,8 @@ async def _handle_ws_command(data: dict, controller: RoasterController, websocke
         else:
             await websocket.send_json({"error": f"未知命令: {cmd}"})
     except Exception as e:
-        await websocket.send_json({"error": str(e)})
+        # 不回显原生异常细节,避免泄漏内部路径/堆栈
+        await websocket.send_json({"error": "命令处理失败"})
 
 
 # ========== REST API ==========
@@ -141,25 +153,6 @@ async def api_status():
 
 
 # --- 控制 ---
-@app.post("/api/v1/control/start")
-async def api_start(payload: dict = None):
-    controller: RoasterController = app.state.controller
-    try:
-        profile_id = (payload or {}).get("profile_id")
-        await controller.start_roast(profile_id)
-        return {"success": True}
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
-
-
-@app.post("/api/v1/control/end")
-async def api_end():
-    # 兼容入口：出豆事件会自动触发 end_roast，此处保留供老客户端/测试调用。
-    controller: RoasterController = app.state.controller
-    await controller.end_roast()
-    return {"success": True}
-
-
 @app.post("/api/v1/control/save_and_clear")
 async def api_save_and_clear():
     controller: RoasterController = app.state.controller
@@ -201,6 +194,7 @@ async def api_list_profiles():
 
 @app.get("/api/v1/profiles/{profile_id}")
 async def api_get_profile(profile_id: str):
+    _check_profile_id(profile_id)
     dm: DataManager = app.state.dm
     profile = await dm.load_profile(profile_id)
     if not profile:
@@ -211,15 +205,22 @@ async def api_get_profile(profile_id: str):
 @app.get("/api/v1/profiles/{profile_id}/export")
 async def api_export_profile(profile_id: str):
     """导出曲线为 JSON 附件下载"""
+    _check_profile_id(profile_id)
     dm: DataManager = app.state.dm
     profile = await dm.load_profile(profile_id)
     if not profile:
         raise HTTPException(status_code=404, detail="曲线不存在")
+    # filename 走 RFC 5987 UTF-8 编码 + ASCII fallback,避免曲线名中的特殊字符注入响应头
+    fallback = _sanitize_filename(profile.name)
+    encoded = urllib.parse.quote(f"{profile.name}.json", safe="")
     return Response(
         content=profile.model_dump_json(indent=2),
         media_type="application/json",
         headers={
-            "Content-Disposition": f'attachment; filename="{profile.name}.json"'
+            "Content-Disposition": (
+                f'attachment; filename="{fallback}.json"; '
+                f"filename*=UTF-8''{encoded}"
+            ),
         },
     )
 
@@ -227,16 +228,23 @@ async def api_export_profile(profile_id: str):
 @app.post("/api/v1/profiles")
 async def api_save_profile(payload: dict):
     dm: DataManager = app.state.dm
+    # 防御:不允许客户端任意指定 id,统一在服务端生成,避免路径穿越
+    if isinstance(payload, dict) and "id" in payload:
+        payload = {k: v for k, v in payload.items() if k != "id"}
     try:
         profile = RoastProfile.model_validate(payload)
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=f"数据格式错误: {e}")
-    await dm.save_profile(profile)
+    except Exception:
+        raise HTTPException(status_code=400, detail="曲线数据格式错误")
+    try:
+        await dm.save_profile(profile)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
     return {"success": True, "id": profile.id}
 
 
 @app.delete("/api/v1/profiles/{profile_id}")
 async def api_delete_profile(profile_id: str):
+    _check_profile_id(profile_id)
     dm: DataManager = app.state.dm
     ok = await dm.delete_profile(profile_id)
     if not ok:
@@ -248,21 +256,23 @@ async def api_delete_profile(profile_id: str):
 async def api_import_profile(payload: dict):
     dm: DataManager = app.state.dm
     try:
-        if "id" in payload:
-            del payload["id"]
+        if isinstance(payload, dict) and "id" in payload:
+            payload = {k: v for k, v in payload.items() if k != "id"}
         profile = RoastProfile.model_validate(payload)
         await dm.save_profile(profile)
         return {"success": True, "id": profile.id}
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=f"数据格式错误: {e}")
-
-
-# --- PID ---
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception:
+        raise HTTPException(status_code=400, detail="曲线数据格式错误")
 
 
 # --- 记录 ---
 @app.get("/api/v1/records")
-async def api_list_records(limit: int = 50, offset: int = 0):
+async def api_list_records(
+    limit: int = Query(50, ge=1, le=200),
+    offset: int = Query(0, ge=0, le=100000),
+):
     dm: DataManager = app.state.dm
     records = await dm.list_records(limit=limit, offset=offset)
     return [r.model_dump() for r in records]
@@ -270,6 +280,7 @@ async def api_list_records(limit: int = 50, offset: int = 0):
 
 @app.get("/api/v1/records/{session_id}")
 async def api_get_record(session_id: str):
+    _check_profile_id(session_id)  # 同一格式(UUID-like)校验,防路径穿越
     dm: DataManager = app.state.dm
     record = await dm.get_record(session_id)
     if not record:
@@ -279,6 +290,7 @@ async def api_get_record(session_id: str):
 
 @app.get("/api/v1/records/{session_id}/export/csv")
 async def api_export_csv(session_id: str):
+    _check_profile_id(session_id)
     dm: DataManager = app.state.dm
     csv_data = await dm.export_csv(session_id)
     if csv_data is None:
@@ -288,6 +300,7 @@ async def api_export_csv(session_id: str):
 
 @app.get("/api/v1/records/{session_id}/export/json")
 async def api_export_json(session_id: str):
+    _check_profile_id(session_id)
     dm: DataManager = app.state.dm
     json_data = await dm.export_json(session_id)
     if json_data is None:
