@@ -16,7 +16,7 @@ roaster/
 │   ├── hardware/
 │   │   └── tc4s_async.py        # 异步 TC4S Modbus RTU 通讯模块
 │   ├── core/
-│   │   ├── events.py            # 状态机枚举（运行时使用 IDLE/ROASTING/COOLING/ERROR；WAITING/PREHEATING 仅供历史 RoastRecord 反序列化兼容）
+│   │   ├── events.py            # 状态机枚举（IDLE / ROASTING / COOLING / ERROR 四态）
 │   │   ├── models.py            # Pydantic 数据模型（RoastRecord 含 seq_no/display_name/profile_snapshot；RoasterStatus 含 lookahead_used/current_phase/phase_lookahead_config；PhaseLookaheadConfig）
 │   │   └── roaster_controller.py # 核心控制器（IDLE→ROASTING 直通、log_event drop 触发 end_roast、分阶段 lookahead、偏移微调）
 │   ├── services/
@@ -148,7 +148,7 @@ python main.py
 5. **保存确认**：系统弹出确认框「是否保存此锅烘焙记录？」，选择后清屏回到待机，开始下一锅
 6. **紧急停止**：右下角嵌入小方框急停按钮始终可见，双击确认触发紧急停止（IDLE 时灰色禁用，ROASTING 时红色高亮，z-index 1020 高于模态层）
 
-> **状态机说明**：运行时仅使用 4 个状态 `IDLE / ROASTING / COOLING / ERROR`。`WAITING / PREHEATING` 在 `RoasterState` 枚举中保留字面量但已 DEPRECATED，仅供历史 `RoastRecord` JSON 反序列化兼容，运行时不会触发。
+> **状态机说明**：运行时仅使用 4 个状态 `IDLE / ROASTING / COOLING / ERROR`。从入豆到出豆全程在 `ROASTING`，出豆事件自动触发 `end_roast → COOLING`。
 
 ### 快捷事件操作栏
 
@@ -297,9 +297,9 @@ python main.py
 | `predictive_control.adaptive_enabled` | 是否启用自适应误差修正（默认 true） |
 | `predictive_control.adaptive_max_extra_sec` | 自适应附加超前量上限（秒），默认 10.0 |
 | `predictive_control.adaptive_error_threshold` | 触发自适应的 PV-nominal 误差阈值（°C），默认 3.0 |
-| `phase_lookahead.drying_sec` | 脱水期基准超前量（秒），范围 0~30，默认 1.0 |
-| `phase_lookahead.maillard_sec` | 梅纳期基准超前量（秒），范围 0~30，默认 0.5 |
-| `phase_lookahead.development_sec` | 发展期基准超前量（秒），范围 0~30，默认 1.0 |
+| `phase_lookahead.drying` | 脱水期基准超前量（秒），范围 0~30，默认 1.0 |
+| `phase_lookahead.maillard` | 梅纳期基准超前量（秒），范围 0~30，默认 0.5 |
+| `phase_lookahead.development` | 发展期基准超前量（秒），范围 0~30，默认 1.0 |
 
 ## WebSocket 命令
 
@@ -316,11 +316,11 @@ python main.py
 { "cmd": "event", "type": "second_crack", "note": "" }
 { "cmd": "event", "type": "second_crack_end", "note": "" }
 { "cmd": "event", "type": "drop", "note": "" }
-{ "cmd": "set_lookahead", "params": { "value": 10.0 } }
-{ "cmd": "update_lookahead_offset", "params": { "value": 0.5 } }
+{ "cmd": "set_phase_lookahead", "params": { "phase": "drying", "value": 1.0 } }
+{ "cmd": "set_lookahead_offset", "params": { "value": 0.5 } }
 ```
 
-> `cmd=set_lookahead` 写入全局 `lookahead_sec`，value 范围 0~30s（超出会被静默 clamp）；`cmd=update_lookahead_offset` 为运行时偏移微调（±3.0s，不持久化，重启归零）。`cmd=end` 保留作向后兼容入口，前端不再调用（出豆事件已自动触发结束烘焙）。
+> `set_phase_lookahead` 接受 `phase ∈ {drying, maillard, development}`、`value ∈ [0, 30]`（超出会被静默 clamp）；`set_lookahead_offset` 为运行时偏移微调（±3.0s，不持久化，重启归零）。出豆事件已自动触发结束烘焙。
 
 ## 开发建议
 

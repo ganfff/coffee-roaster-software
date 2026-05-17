@@ -198,11 +198,6 @@ class RoasterController:
         slope = (n * sum_tv - sum_t * sum_v) / denominator
         return slope * 60.0
 
-    async def _maybe_adjust_sv(self, elapsed: float):
-        """根据当前状态决定是否调整设定温度 SV。外部调用时使用（自行获取锁）。"""
-        async with self._state_lock:
-            await self._maybe_adjust_sv_locked(elapsed)
-
     def _get_current_phase(self, elapsed: float) -> Optional[str]:
         """根据事件日志判断当前烘焙阶段。
 
@@ -463,11 +458,6 @@ class RoasterController:
             "dtr": 0.0,
             "segment_times": {},
             "segment_ratios": {},
-            "segment_colors": {
-                "脱水期": "#3b82f6",
-                "梅纳期": "#f59e0b",
-                "发展期": "#22c55e",
-            },
         }
         charge = next((e for e in self.event_log if e.type == "charge"), None)
         yellowing = next((e for e in self.event_log if e.type == "yellowing"), None)
@@ -535,10 +525,6 @@ class RoasterController:
         )
         await self.dm.save_record(record)
 
-    def get_pid(self) -> PIDParams:
-        """获取当前 PID 参数（启动加载用，运行时不可改）"""
-        return self.pid
-
     def update_phase_lookahead(self, phase: str, value: float):
         """更新指定阶段的超前预测秒数（运行时生效，不持久化到文件）。"""
         if phase not in ("drying", "maillard", "development"):
@@ -551,15 +537,3 @@ class RoasterController:
     def update_lookahead_offset(self, value: float):
         """更新超前预测偏移微调（纯运行时，不持久化）。"""
         self._lookahead_offset = max(-3.0, min(3.0, float(value)))
-
-    def update_lookahead(self, value: float):
-        """向后兼容：更新所有阶段值并同步 fallback lookahead_sec。"""
-        # v3.18: clamp 上限同步收紧到 30.0，与前端 slider / Pydantic 三层一致
-        v = max(0.0, min(30.0, float(value)))
-        pc = self.config.setdefault("predictive_control", {})
-        pc["lookahead_sec"] = v
-        phase_cfg = pc.setdefault("phase_lookahead", {})
-        for phase in ("drying", "maillard", "development"):
-            phase_cfg[phase] = v
-        # 立即更新 UI 反馈值（自适应额外项下次循环再计算）
-        self.current_lookahead = v
