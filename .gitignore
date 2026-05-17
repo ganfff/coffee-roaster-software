@@ -80,3 +80,6 @@ desktop.ini
 .claude/.last-cleanup
 .claude/cache/
 # 但保留 .claude/skills/ 让项目专属 skill 可以被 git 管理
+
+# 本地审查报告/草稿,仅本机保留
+REVIEW_REPORT.md
