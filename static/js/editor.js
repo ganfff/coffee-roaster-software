@@ -20,6 +20,9 @@
   let dragIndex = -1;
   let refreshRaf = null; // requestAnimationFrame 句柄
 
+  // 是否存在未保存修改(用于离开页面前提示)
+  let isDirty = false;
+
   // 撤销/重做系统
   const MAX_HISTORY = 50;
   let undoStack = [];
@@ -133,9 +136,36 @@
     chart.resize();
 
     const canvas = chart.canvas;
+    // 同时绑定鼠标与触摸事件,支持树莓派触摸屏拖节点
     canvas.addEventListener('mousedown', onMouseDown);
     canvas.addEventListener('mousemove', onMouseMove);
     window.addEventListener('mouseup', onMouseUp);
+    canvas.addEventListener('touchstart', onTouchStart, { passive: false });
+    canvas.addEventListener('touchmove', onTouchMove, { passive: false });
+    window.addEventListener('touchend', onTouchEnd);
+    window.addEventListener('touchcancel', onTouchEnd);
+  }
+
+  // 把 Touch 事件转成 mouse-like 事件后复用拖动逻辑
+  function _touchToEventLike(t, shiftKey) {
+    return { clientX: t.clientX, clientY: t.clientY, shiftKey: !!shiftKey };
+  }
+
+  function onTouchStart(evt) {
+    if (!evt.touches || evt.touches.length === 0) return;
+    evt.preventDefault();
+    const t = evt.touches[0];
+    onMouseDown(_touchToEventLike(t));
+  }
+  function onTouchMove(evt) {
+    if (!evt.touches || evt.touches.length === 0) return;
+    if (!isDragging) return;
+    evt.preventDefault();
+    const t = evt.touches[0];
+    onMouseMove(_touchToEventLike(t));
+  }
+  function onTouchEnd() {
+    onMouseUp();
   }
 
   // ========== 坐标转换 ==========
@@ -279,7 +309,7 @@
   }
 
   function pushHistory(type, description) {
-    if (isUndoing) return null;
+    if (isUndoing) return function noop() {};
     const prevState = deepClone(tempNodes);
 
     return function finalize() {
@@ -288,6 +318,7 @@
       undoStack.push(new EditCommand(type, prevState, nextState, description));
       if (undoStack.length > MAX_HISTORY) undoStack.shift();
       redoStack = [];
+      isDirty = true;
       updateUndoRedoUI();
     };
   }
@@ -302,6 +333,7 @@
     selectNode(-1);
     redoStack.push(cmd);
     isUndoing = false;
+    isDirty = true;
     updateUndoRedoUI();
     showToast('已撤销');
   }
@@ -316,6 +348,7 @@
     selectNode(-1);
     undoStack.push(cmd);
     isUndoing = false;
+    isDirty = true;
     updateUndoRedoUI();
     showToast('已重做');
   }
@@ -484,13 +517,6 @@
     return ror;
   }
 
-  /**
-   * 构建 ROR 数据集（简单分段差分法，与 utils.js 一致）
-   */
-  function buildRORDataset(nodeList) {
-    return window.buildRORDataset(nodeList);
-  }
-
   // ========== UI 刷新（核心：修复 Chart.js 渲染） ==========
 
   /**
@@ -610,6 +636,7 @@
       });
       const data = await res.json();
       if (data.success) {
+        isDirty = false;
         showToast('保存成功');
         setTimeout(() => { window.location.href = '/'; }, 800);
       }
@@ -742,5 +769,21 @@
     refresh();
     initEvents();
     updateUndoRedoUI();
+
+    // 未保存修改防丢失:beforeunload + 返回主页面链接拦截
+    window.addEventListener('beforeunload', (e) => {
+      if (!isDirty) return;
+      e.preventDefault();
+      e.returnValue = '';
+    });
+    const backLink = document.querySelector('.back-link');
+    if (backLink) {
+      backLink.addEventListener('click', (e) => {
+        if (!isDirty) return;
+        if (!confirm('有未保存的修改,确定要离开吗?')) {
+          e.preventDefault();
+        }
+      });
+    }
   });
 })();

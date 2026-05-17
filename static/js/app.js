@@ -292,23 +292,53 @@
   }
 
   // ========== WebSocket ==========
+  // 指数退避：1s → 2s → 4s → ... → 30s 封顶；onerror 与 onclose 双路径用 wsGen 序号去重，防止双 timer race
+  let wsGen = 0;
+  let reconnectDelay = 1000;
+  const RECONNECT_MAX_DELAY = 30000;
+  let pingTimer = null;
+
   function connectWS() {
     if (ws && (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING)) return;
+    const myGen = ++wsGen;
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    ws = new WebSocket(`${protocol}//${window.location.host}/ws`);
-    ws.onopen = () => updateWsStatus(true);
-    ws.onmessage = (event) => {
+    const sock = new WebSocket(`${protocol}//${window.location.host}/ws`);
+    ws = sock;
+
+    sock.onopen = () => {
+      if (myGen !== wsGen) return;
+      reconnectDelay = 1000; // 成功连接后退避复位
+      updateWsStatus(true);
+      // 心跳：每 15 秒发一个空 ping,后端如未响应 6 秒则主动 close 触发重连
+      if (pingTimer) clearInterval(pingTimer);
+      pingTimer = setInterval(() => {
+        if (sock.readyState === WebSocket.OPEN) {
+          try { sock.send(JSON.stringify({ cmd: '__ping' })); } catch (_) {}
+        }
+      }, 15000);
+    };
+    sock.onmessage = (event) => {
+      if (myGen !== wsGen) return;
       const msg = JSON.parse(event.data);
       // 跳过命令回包(ok/error),避免它们走完整 state 解析路径
       if (msg.ok === true || msg.error != null) return;
       handleStateUpdate(msg);
     };
-    ws.onclose = () => {
+    sock.onclose = () => {
+      // 旧 sock 的 onclose 不应再触发重连
+      if (myGen !== wsGen) return;
+      if (pingTimer) { clearInterval(pingTimer); pingTimer = null; }
       updateWsStatus(false);
       if (reconnectTimer) clearTimeout(reconnectTimer);
-      reconnectTimer = setTimeout(connectWS, 2000);
+      // 指数退避 + 30s 封顶,避免局域网瞬态抖动时每 2s 撞墙
+      reconnectTimer = setTimeout(connectWS, reconnectDelay);
+      reconnectDelay = Math.min(reconnectDelay * 2, RECONNECT_MAX_DELAY);
     };
-    ws.onerror = () => ws.close();
+    sock.onerror = () => {
+      // 不主动 close —— 浏览器规范上 error 后会自动跟一个 close,二次 close 反而触发双 timer
+      // 只在仍然是当前 sock 时清理 ws 句柄,让 onclose 兜底重连
+      if (myGen !== wsGen) return;
+    };
   }
 
   function sendCmd(cmd, payload) {
@@ -434,7 +464,6 @@
     syncEventActionsBar(msg.events || []);
 
     if (msg.event_stats) {
-      updateEventStats(msg.event_stats);
       updateSegmentBar(msg.event_stats);
     }
 
@@ -452,9 +481,6 @@
           fetch('/api/v1/control/discard_and_clear', { method: 'POST' }).catch(() => {});
         }
       }, 500);
-    }
-    if (msg.state !== 'COOLING' && msg.state !== 'IDLE') {
-      // 非冷却/待机状态下不重置 lastPromptedSessionId，避免意外重复弹窗
     }
 
     currentSessionId = msg.session_id || currentSessionId;
@@ -857,10 +883,6 @@
   }
 
   // 阶段时长由顶部 #segment-bar 渲染（updateSegmentBar）。
-  function updateEventStats(stats) {
-    // no-op: 保留函数签名以便保留调用点的兼容性，将来如需重新挂载主页统计可在此恢复
-    void stats;
-  }
 
   /**
    * 同步事件按钮 active 高亮 + 时间温度 badge。
@@ -1154,17 +1176,6 @@
 
   function round1(v) { return Math.round(v * 10) / 10; }
 
-  // 用户正在交互的控件,跳过 WS 广播覆盖,避免被服务端值打回
-  // 1500ms 窗口 = WS 广播 500ms × 3 帧,用户停手后第 4 帧收敛回服务端真值
-  function shouldSkipUpdate(el) {
-    if (!el) return false;
-    if (document.activeElement === el) return true;
-    const lastEdit = el.dataset.lastUserEdit ? parseInt(el.dataset.lastUserEdit, 10) : 0;
-    if (Date.now() - lastEdit < 1500) return true;
-    return false;
-  }
-  function markUserEdit(el) { if (el) el.dataset.lastUserEdit = String(Date.now()); }
-
   // ========== 超前预测阶段设置 ==========
   function initPhaseLookahead() {
     const phases = ['drying', 'maillard', 'development'];
@@ -1194,11 +1205,9 @@
       }
 
       sliderEl.addEventListener('input', () => {
-        markUserEdit(sliderEl); markUserEdit(numEl);
         commit(sliderEl.value, 'slider');
       });
       numEl.addEventListener('input', () => {
-        markUserEdit(numEl); markUserEdit(sliderEl);
         commit(numEl.value, 'num');
       });
       numEl.addEventListener('change', () => commit(numEl.value, 'num'));
@@ -1241,7 +1250,6 @@
       if (prefixEl) prefixEl.textContent = v > 0 ? '+' : (v < 0 ? '−' : '±');
       updateEvPointer(v);
       if (fromUser) {
-        markUserEdit(sliderEl);
         if (sendTimer) clearTimeout(sendTimer);
         sendTimer = setTimeout(() => {
           sendCmd('set_lookahead_offset', { value: v });
@@ -1329,10 +1337,16 @@
     });
 
     // 急停按钮：双击确认机制（v3.18：嵌入右下角 .estop-box 小方框，按钮自身仍是 #btn-e-stop）
+    // ERROR 状态下短路双击确认,直接触发复位——错误横幅与右下角按钮认知冲突时,任一单击都能恢复。
     const eStopBtn = document.getElementById('btn-e-stop');
     bindTouchClick(eStopBtn, () => {
       // IDLE 时禁用急停
       if (eStopBtn.classList.contains('disabled')) return;
+      if (inErrorState) {
+        // ERROR 状态：直接复位,无需双击
+        sendCmd('emergency_stop');
+        return;
+      }
       if (eStopConfirming) {
         // 第二次点击：执行急停
         clearTimeout(eStopConfirmTimer);
@@ -1556,10 +1570,11 @@
       document.getElementById('detail-events').innerHTML = events.map(e => {
         const color = eventColors[e.type] || '#a3a3a3';
         const tempStr = e.temperature != null ? ` @ ${e.temperature.toFixed(1)}°C` : '';
+        // eventLabel 的 default 分支可能返回未知 type 原文,统一转义防 XSS
         return `<div class="detail-event-item">
           <span class="detail-event-dot" style="background:${color}"></span>
           <span class="detail-event-time">${formatTime(e.time)}</span>
-          <span class="detail-event-name">${eventLabel(e.type)}${tempStr}</span>
+          <span class="detail-event-name">${escapeHtml(eventLabel(e.type))}${escapeHtml(tempStr)}</span>
         </div>`;
       }).join('');
 
