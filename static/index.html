@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ganf's咖啡烘焙机</title>
+  <link rel="stylesheet" href="/static/css/style.css?v=3.18" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body>
+  <div id="app">
+    <!-- 顶部标题栏 -->
+    <header id="top-bar">
+      <div class="header-left">
+        <h1>Ganf's咖啡烘焙机</h1>
+        <div class="state-badge" id="state-badge">待机</div>
+      </div>
+      <div class="header-center">
+        <div class="readout">
+          <div class="readout-item pv">
+            <span class="readout-val" id="pv-val">--</span>
+            <span class="readout-label">温度 (°C)</span>
+          </div>
+          <div class="readout-item sv">
+            <span class="readout-val" id="sv-val">--</span>
+            <span class="readout-label">设定温度 (°C)</span>
+          </div>
+          <div class="readout-item ror">
+            <span class="readout-val" id="ror-val">--</span>
+            <span class="readout-label">升温率 (°C/min)</span>
+          </div>
+        </div>
+      </div>
+      <div class="header-right">
+        <div class="time-block">
+          <div class="elapsed" id="elapsed">00:00</div>
+          <div class="clock" id="clock">--:--:--</div>
+        </div>
+        <button class="icon-btn" id="btn-fullscreen" title="全屏" aria-label="全屏">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- 关键事件温度显示条 + 快捷事件按钮 -->
+    <div id="event-temps-bar">
+      <div class="event-temp-item yellowing">
+        <span class="event-temp-label">转黄</span>
+        <span class="event-temp-val" id="yellowing-info">--</span>
+      </div>
+      <div class="event-temp-item first-crack">
+        <span class="event-temp-label">一爆</span>
+        <span class="event-temp-val" id="first-crack-info">--</span>
+      </div>
+      <div class="event-temp-item development">
+        <span class="event-temp-label">发展期</span>
+        <span class="event-temp-val" id="development-info">--</span>
+      </div>
+    </div>
+
+    <!-- 快捷事件操作栏（始终可见） -->
+    <div id="event-actions-bar">
+      <button class="event-action-btn" data-event="yellowing" title="转黄">转黄<span class="event-badge"></span></button>
+      <button class="event-action-btn" data-event="first_crack" title="一爆开始">一爆<span class="event-badge"></span></button>
+      <button class="event-action-btn" data-event="first_crack_end" title="一爆结束">一爆结束<span class="event-badge"></span></button>
+      <button class="event-action-btn" data-event="second_crack" title="二爆开始">二爆<span class="event-badge"></span></button>
+      <button class="event-action-btn" data-event="second_crack_end" title="二爆结束">二爆结束<span class="event-badge"></span></button>
+      <button class="event-action-btn drop-prominent" data-event="drop" title="出豆">出豆<span class="event-badge"></span></button>
+    </div>
+
+    <!-- 阶段颜色条 -->
+    <div id="segment-bar">
+      <div class="segment" id="seg-drying" style="--seg-color:#3b82f6">
+        <span class="seg-name">脱水期</span>
+        <span class="seg-val" id="seg-drying-val">--</span>
+      </div>
+      <div class="segment" id="seg-maillard" style="--seg-color:#f59e0b">
+        <span class="seg-name">梅纳期</span>
+        <span class="seg-val" id="seg-maillard-val">--</span>
+      </div>
+      <div class="segment" id="seg-development" style="--seg-color:#22c55e">
+        <span class="seg-name">发展期</span>
+        <span class="seg-val" id="seg-development-val">--</span>
+      </div>
+    </div>
+
+    <!-- 主内容区 -->
+    <main>
+      <section id="charts-panel">
+        <div class="chart-header">
+          <span class="chart-title">实时温度曲线</span>
+          <!-- 进度条：三段拼接（脱水蓝/梅纳橙/发展期红/冷却灰） -->
+          <div id="roast-progress-inline" class="roast-progress-bar" data-phase="idle">
+            <div class="rpb-meta">
+              <span class="rpb-phase-label" id="rpb-phase-label">待机</span>
+              <span class="rpb-time" id="rpb-time">--:--</span>
+            </div>
+            <div class="rpb-track" aria-hidden="true">
+              <div class="rpb-seg rpb-seg-drying"     data-phase="drying"></div>
+              <div class="rpb-seg rpb-seg-maillard"   data-phase="maillard"></div>
+              <div class="rpb-seg rpb-seg-development" data-phase="development"></div>
+              <div class="rpb-indicator" id="rpb-indicator"></div>
+            </div>
+          </div>
+        </div>
+        <div class="chart-wrapper">
+          <canvas id="roast-chart"></canvas>
+        </div>
+      </section>
+
+      <aside id="controls-panel">
+        <!-- Tab 按钮 -->
+        <div class="tabs">
+          <button class="tab-btn active" data-tab="roast">烘焙控制</button>
+          <button class="tab-btn" data-tab="profile">曲线管理</button>
+          <button class="tab-btn" data-tab="records">烘焙记录</button>
+        </div>
+
+        <!-- 烘焙控制 -->
+        <div class="tab-content active" id="tab-roast">
+          <!-- 当前曲线只读 -->
+          <div class="roast-section">
+            <div class="profile-readonly">
+              <span class="profile-name" id="current-profile-display">--</span>
+              <a href="#" id="btn-go-profile-tab">去曲线管理选择 →</a>
+            </div>
+          </div>
+
+          <!-- 开始按钮 -->
+          <div class="roast-section btn-grid" id="roast-btn-grid">
+            <button id="btn-start" class="ctrl-btn primary">开始烘焙</button>
+          </div>
+
+          <div class="roast-section btn-grid" id="cooling-btn-grid" style="display:none">
+            <div class="cooling-notice">烘焙已结束，正在等待保存确认...</div>
+          </div>
+
+          <!-- 超前预测阶段设置 -->
+          <div class="roast-section">
+            <div class="section-title">超前预测阶段设置</div>
+            <div class="section-hint">
+              PID控制器和加热系统存在热滞后,读取未来N秒的目标温度作为当前SV。<br>
+              实际使用时间与设定不同是因为开启了自适应误差修正(当PV落后超过阈值时自动增加额外超前量)。
+            </div>
+            <div class="phase-input-row" data-phase="drying">
+              <label>脱水期</label>
+              <input type="range"  id="phase-drying-slider" class="phase-slider"
+                     min="0" max="30" step="0.1" value="1.0">
+              <input type="number" id="phase-drying"        class="phase-number"
+                     min="0" max="30" step="0.1" value="1.0">
+              <span class="unit">秒</span>
+            </div>
+            <div class="phase-input-row" data-phase="maillard">
+              <label>梅纳期</label>
+              <input type="range"  id="phase-maillard-slider" class="phase-slider"
+                     min="0" max="30" step="0.1" value="0.5">
+              <input type="number" id="phase-maillard"        class="phase-number"
+                     min="0" max="30" step="0.1" value="0.5">
+              <span class="unit">秒</span>
+            </div>
+            <div class="phase-input-row" data-phase="development">
+              <label>发展期</label>
+              <input type="range"  id="phase-development-slider" class="phase-slider"
+                     min="0" max="30" step="0.1" value="1.0">
+              <input type="number" id="phase-development"        class="phase-number"
+                     min="0" max="30" step="0.1" value="1.0">
+              <span class="unit">秒</span>
+            </div>
+          </div>
+
+          <!-- 偏移微调（相机 EV 曝光补偿风格刻度尺） -->
+          <div class="roast-section">
+            <div class="section-title">偏移微调</div>
+            <div class="ev-compensation">
+              <div class="ev-readout">
+                <span class="ev-prefix" id="ev-prefix">±</span><span class="ev-value" id="lookahead-offset-value">0.0</span><span class="ev-unit">秒</span>
+              </div>
+              <div class="ev-scale" id="ev-scale">
+                <!-- 主刻度 -3..+3 + 副刻度（0.5 间隔），由 ::before/::after 渐变绘制 -->
+                <div class="ev-scale-track">
+                  <div class="ev-tick ev-tick-major" style="left:0%"  ><span class="ev-tick-label">-3</span></div>
+                  <div class="ev-tick ev-tick-minor" style="left:8.333%"></div>
+                  <div class="ev-tick ev-tick-major" style="left:16.666%"><span class="ev-tick-label">-2</span></div>
+                  <div class="ev-tick ev-tick-minor" style="left:25%"></div>
+                  <div class="ev-tick ev-tick-major" style="left:33.333%"><span class="ev-tick-label">-1</span></div>
+                  <div class="ev-tick ev-tick-minor" style="left:41.666%"></div>
+                  <div class="ev-tick ev-tick-major ev-tick-zero" style="left:50%"><span class="ev-tick-label">0</span></div>
+                  <div class="ev-tick ev-tick-minor" style="left:58.333%"></div>
+                  <div class="ev-tick ev-tick-major" style="left:66.666%"><span class="ev-tick-label">+1</span></div>
+                  <div class="ev-tick ev-tick-minor" style="left:75%"></div>
+                  <div class="ev-tick ev-tick-major" style="left:83.333%"><span class="ev-tick-label">+2</span></div>
+                  <div class="ev-tick ev-tick-minor" style="left:91.666%"></div>
+                  <div class="ev-tick ev-tick-major" style="left:100%"><span class="ev-tick-label">+3</span></div>
+                  <div class="ev-pointer" id="ev-pointer"></div>
+                </div>
+                <input type="range" id="lookahead-offset-slider" class="ev-input"
+                       min="-3" max="3" step="0.1" value="0" aria-label="偏移微调">
+              </div>
+            </div>
+            <div class="lookahead-actual">
+              实际使用: <span id="lookahead-used">--</span> 秒(含自适应)
+            </div>
+          </div>
+
+          <!-- 冷却提示 -->
+          <div id="cooling-hint" class="roast-section cooling-hint" style="display:none">
+            <span class="cooling-icon">❄</span> 正在冷却，请等待...
+          </div>
+        </div>
+
+        <!-- 曲线管理 -->
+        <div class="tab-content" id="tab-profile">
+          <div class="profile-actions">
+            <button id="btn-new-profile" class="ctrl-btn small primary">新建曲线</button>
+            <button id="btn-import-trigger" class="ctrl-btn small">导入曲线</button>
+            <button id="btn-refresh-profiles" class="ctrl-btn small">刷新</button>
+            <input type="file" id="btn-import-file" accept=".json" hidden />
+          </div>
+          <div class="profile-cards" id="profile-cards"></div>
+        </div>
+
+        <!-- 烘焙记录 -->
+        <div class="tab-content" id="tab-records">
+          <div class="compare-actions" id="compare-actions">
+            <button id="btn-compare" class="ctrl-btn small" style="display:none">对比选中</button>
+            <button id="btn-exit-compare" class="ctrl-btn small" style="display:none">退出对比</button>
+          </div>
+          <div class="records-list" id="records-list">
+            <div style="color:#737373;text-align:center;padding:20px 0">加载中...</div>
+          </div>
+          <div id="record-detail" style="display:none">
+            <div class="record-detail-header">
+              <button id="btn-back-to-list" class="ctrl-btn small">← 返回列表</button>
+              <button id="btn-chart-fullscreen" class="ctrl-btn small">图表全屏</button>
+            </div>
+            <div class="record-info-card">
+              <div class="record-info-title">
+                <strong id="detail-profile-name">--</strong>
+                <span id="detail-date">--</span>
+              </div>
+              <div class="record-info-stats" id="detail-stats"></div>
+            </div>
+            <div class="record-chart-container" id="record-chart-container">
+              <button id="btn-chart-exit-fullscreen" class="modal-close" hidden aria-label="退出全屏">×</button>
+              <div class="record-chart-wrapper">
+                <canvas id="record-chart"></canvas>
+              </div>
+            </div>
+            <div class="record-events" id="detail-events"></div>
+            <div class="record-actions">
+              <button id="btn-detail-csv" class="ctrl-btn small">导出 CSV</button>
+              <button id="btn-detail-json" class="ctrl-btn small">导出 JSON</button>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </main>
+
+    <!-- 底部状态栏 -->
+    <footer id="footer">
+      <div class="footer-left">
+        <div class="conn-status-group">
+          <span class="status-dot offline" id="conn-status-ws" title="WebSocket"></span>
+          <span class="conn-label">WS</span>
+        </div>
+        <div class="conn-status-group">
+          <span class="status-dot offline" id="conn-status-tc4s" title="TC4S"></span>
+          <span class="conn-label">TC4S</span>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <!-- ERROR 状态全屏阻断横幅 -->
+  <div id="error-overlay" class="hidden">
+    <div class="error-box">
+      <div class="error-icon">&#x26A0;</div>
+      <h2>系统错误</h2>
+      <p id="error-reason">--</p>
+      <button id="btn-error-reset" class="error-reset-btn">复位系统</button>
+    </div>
+  </div>
+
+  <!-- v3.18：紧急停止从浮动圆形按钮改为右下角嵌入小方框 -->
+  <div class="estop-box" id="estop-box">
+    <button id="btn-e-stop" class="estop-btn" aria-label="紧急停止">E-STOP</button>
+  </div>
+
+  <script src="/static/js/utils.js?v=3.18"></script>
+  <script src="/static/js/app.js?v=3.18"></script>
+</body>
+</html>
