@@ -74,3 +74,9 @@ desktop.ini
 *.tmp
 *.bak
 *.orig
+
+# Claude Code 本机自动生成的配置(权限白名单/缓存),每台机器不同,不进 git
+.claude/settings.local.json
+.claude/.last-cleanup
+.claude/cache/
+# 但保留 .claude/skills/ 让项目专属 skill 可以被 git 管理
