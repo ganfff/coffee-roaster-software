@@ -1,0 +1,17 @@
+{
+  "id": "default-light-roast",
+  "name": "耶加雪菲-浅焙",
+  "description": "默认浅焙曲线，适合耶加雪菲等花香型豆子",
+  "nodes": [
+    {"time": 0, "temperature": 30},
+    {"time": 60, "temperature": 100},
+    {"time": 120, "temperature": 135},
+    {"time": 180, "temperature": 155},
+    {"time": 270, "temperature": 188},
+    {"time": 360, "temperature": 203},
+    {"time": 435, "temperature": 212}
+  ],
+  "end_temp": 212,
+  "created_at": "2026-04-16T00:00:00",
+  "updated_at": "2026-04-16T00:00:00"
+}

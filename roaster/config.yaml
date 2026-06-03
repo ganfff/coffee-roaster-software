@@ -1,0 +1,34 @@
+serial:
+  port: "/dev/ttyUSB0"
+  baudrate: 9600
+  slave_id: 1
+
+paths:
+  profiles_dir: "data/profiles"
+  records_dir: "data/records"
+
+poll_interval: 0.5          # seconds, TC4S read frequency
+broadcast_interval: 0.5     # seconds, WebSocket push frequency
+
+pid:
+  kp: 60.0
+  ki: 0.01
+  kd: 20.0
+
+ror_window_sec: 15.0       # ROR 计算窗口（秒），建议 10~20。滑动线性回归的左右半窗宽
+
+max_safe_temperature: 250.0   # 软件过温保护阈值（°C），超过此值强制关闭加热并进入 ERROR
+
+host: "0.0.0.0"
+port: 8000
+
+predictive_control:
+  lookahead_sec: 15.0
+  phase_lookahead:
+    drying: 1.0
+    maillard: 0.5
+    development: 1.0
+  adaptive_enabled: true
+  adaptive_max_extra_sec: 10.0
+  adaptive_error_threshold: 3.0
+

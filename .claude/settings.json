@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Skill(coffee-roaster-workflow)",
+      "Skill(coffee-roaster-workflow:*)"
+    ]
+  }
+}

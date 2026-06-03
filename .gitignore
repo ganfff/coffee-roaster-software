@@ -1,0 +1,67 @@
+# Python bytecode and build artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Virtual environments and local environment files
+.venv/
+venv/
+env/
+ENV/
+.env
+.env.*
+!.env.example
+!.env.sample
+
+# Test, type-check, lint, and coverage caches
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.tox/
+.nox/
+.hypothesis/
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+
+# Runtime records and SQLite transient files
+/roaster/data/records/
+**/*.db-wal
+**/*.db-shm
+**/*.db-journal
+**/*.sqlite-wal
+**/*.sqlite-shm
+**/*.sqlite-journal
+**/*.sqlite3-wal
+**/*.sqlite3-shm
+**/*.sqlite3-journal
+
+# Keep versioned roast profiles trackable
+!/roaster/data/profiles/
+!/roaster/data/profiles/*.json
+
+# Local Claude Code settings
+/.claude/settings.local.json
+
+# Editor and OS files
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+.AppleDouble
+.LSOverride
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+Desktop.ini
+
+# Temporary local notes
+/readme.txt

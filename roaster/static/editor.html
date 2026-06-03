@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>曲线编辑器 - Ganf's咖啡烘焙机</title>
+  <link rel="stylesheet" href="/static/css/editor.css?v=3.19" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body>
+  <div id="app">
+    <header class="editor-header">
+      <a href="/" class="back-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+          <path d="M19 12H5M12 19l-7-7 7-7"/>
+        </svg>
+        返回主页面
+      </a>
+
+      <div class="title-group">
+        <input type="text" id="profile-name" placeholder="曲线名称" />
+        <input type="text" id="profile-desc" placeholder="描述（可选）" />
+        <input type="number" id="profile-end-temp" placeholder="结束温度 °C" min="0" max="300" step="1" />
+      </div>
+
+      <div class="header-actions">
+        <button id="btn-undo" class="ctrl-btn small" aria-label="撤销" title="撤销 (Ctrl+Z)" disabled>↩ 撤销</button>
+        <button id="btn-redo" class="ctrl-btn small" aria-label="重做" title="重做 (Ctrl+Y)" disabled>↪ 重做</button>
+        <button id="btn-export" class="ctrl-btn small">导出 JSON</button>
+        <button id="btn-save" class="ctrl-btn small primary">保存曲线</button>
+      </div>
+    </header>
+
+    <main class="editor-main">
+      <section class="canvas-area">
+        <div class="chart-wrapper">
+          <canvas id="editor-chart"></canvas>
+        </div>
+        <div class="canvas-hint">
+          <span class="hint-item">[拖拽] 调整节点温度与时间</span>
+          <span class="hint-item">[Ctrl+Z] 撤销 / [Ctrl+Y] 重做</span>
+          <span class="hint-item">按住 [Shift] 吸附到 5 秒 / 0.5℃ 网格;默认丝滑拖动</span>
+          <span class="hint-item">[方向键] 微调节点</span>
+        </div>
+      </section>
+
+      <aside class="props-panel">
+        <div class="panel-block">
+          <h3>节点列表</h3>
+          <div class="nodes-table-header">
+            <span>时间</span>
+            <span>数值</span>
+            <span>斜率</span>
+          </div>
+          <div id="nodes-list" class="nodes-list"></div>
+          <div class="panel-actions">
+            <button id="btn-add-node" class="ctrl-btn small">+ 添加节点</button>
+            <button id="btn-del-node" class="ctrl-btn small danger" disabled>删除选中</button>
+          </div>
+        </div>
+
+        <div class="panel-block">
+          <h3>选中节点</h3>
+          <div class="form-row form-row-time">
+            <label>时间</label>
+            <div class="time-inputs">
+              <input type="number" id="sel-time-min" min="0" step="1" inputmode="numeric" />
+              <span class="time-unit">分</span>
+              <input type="number" id="sel-time-sec" min="0" step="1" inputmode="numeric" />
+              <span class="time-unit">秒</span>
+            </div>
+          </div>
+          <div class="form-row">
+            <label for="sel-temp">数值</label>
+            <input type="number" id="sel-temp" min="0" max="300" step="0.1" />
+          </div>
+        </div>
+
+        <div class="panel-block">
+          <h3>ROR 预览</h3>
+          <div class="ror-list" id="ror-list"></div>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <script src="/static/js/utils.js?v=3.19"></script>
+  <script src="/static/js/editor.js?v=3.19"></script>
+</body>
+</html>

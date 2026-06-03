@@ -1,0 +1,445 @@
+# 已知坑点与注意事项
+
+本文档记录咖啡烘焙机控制系统在开发、维护与二次修改过程中需要特别注意的设计权衡与潜在陷阱。
+
+---
+
+## 1. `asyncio.Lock` 不可重入
+
+`tc4s_async.py` 中的 `_write_lock` 是标准 `asyncio.Lock`，**不可重入**。
+
+- `_on_tc4s_data` 持有 `_state_lock` 时，其内部调用的子方法若需写串口，必须使用 `*_locked` 后缀版本（如 `set_sv_locked`），否则会导致死锁。
+- 新增任何在锁内调用的子方法时，务必同步提供对应的 `_locked` 变体。
+
+## 2. `_state_lock` 内 await I/O 会阻塞状态机
+
+`roaster_controller.py` 的 `_state_lock` 保护状态机一致性，但锁内存在 `await tc4s.set_sv()` 等 I/O 操作。
+
+- 后果：I/O 等待期间状态机无法响应其他事件（如急停、事件记录）。
+- 权衡：这是**安全性优先**的设计。SV 写入与状态转移必须原子化，避免竞态导致加热器在不应加热时开启。
+- 修改建议：若需提升并发响应，可将 I/O 与状态转移拆分为"预检查（无锁）→ I/O → 确认转移（持锁）"三阶段，但需仔细验证原子性。
+
+## 3. `send_command` 重试期间持有 `_write_lock` 最长约 1 秒
+
+`tc4s_async.py` 的 `send_command` 在重试期间始终持有 `_write_lock`。
+
+- 最大等待时间：0.05 + 0.15 + 0.45 = 0.65s，加上串口响应超时约 0.3s，总计约 1s。
+- 影响：高频调用 `set_sv`（如每轮询周期一次）时，若偶发失败，后续写操作会排队等待。
+- 缓解：当前轮询间隔为 1s，实际冲突概率较低；若缩短轮询间隔，需评估锁竞争。
+
+## 4. ERROR 状态下急停按钮仍有双击确认
+
+当前设计：ERROR 状态下前端显示全屏阻断横幅，单击「复位」即可恢复。
+
+- 但急停按钮（物理/屏幕）的双击确认机制在 ERROR 状态下仍然生效。
+- 这意味着如果用户想通过急停按钮复位，仍需双击，与横幅上的「单击复位」提示不一致。
+- 未来优化：可在 ERROR 状态下临时禁用急停按钮的双击确认，或统一为单击逻辑。
+
+## 5. TC4S 断线后 `set_sv(0)` 可能失败
+
+当 TC4S 断线触发 ERROR 状态时，`roaster_controller.py` 会尝试 `set_sv(0)` 关闭加热器。
+
+- 若此时串口已完全断开，`set_sv(0)` 会失败，error_reason 会附加「加热器关闭失败」警告。
+- 这是预期行为：硬件已不可达，软件层面只能记录警告，无法强制关闭。
+- 安全依赖：硬件层应配置独立的过温硬件保护（如 TC4S 自身的报警输出），不能仅依赖软件关加热器。
+
+## 6. 自动重连的指数退避上限
+
+`tc4s_async.py` 的 `_reconnect_loop` 最大重连 30 次，退避间隔从 2s 指数增长到 30s。
+
+- 最坏情况下，从首次断开到放弃重连约需 10 分钟以上。
+- 若树莓派与 TC4S 之间为 USB-RS485 转换器，拔插后通常需要 1~3 次重连即可恢复。
+- 若 30 次后仍未恢复，系统会永久停留在 `disconnected` 状态，需人工检查硬件并重启服务。
+
+## 7. 状态回调异常被吞掉
+
+`tc4s_async.py` 对每个数据回调单独 `try/except`，防止用户回调抛异常拖垮轮询。
+
+- 副作用：回调内部的异常不会向上传播，也不会被记录（除非回调自己处理）。
+- 调试建议：在 `register_status_callback` 的回调函数内部自行加 `try/except + logging`，否则异常静默消失。
+
+## 8. 旧曲线 float `time` 在「分/秒」双输入下被静默取整
+
+`editor.js` 的 `selectNode` 用 `Math.floor(total / 60)` 和 `Math.round(total % 60)` 拆分时间填充输入框，`updateSelectedFromInputs` 提交时通过 `m * 60 + s` 重组为整数秒。
+
+- 后果：若历史曲线 JSON 中 `time` 是浮点数（例如 `90.5`），双输入面板显示 `1分31秒`；用户编辑该节点（即使只是确认）后，落盘值会变成整数 `91` 秒，丢失 0.5s 精度。
+- 这是符合存储契约的良性行为：`tempNodes` 内部从未真正使用浮点秒（拖拽 snap 到 5s、微调 ±1s），曲线编辑器的所有路径都生成整数秒。
+- 注意点：若未来引入亚秒级精度（例如毫秒级控制点），需把 `selectNode` 拆分逻辑改为带小数的 `total / 60`，并在输入框中暴露毫秒位或保留浮点存储。
+
+## 9. `set_sv` 仅接受 int，超前预测产生的小数温度会被截断
+
+`tc4s_async.py` 的 `set_sv` 内部以 `int(temperature)` 落寄存器，但 v3.10 引入超前预测后，`profile.get_target_temp(elapsed + lookahead)` 在样条插值下可能返回浮点温度（如 187.4°C），最终写入 TC4S 的会被截断为 187。
+
+- 影响：后端
+- 解决方案：浅焙 PID 控制对 1°C 内精度不敏感，当前可接受；若未来需要亚度精度（如恒温烘焙、SCA 表征实验），需把 TC4S 寄存器升级为 0.1°C 单位编码并改 `set_sv` 逻辑（同时确认 TC4S 协议手册中是否支持 0.1°C 寄存器）。
+- 相关文件：`src/hardware/tc4s_async.py`、`src/core/roaster_controller.py`
+
+## 10. `lookahead_sec=0` 是合法配置，等价于退化为传统跟踪
+
+把超前预测滑块拉到 0 后，`base_la=0`；自适应分支按公式 `extra_la = ratio * ror_factor * adaptive_max_extra_sec` 仍会计算，但 nominal 与 PV 同步即视作不落后，所以 `extra_la` 多数时间为 0，整体退化为「SV = profile(elapsed)」的旧行为。
+
+- 影响：后端、前端
+- 解决方案：作为合法的「关闭预测」模式保留，调试 PID 时可临时归零；UI 上让用户明白滑块 0 = 关闭预测，避免「调到 0 后效果反而变差」的困惑。
+- 相关文件：`src/core/roaster_controller.py:_maybe_adjust_sv_locked`、`static/index.html` 滑块说明
+
+## 11. SQLite `ALTER TABLE ADD COLUMN` 必须 try/except 包裹
+
+v3.10 引入 4 个新列（`seq_no` / `display_name` / `profile_snapshot_json` / `duration_sec`），但老用户 `roasts.db` 已存在；SQLite 同一列重复 ALTER 会报 `duplicate column name` 错。
+
+- 影响：后端（数据持久化）
+- 解决方案：每个 `ALTER TABLE` 语句单独 `try/except` 兜底吞异常，让 `init_db` 在新老 db 上幂等。后续再加列遵循同样模式。
+- 相关文件：`src/services/data_manager.py:init_db`
+
+## 12. `profile_snapshot` 让每锅记录额外 +1~3KB
+
+v3.10 起每条 record 嵌入完整曲线 JSON（节点 + 元信息），即便几年后曲线被改/删仍能完整还原历史；但单条记录体积从 ~1KB 涨到 2~4KB。
+
+- 影响：后端
+- 解决方案：长期可接受（一年 100 锅也不到 0.5MB 净增）；若极度在乎容量可抽离 `profile_snapshot` 到独立表用 `profile_hash` 共享，但收益不抵复杂度，目前不推荐。
+- 相关文件：`src/services/data_manager.py:save_record`、`src/core/models.py:RoastRecord`
+
+## 13. 自适应 lookahead 的 `ror_factor` 公式假设 ROR 在 [0, 30] °C/min
+
+`ror_factor = clamp(1.5 - max(ror, 0)/30, 0.5, 1.5)`，当 ROR > 30 时直接饱和到 0.5；某些极端浅焙可能在脱水末段 ROR 短暂冲到 25-35 °C/min。
+
+- 影响：后端（控制算法）
+- 解决方案：当前线性映射在常见烘焙范围（5-25 °C/min）行为良好，饱和段也只是把 `extra_la` 收紧并不出错；若未来需要更精细控制，可改成对数或分段映射。
+- 相关文件：`src/core/roaster_controller.py:_maybe_adjust_sv_locked`
+
+## 14. `current_lookahead` 仅在 ROASTING 中刷新，IDLE/COOLING 下保留上次值
+
+UI 上 `lookahead_used` 显示的是 `getattr(self, "current_lookahead", base_la)`；ROASTING 之外的状态下该字段不会被重置，前端会看到上一锅烘焙结束时的 lookahead 值定格在面板上。
+
+- 影响：前端（视觉）
+- 解决方案：进入 IDLE 时显式 `self.current_lookahead = 0.0`，或前端在 IDLE 状态下隐藏该字段——任选其一即可，目前是次要 UX 问题。
+- 相关文件：`src/core/roaster_controller.py`、`static/js/app.js`
+
+---
+
+## v3.11 新增坑点 (2026-04-28)
+
+### 15. 历史 RoastRecord 反序列化兼容
+
+v3.11 删除了运行时 `PREHEATING / WAITING` 状态，但保留了 `RoasterState` 枚举的字面量并加 `# DEPRECATED v3.11` 注释。
+
+- **问题**：旧 `RoastRecord` JSON 中 events 数组可能含 `type='preheat_*'` 字符串，需保证可加载。
+- **影响**：后端（数据持久化）、前端（事件渲染）
+- **解决方案**：`RoastEvent.type` 是字符串而非枚举，反序列化天然兼容；前端 `eventLabel` 映射需补充对未知 type 的兜底显示（"未知事件" 或原 type 字符串），避免历史记录详情出现 `undefined`。
+- **相关文件**：`src/core/events.py`、`src/core/models.py:RoastEvent`、`static/js/app.js:eventLabel`
+
+### 16. WS race：drop 触发 end_roast 后并发 log_event
+
+出豆事件触发 `asyncio.create_task(self.end_roast())` 后，可能仍有 1-2 个 `log_event` 已排队等锁。
+
+- **问题**：end_roast 已把 state 切到 COOLING，但等锁的 log_event 拿到锁时仍按 ROASTING 处理逻辑，写入「不该有」的事件。
+- **影响**：后端
+- **解决方案**：`log_event` 入锁后第一行重判 `if self.state != RoasterState.ROASTING: return`（噪音消除），此时 drop 已是序列里最后一个有效事件。
+- **相关文件**：`src/core/roaster_controller.py:log_event`
+
+### 17. Chart.js tooltip filter 副作用
+
+`filter: ctx => ctx.parsed.y != null && !Number.isNaN(ctx.parsed.y)` 可能让 `callbacks.title` 收到空 items 数组。
+
+- **问题**：所有 dataset 在该 X 值下都被过滤后 `items.length === 0`，访问 `items[0].parsed.x` 抛 `Cannot read property 'parsed' of undefined`。
+- **影响**：前端
+- **解决方案**：`callbacks.title` 第一行 `if (!items?.length) return ''`，安全降级为空标题。
+- **相关文件**：`static/js/app.js` chart options `plugins.tooltip.callbacks.title`
+
+### 18. slider step=0.1 浮点精度
+
+JS 浮点会出 `12.300000001`。
+
+- **问题**：滑块拖动到 12.3 后下次读值变成 12.299999999...，UI 显示丑陋且 set_lookahead 命令带尾巴。
+- **影响**：前端
+- **解决方案**：所有 set/get 走 `round1(v) = Math.round(v * 10) / 10` 一次，并 clamp 到 `[0, 30]` 防越界。微调按钮 ±0.1 也走同一函数。
+- **相关文件**：`static/js/app.js:round1`、所有 lookahead 滑块/微调按钮的 set 路径
+
+### 19. prefers-reduced-motion 兼容
+
+某些用户系统设置无障碍，密集动画反而变卡。
+
+- **问题**：`dropPulse` 1.6s + `pulseOnline/Offline` 0.6~2s + 全局 hover translateY/scale 在前庭功能敏感用户上会引发眩晕。
+- **影响**：前端（UX/无障碍）
+- **解决方案**：CSS 全局加
+  ```css
+  @media (prefers-reduced-motion: reduce) {
+    *::before, *::after, * {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+  ```
+- **相关文件**：`static/css/style.css` 末尾
+
+### 20. `.btn-grid` 选择器列数依赖
+
+原 `.btn-grid > .btn:nth-child(1):nth-last-child(3) { grid-column: 1 / -1 }` 假设 3 个子元素（btn-charge / btn-end / btn-start）；v3.11 删除 charge/end 后只剩 1 个 btn-start。
+
+- **问题**：选择器不再匹配，btn-start 不再跨满行，UI 排版断裂。
+- **影响**：前端
+- **解决方案**：改为 `.btn-grid > .btn:only-child { grid-column: 1 / -1 }`，单子元素时自动跨满，未来无论 1/2/3 子元素都能正确处理。
+- **相关文件**：`static/css/style.css:.btn-grid`
+
+### 21. fixed 嵌入小方框急停按钮 z-index 冲突
+
+- **问题**：`#error-overlay` z-index 9999；常规模态层 1010；嵌入小方框急停按钮（`.estop-box` / `.estop-btn`）必须既高于普通模态（让用户在模态打开时仍能点急停）又低于 ERROR overlay（让 ERROR 状态下急停不与复位横幅重叠）。
+- **影响**：前端
+- **解决方案**：`.estop-box { z-index: 1020 }`，落在 1010 < x < 9999 区间。
+- **相关文件**：`static/css/style.css:.estop-box`、`.estop-btn`、`#error-overlay`
+- **备注**：v3.18 重构为嵌入小方框结构后，z-index 约束依然成立，作用在 `.estop-box` 容器上。
+
+### 22. drop → end 后事件按钮 active 重置
+
+COOLING 状态下事件栏可能仍可见，旧的 active class 持续显示。
+
+- **问题**：用户把上一锅的 active 状态误认为本锅已按过事件，重复确认混乱。
+- **影响**：前端
+- **解决方案**：`syncEventActionsBar([])` 在 `optimisticResetToIdle` 中显式清空；同时 state 广播每次都带 events 同步，events 为空时按钮自动清 active + badge。
+- **相关文件**：`static/js/app.js:syncEventActionsBar`、`optimisticResetToIdle`
+
+### 23. `#detail-stats` 删除范围混淆
+
+v3.11 删除的是**主页** `#event-float .stats-grid`（顶部小窗 4 张统计卡），**保留** `#detail-stats`（record-detail 模态内的烘焙详情统计）。
+
+- **问题**：两者命名相近，按 id 直接 `document.getElementById('detail-stats')` 可能误删历史详情面板。
+- **影响**：前端
+- **解决方案**：清理脚本 / Edit 操作时，确认上下文是「主页烘焙中实时统计」还是「历史详情查看器」；前者 id 为 `event-float`/`stats-grid`，后者 id 为 `detail-stats`，**不要混淆**。
+- **相关文件**：`static/index.html`、`static/js/app.js:showRecordDetail`
+
+### 24. config.yaml 老配置 preheat 节兼容
+
+v3.11 删除 `preheat:` 节，但老用户配置可能仍含此节。
+
+- **问题**：直接 `KeyError` 退出会让升级用户在没看到提示前就崩溃。
+- **影响**：后端（启动）
+- **解决方案**：`main.py` 启动时检测到 `config.get('preheat')` 非空打 warning 日志（非 error），自动忽略不退出；用户后续可主动清理 yaml。
+- **相关文件**：`main.py`
+
+### 25. 触摸屏 hover 残留
+
+树莓派触摸屏环境下 `:hover` 在松手后可能保留 `transform: translateY(-1px) scale(1.02)`。
+
+- **问题**：用户点完按钮后视觉上按钮"卡住"在 hover 态，下次点击前以为系统卡死。
+- **影响**：前端（树莓派触摸屏专用）
+- **解决方案**：可考虑后续优化用 `@media (hover: hover)` 包裹全局 hover 规则，让纯触摸设备不应用 hover 变换；目前作为已知 UX 瑕疵记录。
+- **相关文件**：`static/css/style.css` 全局 button:hover
+
+### 26. `#event-actions-bar` 是 flex 不是 grid
+
+plan 原假设 grid 布局，实际是 flex。
+
+- **问题**：出豆按钮想跨整行突出时，套用 grid 的 `grid-column: 1 / -1` 在 flex 容器中无效。
+- **影响**：前端
+- **解决方案**：flex 容器中通过 `flex: 1.6`（或更大比重）让出豆按钮占更大宽度；如未来改 grid 需同步调整为 `grid-column: 1 / -1`。
+- **相关文件**：`static/css/style.css:#event-actions-bar`、`.btn-drop`
+
+## v3.12 新增坑点
+
+27. `current_phase` 在 IDLE/COOLING/ERROR 状态下为 None
+    - `_get_current_phase` 只在有 charge 事件后才开始判断阶段，IDLE/COOLING/ERROR 时返回 None
+    - 前端需做好空值处理，不要假设 current_phase 始终有值
+
+28. `phase_lookahead` 运行时配置不持久化到文件
+    - `update_phase_lookahead` 只更新内存中的 `self.config`，重启后恢复为 `config.yaml` 中的值
+    - 如需持久化修改，需手动编辑 config.yaml 或通过其他持久化机制实现
+
+29. `lookahead_offset` 纯运行时，重启归零
+    - 偏移微调值 `_lookahead_offset` 不写入任何文件，重启服务后自动归零
+    - 每锅烘焙前检查偏移是否为预期值
+
+30. 老 config 无 `phase_lookahead` 时的 fallback 行为
+    - 老 config.yaml 缺少 `phase_lookahead` 节时，系统 fallback 到全局 `lookahead_sec`
+    - 三阶段输入框会显示相同的 fallback 值，用户可能误以为已配置分阶段值
+    - 建议升级 config.yaml 时手动添加 `phase_lookahead` 节
+
+31. `#profile-select` 删除后曲线选择完全依赖卡片网格
+    - v3.12 删除了 `<select>` 下拉框，曲线选择/应用/导入全部通过 `#profile-cards` 卡片网格完成
+    - 确保卡片网格渲染正常，否则用户无法选择曲线开始烘焙
+
+## v3.13 新增坑点 (2026-04-29)
+
+### 32. WS 广播覆盖正在交互的控件
+
+v3.13 之前用户拖动 phase-lookahead slider / lookahead-offset slider 时，每 ~500ms 一次的 WS 广播会把值覆盖回后端旧值，导致拖动有「弹回」抖动。
+
+- **问题**：广播间隔 ~500ms,用户连续拖动时下一拍广播会把 input 值改回旧值,UI 出现视觉抖动且 set 命令派发被打断
+- **影响**：前端
+- **解决方案**：`static/js/app.js` 新增 `shouldSkipUpdate(el)` 通过 `el.dataset._lastUserEdit` 判定 1500ms 窗口,`handleStateUpdate` 内对相关控件先检查 skip;1500ms 依据是「广播 500ms × 3 帧容错」,松开 slider 后下一拍广播不会被「吸」回旧值
+- **相关文件**：`static/js/app.js:shouldSkipUpdate`、`markUserEdit`、`handleStateUpdate`
+
+### 33. Chart.js v4 `update('none')` 必须用字符串
+
+Chart.js v4 的 `update(mode)` 第二参数必须是字符串字面量(`'none'` / `'active'` / `'resize'` 等),不能用数字 0 或 false。
+
+- **问题**：写成 `chart.update(0)` / `chart.update(false)` 不会报错,但 `mode` 参数被忽略,默认动画路径仍然执行,树莓派 4B 上掉帧
+- **影响**：前端
+- **解决方案**：所有禁用动画的 update 调用统一改为 `roastChart.update('none')`(已替换 7 处:264/282/412/418/497/1571/1602)
+- **相关文件**：`static/js/app.js`
+
+### 34. 编辑器拖动吸附语义反转(v3.13)
+
+v3.13 反转了 v3.12 之前的吸附语义:**默认丝滑(1s/0.1℃ 量化), Shift 才吸附到 5s/0.5℃ 网格**;此前是「默认 5s 网格,Shift 精确」。
+
+- **问题**：习惯 v3.12 之前操作的用户会发现「拖动手感变细腻了但需要严格对齐 5s 节点时反而要按 Shift」;若未来再次反转会让肌肉记忆混乱
+- **影响**：前端(UX)
+- **解决方案**：`editor.html` 提示条文案明确写「按住 Shift 吸附 / 默认丝滑」,代码注释 `SNAP_TIME_DEFAULT` / `SNAP_TIME_GRID` 注明语义反转;若再次调整需同步更新提示文案与注释
+- **相关文件**：`static/js/editor.js:30-31, 190-197`、`static/editor.html:42`
+
+### 35. config.yaml 默认值升级时旧文件不会自动覆盖
+
+v3.13 把 `phase_lookahead` 三阶段默认值从 15.0 改为 1.0/0.5/1.0,但 v3.12 用户已有的 `config.yaml` 里旧值 15.0 不会被自动覆盖。
+
+- **问题**：升级用户启动后三阶段超前预测仍然是 15.0(旧 yaml 值优先),与新的"小默认值"设计意图不符;若用户没看 UPDATE_LOG 会困惑「为什么浅焙超调没改善」
+- **影响**：后端(配置)、前端(显示)
+- **解决方案**：升级时在 README/UPDATE_LOG 显式提示「老用户需手动把 `phase_lookahead.{drying,maillard,development}_sec` 改为 1.0/0.5/1.0」;或将来加入启动时检测旧默认值并打 warning(目前未做)
+- **相关文件**：`config.yaml:27-30`、`src/core/models.py:PhaseLookaheadConfig`
+
+### 36. backdrop-filter blur 在树莓派 4B 性能监测
+
+v3.13 多处启用 `backdrop-filter: blur(...)`(`.roast-section` blur(10px) / `.floating-emergency` blur(8px)),WebKit 在树莓派 4B 上 GPU 加速并不总是稳定。
+
+- **问题**：长时间烘焙(60+ 分钟)中,部分场景下 backdrop-filter 会触发软件渲染回退,导致整体掉帧明显;Chromium 版本不同表现也不同
+- **影响**：前端(性能)
+- **解决方案**：上线前在树莓派 4B 上跑一锅完整烘焙观察 FPS;若掉帧,降级方案是把 `backdrop-filter: blur(Xpx)` 改为半透明纯色背景(`background: rgba(28,28,30,0.85)`),牺牲玻璃拟态保性能
+- **相关文件**：`static/css/style.css:.roast-section`、`.floating-emergency`
+
+## v3.14 新增坑点 (2026-04-29)
+
+### 37. `backdrop-filter: blur` 在树莓派 4B Chromium 上与 canvas 同合成树会卷入闪烁
+
+v3.13 在 `.roast-section` 与 `.floating-emergency` 启用 `backdrop-filter: blur(...)` 实现玻璃拟态,但拖动控制面板内的 slider 时,邻居 `<canvas>`(`#charts-panel`)区域出现历史绘制内容短暂消失/闪烁。
+
+- **问题**：父元素的 backdrop-filter 强制每帧重新采样合成树,canvas 被卷入软件渲染回退路径,PV/SV/ROR 历史曲线在 slider 拖动期间反复消失重画
+- **影响**：前端(性能/视觉)
+- **解决方案**：v3.14 已删除 `.roast-section` / `.floating-emergency` 的 `backdrop-filter`;改用半透明纯色背景 `var(--glass)` (rgba 28,28,30,0.85);同时给 canvas 父容器加 `contain: paint; isolation: isolate;` 形成独立合成层,外部 dirty 不再回卷 canvas
+- **应避免**：任何与 canvas 共享祖先合成树的元素再次引入 `backdrop-filter` / `filter: blur(>2px)` / `mix-blend-mode`;新增视觉特效前先在树莓派 4B 实机验证 FPS
+- **相关文件**：`static/css/style.css:.roast-section`、`.floating-emergency`、`#charts-panel`
+
+### 38. `dragging-slider` 状态类必须有 window 级 capture pointerup/pointercancel 兜底
+
+v3.14 在 slider 拖动期间用 `body.dragging-slider` 类关闭 transition 静默 repaint;但仅在元素自身上绑定 pointerup 时,触摸或鼠标在 slider 短轨道外释放可能漏触。
+
+- **问题**：触摸或鼠标在 slider 短轨道外释放时,pointerup 可能不冒泡到原始绑定,body 残留 `.dragging-slider` 类,导致 transition 永久关闭(后续 hover/focus 动效全部失效)
+- **影响**：前端(交互/视觉)
+- **解决方案**：v3.14 在 `installSliderDragGuard` 末尾注册 `window.addEventListener('pointerup', forceCleanup, true)` 和 `pointercancel` 同样规则(capture=true 优先收到),`forceCleanup` 检查 body 类命中则强制清零并移除 class
+- **应避免**：仅在元素自身上绑定 pointerup;新增任何「按下进入临时 body 类、抬起退出」的交互必须配 window 级 capture 兜底
+- **相关文件**：`static/js/app.js:installSliderDragGuard`
+
+### 39. `cubic-bezier` 字面量必须变量化
+
+v3.13 在 30+ 处散落两套缓动字面量(苹果系 `(0.32,0.72,0,1)` 与 Material 系 `(0.4,0,0.2,1)`),后续维护时易出现风格不一致。
+
+- **问题**：手写字面量分散导致风格漂移;某些 transition 用了 spring 风,某些用了 Material 风,视觉一致性下降
+- **影响**：前端(代码可维护性/视觉一致性)
+- **解决方案**：v3.14 在 `:root` 定义 `--ease-apple: cubic-bezier(0.32, 0.72, 0, 1)`(spring 风)和 `--ease-apple-fast: cubic-bezier(0.4, 0, 0.2, 1)`(数据驱动场景),所有 transition / animation 用变量引用
+- **应避免**：直接写字面量 cubic-bezier;新增动画必须用 `var(--ease-apple)` 或 `var(--ease-apple-fast)`;grep `cubic-bezier` 应只命中 `:root` 的 2 行变量定义
+- **相关文件**：`static/css/style.css:root`、全文 transition / animation
+
+### 40. EV 三角指针位置需减半宽校正(指针尖端对齐刻度)
+
+v3.14 偏移微调改成相机 EV 风格刻度尺,橙色三角指针走 `transform: translateX` 合成层。
+
+- **问题**：CSS 三角形 14px 宽,若直接 `translateX(ratio * trackWidth)` 会让指针**左边缘**对齐刻度,看起来偏左
+- **影响**：前端(视觉对齐)
+- **解决方案**：v3.14 `updateEvPointer` 中 `transform: translateX(${ratio * trackWidth - 7}px)`(-7 = 半宽校正),让三角尖端正中刻度
+- **应避免**：忘记半宽校正,或用错指针宽度;若调整三角形 CSS 宽度需同步更新 `-7` 这个偏移
+- **相关文件**：`static/js/app.js:updateEvPointer`、`static/css/style.css:.ev-pointer`
+
+### 41. 进度条三段权重必须有 events 优先 + profile 兜底
+
+v3.14 烘焙进度从百分比改成三段进度条(脱水 / 美拉德 / 发展),三段宽度由权重决定。
+
+- **问题**：单纯按 profile 时长 1:1:1 平分三段时,实际烘焙 yellowing / first_crack 事件早 / 晚发生会导致进度条与真实进度脱节(例如发展期实际很短但占了 1/3 宽度)
+- **影响**：前端(视觉)
+- **解决方案**：v3.14 `updateProgress` 优先用 `msg.events` 中的 yellowing / first_crack 时间戳计算真实段宽,事件未发生时回退到 profile 时长比例,profile 缺失时再回退 1fr 1fr 1fr 默认
+- **应避免**：硬编码权重;或仅依赖单一数据源;权重变化也要纳入 `lastProgressSig` 签名(已纳入三段权重),否则 ratioQ 不变但权重变时 DOM 不更新
+- **相关文件**：`static/js/app.js:updateProgress`
+
+## v3.15 新增坑点 (2026-04-29)
+
+### 42. requestAnimationFrame 节流叠加 WS 立即 broadcast 导致图表视觉刷数据
+
+v3.13 引入 phase slider 三段独立配置时,命令节流改用 `requestAnimationFrame`(约 60fps,16ms 间隔)。每帧 `sendCmd('set_phase_lookahead', ...)` 在后端 `web_api.py` 触发 `manager.broadcast(controller.get_state_payload())`,前端 `handleStateUpdate` 每帧执行 `updateEventAnnotations` + `roastChart.update('none')`,叠加 `appendChartData` 在同一 elapsed 秒内的高频追加,造成视觉上「已记录烘焙曲线被刷新」的假象。
+
+- **问题**：用户报告「调节曲线超前预测参数时前面的烘焙数据依旧被刷」,跨多个版本未修复
+- **影响**：前端(视觉/可信度)
+- **解决方案**：参考 V3.11 实现,将 `initPhaseLookahead` 与 `initLookaheadOffset` 内的 raf 节流改为 `setTimeout(100ms)` debounce。一次拖动只发 1 条命令,后端 broadcast 频次回到 0.5s 自然节流水平
+- **应避免**：在高频拖动控件上使用 raf 节流并直接发送 WS 命令;任何「每命令立即 broadcast」的后端路径都必须配套保守的前端 debounce(≥100ms)
+- **相关文件**：`roaster/static/js/app.js:1115-1149` `initPhaseLookahead`、`roaster/static/js/app.js:1168-1195` `initLookaheadOffset`、`roaster/src/web/web_api.py:112-130` 后端立即 broadcast 路径、`V3.11/roaster/static/js/app.js:982-1036` 参考实现
+
+## v3.16 新增坑点 (2026-04-29)
+
+### 43. WebSocket 高频广播下 `handleStateUpdate` 必须对所有 DOM 写做「值未变跳过」
+
+v3.15 把 raf 节流改为 `setTimeout(100ms)` debounce 后,用户实测仍报告「整个图表/网页都在刷,烘焙数据被刷掉」。复盘发现:WebSocket 每 0.5s 推送一次 state 帧,只要 `handleStateUpdate` 在每帧无差别地写入 DOM(即使值没变),浏览器合成层会被反复 invalidate,给用户造成「整个图表/网页都在刷」的视觉错觉,且会与 chart.js 的 raf 渲染竞争 CPU。
+
+- **问题**：用户拖动曲线超前预测滑动条 → 命令以 setTimeout 100ms debounce 发出 → 服务端立即把新 config 通过 WS 反推 → 前端 `handleStateUpdate` 无差别重建 progress bar / 重写 6 个 input.value / 重置 `--ev-pointer-transform` / 重建 annotations + `chart.update('none')` → 累积出「刷图」视觉效果。即使没有用户操作,0.5s 的常规 broadcast 也会一直触发重 DOM,因此单独把 raf 改成 100ms setTimeout 不能解决该问题
+- **影响**：前端(视觉/可信度/性能)
+- **解决方案**：每个高频写 DOM 点必须加「值未变就跳过」短路。具体覆盖:
+  - **进度条段**:`updateProgress` 拆 `lastStructureSig`(state | phase | 三段宽度 | totalEnd)+ `lastPositionSig`(`Math.round(ratio*1000)`)+ `lastTimeText` + `lastPhaseLabel`,三层独立短路;静止帧下不重建 `.phase-segments`、不重写 `--rpb-cols`、不动 indicator transform
+  - **滑动条 / 数字框 input.value**:写入前 `el.value !== v` 比较,叠加 v3.13 的 `shouldSkipUpdate` 1500ms 用户编辑窗口形成双重保护
+  - **CSS 自定义属性写入**(如 `--ev-pointer-transform`):用模块级字符串缓存(`lastEvPointerTransform`),相同时直接 return,不再触碰 CSS 变量
+  - **chart annotations + `chart.update('none')`**:用 events 数组拼接签名 `${type}:${time}:${temperature}` + `lastEventsSig` 缓存;签名相同时函数直接 return,不再每帧调 chart.update。这是 v3.15 残留的最大一笔重 DOM 操作
+  - **状态徽章 textContent / className / body classList / elapsed text**:全部加 `!==` 比较短路,避免每帧重写 className 触发样式重算
+- **反例**：直接在每个 ws msg 里 `el.style.transform = '...'` / `chart.update('none')` 而不做缓存。在低频静态页面看不出差别,但 0.5s 高频推送下立刻表现为视觉刷新
+- **参考实现**：V3.11 的 `handleStateUpdate`(`V3.11/roaster/static/js/app.js:303-435`)和 `updateProgress`(541-552 行)
+- **相关文件**：`roaster/static/js/app.js:handleStateUpdate`、`updateProgress`、`updateEventAnnotations`、`updateEvPointer`、模块级缓存变量声明区(`lastBodyState` / `lastEventsSig` / `lastStructureSig` / `lastPositionSig` / `lastTimeText` / `lastPhaseLabel` / `lastSegmentSig` / `lastEvPointerTransform`)
+
+## v3.17 新增坑点 (2026-04-29)
+
+### 44. 后端立即 broadcast + payload 多塞字段 + 前端反向回写 = 视觉刷图三连击
+
+v3.13 引入三段 phase 配置时同时引入了三件事，单独存在都没问题，但三个叠加产生了"用户拖一个滑块 → 后端立即广播 → 前端反向重写**其他**滑块 → 浏览器 layout / paint / composite 重算 → 视觉刷图"的副作用链。这是 v3.13~v3.16 跨四个版本始终未真正修复"调超前预测刷图"问题的根本原因。
+
+- **问题**：三个互相独立的设计同时出现就构成了完整链路：
+  1. `roaster/src/web/web_api.py` 在 `set_phase_lookahead` / `set_lookahead_offset` 命令分支末尾立即 `await manager.broadcast(controller.get_state_payload())`
+  2. `roaster/src/core/roaster_controller.py:get_state_payload` 多发了 `phase_lookahead_config` 与 `lookahead_offset` 两个字段
+  3. `roaster/static/js/app.js:handleStateUpdate` 加了消费这两个字段并反向回写其他滑块 `.value`、调 `updateEvPointer` 写 `style.transform` 的代码
+- **影响**：前端（视觉 / 可信度）、后端（命令处理路径）
+- **为什么 v3.15 / v3.16 的前端优化无法根除**：`shouldSkipUpdate` 只在 `activeElement === sliderEl` 时短路，但拖动期间 `activeElement` 经常因 touch 事件导致短暂偏离，导致短路失效。v3.16 加的"值未变跳过"短路在用户**首次**拖动时就生效不了——因为后端反推的值与 UI 当前值"确实不同"
+- **正确做法**：**任何"用户输入"型的命令路径，后端不应在收到命令后立即广播完整 state**。命令处理只回 `{"ok": True}`，让 0.5s 节流的主控广播循环自然带出新状态。前端则不应把后端反推的"配置类"字段写回用户正在交互的输入控件——**用户输入是唯一可信源**
+- **反例**：
+  1. 后端命令分支：`controller.update_X(v); await manager.broadcast(...)` → 拖滑块产生密集广播
+  2. 前端 handleStateUpdate：`if (msg.config != null) { input.value = msg.config.X }` → 反向覆盖用户当前输入
+- **参考实现**：V3.11 的 `set_lookahead` 路径——立即 broadcast 是可以的，但前提是 payload 不含可写回字段（V3.11 只发 `lookahead_used` 这种只读反馈），且前端只更新 `<span>` textContent，永远不写 `<input>.value`
+- **v3.17 修复策略**：字面意义回退到 V3.11——砍掉 web_api 立即 broadcast 与 app.js 反向回写两条链路，payload 字段保留向下兼容（前端不消费即可）；onmessage 入口加 `{ok} / {error}` guard 避免命令回包走 handleStateUpdate 全路径
+- **相关文件**：
+  - v3.17 修复点：`roaster/src/web/web_api.py:set_phase_lookahead, set_lookahead_offset`（删除立即广播）
+  - v3.17 修复点：`roaster/static/js/app.js:handleStateUpdate`（删除两段反向回写）、`ws.onmessage`（加 ok / error guard）
+  - 反例参考：v3.13~v3.16 期间的同位置代码（git 历史）
+  - 正例参考：`V3.11/roaster/static/js/app.js:handleStateUpdate`（只读 `lookahead_used` 文本反馈）
+
+### 45. WS 断线重连后 phase slider / EV 偏移 UI 不与后端真值同步——有意取舍
+
+v3.17 删除前端 `handleStateUpdate` 对 `phase_lookahead_config` / `lookahead_offset` 的反向回写后，WS 断线重连或新打开页面时，三段滑块与 EV 偏移 UI 不再用后端 payload 真值初始化，会停留在 HTML 默认值。这是为修复 #44（反向回写副作用）必须的取舍。
+
+- **问题**：用户调过参 → 断线重连 → 看到 UI 显示默认值，但后端 `_lookahead_offset` 与 `phase_lookahead_config` 仍是真值。烘焙逻辑使用后端真值，UI 显示有偏差但不影响烘焙结果
+- **影响**：前端（视觉 / UX）
+- **为什么是有意取舍**：与 V3.11 行为字面等价（V3.11 根本不含这些字段也没有这些滑块，自然不存在同步路径）。用 v3.17 的方式回退是为了优先消除 #44 的视觉刷图副作用
+- **当前应对**：用户重连后如发现 UI 与后端不一致，可直接手动拖回想要的值或刷新页面
+- **应如何处理**（如未来需要恢复"重连同步"能力）：使用"仅在 `dataset.lastUserEdit` 为空、且 `document.activeElement !== sliderEl`、且本次会话尚未做过同步"的条件下执行一次性初始化，避免再次触发 #44 的反向回写副作用。任何无条件回写都会引发 #44
+- **相关文件**：
+  - 触发场景：`roaster/src/web/web_api.py:web_websocket_endpoint` WS 接入时的 `await websocket.send_json(controller.get_state_payload())` 仍会推送配置字段，但前端不消费
+  - 涉及代码：`roaster/static/js/app.js:handleStateUpdate`（无消费此字段的代码）
+  - 后端 payload 来源：`roaster/src/core/roaster_controller.py:get_state_payload`（仍发送 `phase_lookahead_config` / `lookahead_offset`，向下兼容）
+
+## v3.18 新增坑点 (2026-04-30)
+
+### 46. PhaseLookaheadConfig 历史值兼容性
+
+- **问题**：用户从 v3.17 或更早版本升级到 v3.18，且其 `config.yaml` 里 `lookahead_sec` 历史上手动改过 >30 的值（v3.17 之前 Pydantic le=60.0 允许）。v3.18 把 `PhaseLookaheadConfig` 三字段 Pydantic 校验上限收紧到 le=30.0；但 `roaster_controller.get_state_payload` 每 0.5s 用 `PhaseLookaheadConfig(...)` 包装从配置读取的 fallback 值，如果 fallback 值 > 30 就会触发 `ValidationError`，让状态广播线程崩溃。
+- **影响**：后端（状态广播线程）
+- **解决方案**：v3.18 在 `get_state_payload` 构造 `PhaseLookaheadConfig` 之前对每个 fallback 值做 `min(30.0, max(0.0, ...))` 静默 clamp。即使老 yaml 有越界值，也只会被截断到 30，不会让广播崩。
+- **未来注意**：如果以后又调整 `PhaseLookaheadConfig` 的 le 上限，记得同步更新 `get_state_payload` 中的 clamp 上限。
+- **相关文件**：`src/core/models.py:PhaseLookaheadConfig`、`src/core/roaster_controller.py:get_state_payload`
+
+### 47. 紧急停止小方框闪烁动画绑定层
+
+- **问题**：v3.18 重构后的紧急停止结构是 `<div class="estop-box"><button class="estop-btn">…</button></div>`。如果未来开发者想"让整个紧急停止区域更醒目"，可能误把 `estopBlink` 动画从 `.estop-btn.confirming` 改为绑定到 `.estop-box`。外层容器整体闪烁会让用户误以为整个工具框是一个大按钮（视觉语义错误）——容器是静态的"小方框工具区"，按钮才是真正可交互的紧急停止控件，闪烁应该只作用在按钮本体上吸引注意，容器保持稳定边框。
+- **影响**：前端（视觉语义 / UX）
+- **解决方案**：`estopBlink` 动画与 `confirming` 状态类**只能**绑在 `.estop-btn`，不要改在 `.estop-box`。
+- **相关文件**：`static/css/style.css`（搜索 `estopBlink`、`.estop-btn.confirming`）
+
+---
+
+*最后更新：v3.18 (2026-04-30)*
