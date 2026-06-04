@@ -286,8 +286,8 @@ main {
   border: 1px solid var(--border);
   padding: 14px;
   position: relative;
-  /* 图表面板独立合成层（PITFALLS #36）：
-     防止 slider :active + filter 等父级 dirty 卷入 canvas 造成回退掉帧/闪烁 */
+  /* 图表面板建立独立绘制边界：
+     避免 slider :active + filter 等父级重绘卷入 canvas，降低掉帧/闪烁风险 */
   contain: paint;
   isolation: isolate;
 }
@@ -952,9 +952,9 @@ body.dragging-slider .roast-progress-bar .rpb-indicator { transition: none !impo
 .roast-section {
   padding: 14px 14px 12px;
   border-bottom: 1px solid #2c2c2e;
-  /* 不使用 backdrop-filter（PITFALLS #36）：
-     slider :active + filter 让父容器每帧 dirty，强制重新采样身后合成内容把 canvas
-     卷入软件渲染回退路径 → 实时温度曲线闪烁。改用半透明纯色背景，保留视觉层次但不要 GPU blur。 */
+  /* 避免使用 backdrop-filter：
+     slider :active + filter 会让父容器每帧重绘，backdrop 重新采样可能卷入 canvas，
+     导致实时温度曲线闪烁。半透明纯色背景保留视觉层次且避免 GPU blur。 */
   background: var(--glass);              /* rgba(28,28,30,0.85) */
   border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 14px;
@@ -1440,7 +1440,7 @@ body.dragging-slider .ev-pointer { transition: none; }
   100% { transform: scale(1);    box-shadow: 0 2px 8px rgba(255, 159, 10, 0.25); }
 }
 
-body.state-roasting .drop-prominent {
+body.state-roasting .drop-prominent:not(.active) {
   animation: dropPulse 1.6s ease-in-out infinite;
 }
 
@@ -1483,7 +1483,7 @@ body.state-roasting .drop-prominent {
               filter 0.18s var(--ease-apple),
               box-shadow 0.18s var(--ease-apple);
 }
-/* PITFALL #25：触摸屏上 :hover 残留导致按下后状态卡住，故只在真鼠标设备生效 */
+/* 触摸屏上 :hover 可能残留，悬停样式只在真鼠标设备生效 */
 @media (hover: hover) and (pointer: fine) {
   .estop-btn:hover {
     background: #ff6b60;
@@ -1753,7 +1753,7 @@ body.error-active #event-actions-bar .event-action-btn {
 }
 
 /* === 全局交互动画 ===
- * hover 改用 filter: brightness(1.1) 替代 transform，避免触摸屏残留问题（PITFALLS #25）
+ * hover 使用 filter: brightness(1.1) 替代 transform，避免触摸屏悬停状态残留
  * active 保留 scale 反馈 */
 button, .btn, [role="button"] {
   transition: filter 0.15s var(--ease-apple-fast), background-color 0.2s var(--ease-apple-fast), box-shadow 0.2s var(--ease-apple-fast),
@@ -1806,6 +1806,26 @@ button:active:not(:disabled):not(.disabled),
 .modal-overlay,
 .modal-backdrop {
   animation: modalFadeIn 0.2s ease-out;
+}
+
+@media (pointer: coarse) {
+  .ctrl-btn.small,
+  .profile-card .actions button,
+  .event-action-btn,
+  .icon-btn,
+  .modal-close {
+    min-height: 44px;
+  }
+
+  .icon-btn,
+  .modal-close {
+    width: 44px;
+    height: 44px;
+  }
+
+  .profile-card .actions button {
+    padding: 8px 10px;
+  }
 }
 
 /* prefers-reduced-motion 兼容：尊重用户系统设置，必要时基本关闭动画 */

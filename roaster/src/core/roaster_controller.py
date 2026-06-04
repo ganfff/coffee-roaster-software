@@ -18,9 +18,19 @@ from src.core.models import (
 
 logger = logging.getLogger(__name__)
 
+BASE_LOOKAHEAD_MIN_SEC = 0.0
+BASE_LOOKAHEAD_MAX_SEC = 30.0
+
 
 class RoasterController:
     """烘焙机核心控制器：状态机、ROR 计算、曲线追踪、事件统计"""
+
+    @staticmethod
+    def _clamp_base_lookahead(value: Any) -> float:
+        return max(
+            BASE_LOOKAHEAD_MIN_SEC,
+            min(BASE_LOOKAHEAD_MAX_SEC, float(value)),
+        )
 
     def __init__(self, config: dict, data_manager: DataManager):
         self.config = config
@@ -64,7 +74,9 @@ class RoasterController:
 
         # 超前预测：当前实际使用的提前秒数（含自适应），UI 反馈用
         pc_cfg = config.get("predictive_control", {})
-        self.current_lookahead: float = float(pc_cfg.get("lookahead_sec", 15.0))
+        self.current_lookahead: float = self._clamp_base_lookahead(
+            pc_cfg.get("lookahead_sec", 15.0)
+        )
         self._lookahead_offset: float = 0.0
 
     def set_broadcast_callback(self, callback):
@@ -267,9 +279,9 @@ class RoasterController:
             if phase is not None:
                 phase_cfg = pc.get("phase_lookahead", {})
                 if phase in phase_cfg:
-                    base_la = float(phase_cfg[phase])
+                    base_la = self._clamp_base_lookahead(phase_cfg[phase])
             if base_la is None:
-                base_la = float(pc.get("lookahead_sec", 15.0))
+                base_la = self._clamp_base_lookahead(pc.get("lookahead_sec", 15.0))
             extra_la = 0.0
             if pc.get("adaptive_enabled", True) and self.current_pv is not None:
                 nominal = self.profile.get_target_temp(elapsed)
@@ -336,11 +348,11 @@ class RoasterController:
         elapsed = self._get_elapsed_seconds()
         pc = self.config.get("predictive_control", {})
         phase_cfg = pc.get("phase_lookahead", {})
-        # v3.18: 防御老 config.yaml 中 lookahead_sec > 30 的历史值，避免 PhaseLookaheadConfig 校验失败让广播崩。
+        fallback_la = self._clamp_base_lookahead(pc.get("lookahead_sec", 15.0))
         phase_lookahead_config = PhaseLookaheadConfig(
-            drying=min(30.0, max(0.0, float(phase_cfg.get("drying", pc.get("lookahead_sec", 15.0))))),
-            maillard=min(30.0, max(0.0, float(phase_cfg.get("maillard", pc.get("lookahead_sec", 15.0))))),
-            development=min(30.0, max(0.0, float(phase_cfg.get("development", pc.get("lookahead_sec", 15.0))))),
+            drying=self._clamp_base_lookahead(phase_cfg.get("drying", fallback_la)),
+            maillard=self._clamp_base_lookahead(phase_cfg.get("maillard", fallback_la)),
+            development=self._clamp_base_lookahead(phase_cfg.get("development", fallback_la)),
         )
         return RoasterStatus(
             state=self.state.value,
@@ -588,7 +600,7 @@ class RoasterController:
         """更新指定阶段的超前预测秒数（运行时生效，不持久化到文件）。"""
         if phase not in ("drying", "maillard", "development"):
             raise ValueError(f"无效阶段: {phase}")
-        v = max(0.0, min(30.0, float(value)))
+        v = self._clamp_base_lookahead(value)
         pc = self.config.setdefault("predictive_control", {})
         phase_cfg = pc.setdefault("phase_lookahead", {})
         phase_cfg[phase] = v
@@ -599,8 +611,7 @@ class RoasterController:
 
     def update_lookahead(self, value: float):
         """向后兼容：更新所有阶段值并同步 fallback lookahead_sec。"""
-        # v3.18: clamp 上限同步收紧到 30.0，与前端 slider / Pydantic 三层一致
-        v = max(0.0, min(30.0, float(value)))
+        v = self._clamp_base_lookahead(value)
         pc = self.config.setdefault("predictive_control", {})
         pc["lookahead_sec"] = v
         phase_cfg = pc.setdefault("phase_lookahead", {})

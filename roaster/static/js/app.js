@@ -5,14 +5,22 @@
   let ws = null;
   let reconnectTimer = null;
   let currentProfile = null;
+  let activeRoastProfile = null;
+  let activeRoastProfileId = null;
+  let activeRoastProfileName = null;
+  let activeRoastProfileFetchId = null;
+  let activeRoastProfileRequestSeq = 0;
+  let profileCurveKey = '';
   let profileMap = {};
   let roastChart = null;
   const MAX_POINTS = 2400;
   let eventAnnotations = [];
   let lastState = 'IDLE';
+  let latestState = 'IDLE';
   let lastBodyState = null; // 缓存上次写入 body 的状态 class,避免每帧 remove/add 触发样式重算
   let lastEventsSig = '';   // 缓存上次 events 签名,events 未变时跳过 eventAnnotations 重建 + chart.update
   let lastPromptedSessionId = null;
+  let lastOfflineCommandToastAt = 0;
   let compareMode = false;
   let selectedRecords = new Set();
   let selectedProfileId = null;
@@ -27,8 +35,6 @@
   // ROR 前端 EWMA 平滑
   let rorEwma = 0;
   const ROR_EWMA_ALPHA = 0.3;
-  let lastRORValue = null;
-  let lastRORTime = null;
 
   // ========== Chart.js 自定义插件：事件垂直线 ==========
   const eventLinesPlugin = {
@@ -233,13 +239,6 @@
     });
   }
 
-  function appendChartData(datasetIndex, x, y) {
-    const ds = roastChart.data.datasets[datasetIndex].data;
-    ds.push({ x, y });
-    if (ds.length > MAX_POINTS) ds.shift();
-    return true;
-  }
-
   /**
    * 同一秒内只保留最新有效值，减少广播重复点造成的重绘。
    */
@@ -272,6 +271,206 @@
    */
   function setTextIfChanged(el, text) {
     if (el && el.textContent !== text) el.textContent = text;
+  }
+
+  /**
+   * 烘焙活跃期以后端锁定曲线为准，避免本地选中项影响当前锅显示。
+   */
+  function isRoastActiveState(state) {
+    return state === 'ROASTING' || state === 'COOLING';
+  }
+
+  /**
+   * profile_id 是 URL path segment，必须编码后再拼接 REST 端点。
+   */
+  function profileEndpoint(id) {
+    return '/api/v1/profiles/' + encodeURIComponent(String(id));
+  }
+
+  /**
+   * data-* 属性仍走字符串模板时需要转义引号，避免 id 破坏属性边界。
+   */
+  function escapeAttr(value) {
+    const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+    return String(value).replace(/[&<>"']/g, ch => map[ch]);
+  }
+
+  /**
+   * 活跃烘焙按后端 profile_id 拉取曲线，但不改变本地待机选中项。
+   */
+  async function fetchProfileById(id) {
+    const res = await fetch(profileEndpoint(id));
+    if (!res.ok) return null;
+    return await res.json();
+  }
+
+  /**
+   * 曲线来源签名用于避免 WebSocket 静止帧重复重建目标曲线数据集。
+   */
+  function buildProfileCurveKey(profile, source) {
+    const nodes = Array.isArray(profile?.nodes) ? profile.nodes : [];
+    const first = nodes[0] || {};
+    const last = nodes[nodes.length - 1] || {};
+    return [
+      source,
+      profile?.id || '',
+      profile?.name || '',
+      nodes.length,
+      first.time ?? '',
+      first.temperature ?? '',
+      last.time ?? '',
+      last.temperature ?? ''
+    ].join('|');
+  }
+
+  /**
+   * 没有可用曲线时必须清掉目标温度与 ROR 预览，防止旧曲线残留。
+   */
+  function clearProfilePreview() {
+    if (!roastChart) return;
+    let dirty = false;
+    dirty = clearDatasetIfNeeded(2) || dirty;
+    dirty = clearDatasetIfNeeded(4) || dirty;
+    if (roastChart.data.datasets[2].label !== '目标曲线') {
+      roastChart.data.datasets[2].label = '目标曲线';
+      dirty = true;
+    }
+    if (roastChart.options.scales.x.suggestedMax !== 600) {
+      roastChart.options.scales.x.suggestedMax = 600;
+      dirty = true;
+    }
+    profileCurveKey = 'empty';
+    if (dirty) roastChart.update('none');
+  }
+
+  /**
+   * 只在来源真的变化时更新目标曲线，降低状态广播下的图表扰动。
+   */
+  function showProfileCurve(profile, source) {
+    if (!profile || !Array.isArray(profile.nodes) || !profile.nodes.length) {
+      clearProfilePreview();
+      return false;
+    }
+    const key = buildProfileCurveKey(profile, source);
+    if (key === profileCurveKey) return false;
+    profileCurveKey = key;
+    setProfileCurve(profile.nodes || [], profile.name);
+    return true;
+  }
+
+  /**
+   * 图表/进度条在活跃烘焙期读取后端曲线，待机期读取本地选中曲线。
+   */
+  function getProfileForState(state) {
+    return isRoastActiveState(state) ? activeRoastProfile : currentProfile;
+  }
+
+  /**
+   * 当前曲线标签必须跟随实际显示来源，避免用户误判当前锅使用的曲线。
+   */
+  function updateCurrentProfileDisplay(state) {
+    const displayEl = document.getElementById('current-profile-display');
+    if (!displayEl) return;
+    if (isRoastActiveState(state)) {
+      const name = activeRoastProfileName || activeRoastProfile?.name || (activeRoastProfileId ? `曲线 ${activeRoastProfileId}` : '--');
+      setTextIfChanged(displayEl, name || '--');
+      return;
+    }
+    const localProfile = currentProfile || (selectedProfileId ? profileMap[selectedProfileId] : null);
+    setTextIfChanged(displayEl, localProfile ? (localProfile.name || '--') : '--');
+  }
+
+  /**
+   * 状态切换后恢复该状态应该看到的曲线来源。
+   */
+  function restoreProfileCurveForState(state) {
+    const profile = getProfileForState(state);
+    if (profile) {
+      showProfileCurve(profile, isRoastActiveState(state) ? 'active' : 'selected');
+    } else {
+      clearProfilePreview();
+    }
+  }
+
+  /**
+   * 曲线库为空时彻底清理本地选择与预览，避免旧选择继续显示。
+   */
+  function clearSelectedProfileState() {
+    selectedProfileId = null;
+    currentProfile = null;
+    clearProfilePreview();
+    const displayEl = document.getElementById('current-profile-display');
+    setTextIfChanged(displayEl, '--');
+    updateProfileCardsActive();
+  }
+
+  /**
+   * 活跃烘焙的曲线以状态广播中的 profile_id/profile_name 为唯一显示来源。
+   */
+  function syncActiveRoastProfile(msg) {
+    const state = msg.state;
+    if (!isRoastActiveState(state)) {
+      const hadActiveProfile = activeRoastProfile || activeRoastProfileId || activeRoastProfileName;
+      activeRoastProfile = null;
+      activeRoastProfileId = null;
+      activeRoastProfileName = null;
+      activeRoastProfileFetchId = null;
+      activeRoastProfileRequestSeq++;
+      updateCurrentProfileDisplay(state);
+      if (hadActiveProfile) restoreProfileCurveForState(state);
+      return;
+    }
+
+    const backendId = msg.profile_id != null ? String(msg.profile_id) : null;
+    const backendName = msg.profile_name != null ? String(msg.profile_name) : '';
+    if (backendId !== activeRoastProfileId) {
+      activeRoastProfile = null;
+      activeRoastProfileFetchId = null;
+      activeRoastProfileRequestSeq++;
+    }
+    activeRoastProfileId = backendId;
+    activeRoastProfileName = backendName;
+    updateCurrentProfileDisplay(state);
+
+    if (!backendId) {
+      clearProfilePreview();
+      return;
+    }
+    if (activeRoastProfile && String(activeRoastProfile.id) === backendId) {
+      showProfileCurve(activeRoastProfile, 'active');
+      updateCurrentProfileDisplay(state);
+      return;
+    }
+    if (currentProfile && String(currentProfile.id) === backendId) {
+      activeRoastProfile = currentProfile;
+      showProfileCurve(activeRoastProfile, 'active');
+      updateCurrentProfileDisplay(state);
+      return;
+    }
+    const cached = profileMap[backendId];
+    if (cached && Array.isArray(cached.nodes)) {
+      activeRoastProfile = cached;
+      showProfileCurve(activeRoastProfile, 'active');
+      updateCurrentProfileDisplay(state);
+      return;
+    }
+
+    clearProfilePreview();
+    if (activeRoastProfileFetchId === backendId) return;
+    activeRoastProfileFetchId = backendId;
+    const requestSeq = ++activeRoastProfileRequestSeq;
+    fetchProfileById(backendId)
+      .then(profile => {
+        if (requestSeq !== activeRoastProfileRequestSeq) return;
+        if (!isRoastActiveState(latestState) || activeRoastProfileId !== backendId) return;
+        if (!profile) return;
+        activeRoastProfile = profile;
+        profileMap[backendId] = profile;
+        showProfileCurve(activeRoastProfile, 'active');
+        updateCurrentProfileDisplay(latestState);
+        updateProfileCardsActive();
+      })
+      .catch(() => {});
   }
 
   /**
@@ -333,8 +532,12 @@
     ws.onopen = () => updateWsStatus(true);
     ws.onmessage = (event) => {
       const msg = JSON.parse(event.data);
-      // 跳过命令回包(ok/error),避免它们走完整 state 解析路径
-      if (msg.ok === true || msg.error != null) return;
+      // 命令回包不进入状态解析，避免配置命令触发整页刷新路径
+      if (msg.error != null) {
+        showToast(String(msg.error));
+        return;
+      }
+      if (msg.ok === true) return;
       handleStateUpdate(msg);
     };
     ws.onclose = () => {
@@ -345,10 +548,27 @@
     ws.onerror = () => ws.close();
   }
 
+  /**
+   * 关键控制命令断线时必须给反馈，避免用户以为操作已经送达硬件。
+   */
+  function shouldWarnOfflineCommand(cmd) {
+    const name = String(cmd || '');
+    return name === 'start' || name === 'event' || name === 'emergency_stop' || name === 'e-stop' || name.startsWith('set_');
+  }
+
   function sendCmd(cmd, payload) {
     if (ws && ws.readyState === WebSocket.OPEN) {
       ws.send(JSON.stringify({ cmd, ...payload }));
+      return true;
     }
+    if (shouldWarnOfflineCommand(cmd)) {
+      const now = Date.now();
+      if (now - lastOfflineCommandToastAt > 2000) {
+        showToast('WebSocket 未连接，操作未发送');
+        lastOfflineCommandToastAt = now;
+      }
+    }
+    return false;
   }
 
   // ========== UI 更新 ==========
@@ -357,6 +577,9 @@
    * @param {object} msg - 后端广播的状态对象
    */
   function handleStateUpdate(msg) {
+    latestState = msg.state || latestState;
+    if (!compareMode) syncActiveRoastProfile(msg);
+
     setTextIfChanged(document.getElementById('pv-val'), msg.pv != null ? msg.pv.toFixed(1) : '--');
     setTextIfChanged(document.getElementById('sv-val'), msg.sv != null ? msg.sv.toFixed(1) : '--');
     setTextIfChanged(document.getElementById('ror-val'), msg.ror != null ? msg.ror.toFixed(1) : '--');
@@ -416,8 +639,6 @@
         chartDirty = eventAnnotations.length > 0 || chartDirty;
         eventAnnotations = [];
         rorEwma = 0;
-        lastRORValue = null;
-        lastRORTime = null;
       }
       if (enteringIdle) {
         chartDirty = clearDatasetIfNeeded(0) || chartDirty;
@@ -435,15 +656,10 @@
         chartDirty = appendRealtimePoint(0, t, msg.pv) || chartDirty;
         chartDirty = appendRealtimePoint(1, t, msg.sv) || chartDirty;
 
-        // EWMA 平滑 ROR，跳过 2 秒内重复值
+        // EWMA 平滑 ROR，同一秒内覆盖最新值，避免重复 x 点累积
         if (msg.ror != null) {
-          const shouldAppend = (msg.ror !== lastRORValue) || (t - (lastRORTime || 0) >= 2);
-          if (shouldAppend) {
-            rorEwma = ROR_EWMA_ALPHA * msg.ror + (1 - ROR_EWMA_ALPHA) * rorEwma;
-            chartDirty = appendChartData(3, t, rorEwma) || chartDirty;
-            lastRORValue = msg.ror;
-            lastRORTime = t;
-          }
+          rorEwma = ROR_EWMA_ALPHA * msg.ror + (1 - ROR_EWMA_ALPHA) * rorEwma;
+          chartDirty = appendRealtimePoint(3, t, rorEwma) || chartDirty;
         }
       } else if (msg.state === 'COOLING') {
         // COOLING 时只定格温度与 SV，不再追加 ROR
@@ -513,9 +729,13 @@
   function optimisticResetToIdle() {
     lastPromptedSessionId = null;
     lastState = 'IDLE';
+    latestState = 'IDLE';
+    activeRoastProfile = null;
+    activeRoastProfileId = null;
+    activeRoastProfileName = null;
+    activeRoastProfileFetchId = null;
+    activeRoastProfileRequestSeq++;
     rorEwma = 0;
-    lastRORValue = null;
-    lastRORTime = null;
 
     // 清空实时曲线
     roastChart.data.datasets[0].data = [];
@@ -534,6 +754,9 @@
     setTextIfChanged(document.getElementById('pv-val'), '--');
     setTextIfChanged(document.getElementById('sv-val'), '--');
     setTextIfChanged(document.getElementById('ror-val'), '--');
+    updateCurrentProfileDisplay('IDLE');
+    restoreProfileCurveForState('IDLE');
+    updateProfileCardsActive();
     updateButtonVisibility('IDLE');
 
     // 清空事件与统计
@@ -613,8 +836,9 @@
       idle: '待机',
     };
 
-    const totalProfile = (currentProfile && currentProfile.nodes && currentProfile.nodes.length)
-      ? currentProfile.nodes[currentProfile.nodes.length - 1].time : 0;
+    const progressProfile = getProfileForState(msg.state);
+    const totalProfile = (progressProfile && progressProfile.nodes && progressProfile.nodes.length)
+      ? progressProfile.nodes[progressProfile.nodes.length - 1].time : 0;
 
     // ============ 非烘焙状态：清零段位 ============
     if (msg.state !== 'ROASTING' || !totalProfile) {
@@ -783,6 +1007,7 @@
     }
 
     setEventActionsEnabled(state === 'ROASTING');
+    setProfileMutationEnabled(!isRoastActiveState(state));
   }
 
   /**
@@ -794,6 +1019,22 @@
     eventBar.querySelectorAll('.event-action-btn').forEach(btn => {
       const shouldDisable = !enabled;
       if (btn.disabled !== shouldDisable) btn.disabled = shouldDisable;
+    });
+  }
+
+  /**
+   * 烘焙进行中禁止改变曲线库对当前图表的含义，只保留导出等只读操作。
+   */
+  function setProfileMutationEnabled(enabled) {
+    const cards = document.getElementById('profile-cards');
+    if (!cards) return;
+    cards.querySelectorAll('[data-action="apply"], [data-action="delete"]').forEach(btn => {
+      const shouldDisable = !enabled;
+      if (btn.disabled !== shouldDisable) btn.disabled = shouldDisable;
+    });
+    cards.querySelectorAll('.profile-card').forEach(card => {
+      card.classList.toggle('locked', !enabled);
+      card.setAttribute('aria-disabled', enabled ? 'false' : 'true');
     });
   }
 
@@ -978,15 +1219,14 @@
         } else {
           selectedProfileId = list[0].id;
         }
-        await applySelectedProfile();
+        if (!isRoastActiveState(latestState)) {
+          await applySelectedProfile({ silent: true });
+        } else {
+          updateCurrentProfileDisplay(latestState);
+          restoreProfileCurveForState(latestState);
+        }
       } else {
-        currentProfile = null;
-      }
-      // 同步当前曲线只读显示
-      const displayEl = document.getElementById('current-profile-display');
-      if (displayEl) {
-        const activeProfile = profileMap[selectedProfileId];
-        displayEl.textContent = activeProfile ? (activeProfile.name || '--') : '--';
+        clearSelectedProfileState();
       }
       await renderProfileCards(list);
     } catch (e) {
@@ -1004,22 +1244,24 @@
 
     // 拉取每个 profile 的完整数据用于绘制 sparkline 与计算总时长
     const fullProfiles = await Promise.all(
-      list.map(s => fetch('/api/v1/profiles/' + s.id).then(r => r.ok ? r.json() : null).catch(() => null))
+      list.map(s => fetch(profileEndpoint(s.id)).then(r => r.ok ? r.json() : null).catch(() => null))
     );
 
     // 缓存到 profileMap（覆盖摘要）
     fullProfiles.forEach(p => { if (p && p.id) profileMap[p.id] = p; });
 
-    const activeId = selectedProfileId;
+    const activeId = isRoastActiveState(latestState) ? activeRoastProfileId : selectedProfileId;
 
     container.innerHTML = fullProfiles.map((p, i) => {
       if (!p) {
         const s = list[i];
-        return `<div class="profile-card" data-id="${s.id}">
+        const safeId = escapeAttr(s.id || '');
+        return `<div class="profile-card" data-id="${safeId}">
           <div class="name">${escapeHtml(s.name || '未命名')}</div>
           <div class="meta">加载失败</div>
         </div>`;
       }
+      const safeId = escapeAttr(p.id || '');
       const nodes = p.nodes || [];
       const total = nodes.length ? nodes[nodes.length - 1].time : 0;
       const m = Math.floor(total / 60);
@@ -1027,14 +1269,14 @@
       const sparkline = buildSparklineSVG(nodes);
       const isActive = p.id === activeId ? 'active' : '';
       return `
-        <div class="profile-card ${isActive}" data-id="${p.id}">
+        <div class="profile-card ${isActive}" data-id="${safeId}">
           <div class="name">${escapeHtml(p.name || '未命名')}</div>
           <div class="meta">${nodes.length} 节点 · ${m}:${String(sec).padStart(2,'0')}</div>
           ${sparkline}
           <div class="actions">
-            <button class="ctrl-btn small primary" data-action="apply" data-id="${p.id}">应用</button>
-            <button class="ctrl-btn small" data-action="export" data-id="${p.id}">导出</button>
-            <button class="ctrl-btn small danger" data-action="delete" data-id="${p.id}">删除</button>
+            <button class="ctrl-btn small primary" data-action="apply" data-id="${safeId}">应用</button>
+            <button class="ctrl-btn small" data-action="export" data-id="${safeId}">导出</button>
+            <button class="ctrl-btn small danger" data-action="delete" data-id="${safeId}">删除</button>
           </div>
         </div>
       `;
@@ -1046,19 +1288,24 @@
         e.stopPropagation();
         const action = btn.dataset.action;
         const id = btn.dataset.id;
+        if (isRoastActiveState(latestState) && (action === 'apply' || action === 'delete')) {
+          showToast(action === 'delete' ? '烘焙中不能删除曲线' : '烘焙中不能应用曲线');
+          return;
+        }
         if (action === 'apply') {
           selectedProfileId = id;
-          await applySelectedProfile();
+          const applied = await applySelectedProfile();
+          if (!applied) return;
           updateProfileCardsActive();
           showToast('已应用曲线');
         } else if (action === 'export') {
-          window.open('/api/v1/profiles/' + id + '/export', '_blank');
+          window.open(profileEndpoint(id) + '/export', '_blank');
         } else if (action === 'delete') {
           const p = profileMap[id];
           if (!p) return;
           if (!confirm('确定要删除曲线「' + p.name + '」吗？')) return;
           try {
-            const res = await fetch('/api/v1/profiles/' + id, { method: 'DELETE' });
+            const res = await fetch(profileEndpoint(id), { method: 'DELETE' });
             if (res.ok) {
               await loadProfiles();
             }
@@ -1072,12 +1319,18 @@
     // 整张卡片点击 = 应用
     container.querySelectorAll('.profile-card').forEach(card => {
       card.addEventListener('click', async () => {
+        if (isRoastActiveState(latestState)) {
+          showToast('烘焙中不能应用曲线');
+          return;
+        }
         const id = card.dataset.id;
         selectedProfileId = id;
-        await applySelectedProfile();
+        const applied = await applySelectedProfile();
+        if (!applied) return;
         updateProfileCardsActive();
       });
     });
+    setProfileMutationEnabled(!isRoastActiveState(latestState));
   }
 
   /**
@@ -1106,28 +1359,33 @@
   }
 
   function updateProfileCardsActive() {
-    const activeId = selectedProfileId;
+    const activeId = isRoastActiveState(latestState) ? activeRoastProfileId : selectedProfileId;
     document.querySelectorAll('.profile-card').forEach(card => {
       card.classList.toggle('active', card.dataset.id === activeId);
     });
   }
 
-  async function applySelectedProfile() {
+  /**
+   * 应用曲线只影响待机期的本地选择，活跃烘焙期必须保留后端曲线来源。
+   */
+  async function applySelectedProfile(options = {}) {
     const id = selectedProfileId;
-    if (!id) return;
+    if (!id) return false;
+    if (isRoastActiveState(latestState)) {
+      if (!options.silent) showToast('烘焙中不能应用曲线');
+      return false;
+    }
     try {
-      const res = await fetch('/api/v1/profiles/' + id);
-      if (!res.ok) return;
+      const res = await fetch(profileEndpoint(id));
+      if (!res.ok) return false;
       currentProfile = await res.json();
       profileMap[id] = currentProfile;
-      setProfileCurve(currentProfile.nodes || [], currentProfile?.name);
-      // 同步当前曲线只读显示
-      const displayEl = document.getElementById('current-profile-display');
-      if (displayEl) {
-        displayEl.textContent = currentProfile ? (currentProfile.name || '--') : '--';
-      }
+      showProfileCurve(currentProfile, 'selected');
+      updateCurrentProfileDisplay(latestState);
+      return true;
     } catch (e) {
       showToast('应用曲线失败');
+      return false;
     }
   }
 
@@ -1174,9 +1432,13 @@
         const result = await res.json();
         if (result.success) {
           await loadProfiles();
-          selectedProfileId = result.id;
-          await applySelectedProfile();
-          updateProfileCardsActive();
+          if (isRoastActiveState(latestState)) {
+            showToast('已导入，烘焙结束后可应用');
+          } else {
+            selectedProfileId = result.id;
+            const applied = await applySelectedProfile();
+            if (applied) updateProfileCardsActive();
+          }
         } else {
           alert('导入失败');
         }
@@ -1192,38 +1454,105 @@
   // ========== 超前预测阶段设置 ==========
   function initPhaseLookahead() {
     const phases = ['drying', 'maillard', 'development'];
-    // 100ms setTimeout debounce（避免高频后端写入）
-    // raf 在持续拖动下会发 ~60 cmd/s,后端每条都立即 broadcast,
-    // 前端 handleStateUpdate 每帧 update chart,叠加 appendChartData 造成已记录曲线"被刷"。
-    const sendDebounced = {};
-    const defaults = { drying: 1.0, maillard: 0.5, development: 1.0 };
 
     phases.forEach(phase => {
       const numEl    = document.getElementById('phase-' + phase);
       const sliderEl = document.getElementById('phase-' + phase + '-slider');
       if (!numEl || !sliderEl) return;
 
-      function commit(rawV, source) {
-        let v = parseFloat(rawV);
-        if (isNaN(v)) v = defaults[phase];
-        // 上限与前后端校验保持一致
-        v = Math.max(0, Math.min(30, round1(v)));   // PITFALL #18 clamp+round1
-        if (source !== 'num')    numEl.value    = v.toFixed(1);
-        if (source !== 'slider') sliderEl.value = v.toFixed(1);
-        if (sendDebounced[phase]) clearTimeout(sendDebounced[phase]);
-        sendDebounced[phase] = setTimeout(() => {
-          sendCmd('set_phase_lookahead', { phase, value: v });
-          sendDebounced[phase] = null;
+      let sendTimer = null;
+      let pendingValue = null;
+      let lastSent = normalizePhaseValue(sliderEl.value);
+
+      function sameValue(a, b) {
+        return a != null && b != null && Math.abs(a - b) < 0.0001;
+      }
+
+      function parsePhaseNumber(rawV) {
+        const text = String(rawV).trim();
+        if (!text) return null;
+        const parsed = Number(text);
+        return Number.isFinite(parsed) ? parsed : null;
+      }
+
+      function normalizePhaseValue(rawV) {
+        const parsed = parsePhaseNumber(rawV);
+        if (parsed == null) return null;
+        return Math.max(0, Math.min(30, round1(parsed)));
+      }
+
+      function normalizeLiveNumberValue(rawV) {
+        const parsed = parsePhaseNumber(rawV);
+        if (parsed == null) return null;
+        return Math.max(0, Math.min(30, round1(parsed)));
+      }
+
+      function syncControls(v, source) {
+        const text = v.toFixed(1);
+        if (source !== 'num' && numEl.value !== text) numEl.value = text;
+        if (source !== 'slider' && sliderEl.value !== text) sliderEl.value = text;
+      }
+
+      function cancelPendingSend() {
+        if (sendTimer) clearTimeout(sendTimer);
+        sendTimer = null;
+        pendingValue = null;
+      }
+
+      function scheduleSend(v) {
+        if (v == null) return;
+        if (sameValue(lastSent, v)) {
+          cancelPendingSend();
+          return;
+        }
+        if (sameValue(pendingValue, v)) return;
+        pendingValue = v;
+        if (sendTimer) clearTimeout(sendTimer);
+        sendTimer = setTimeout(() => {
+          const valueToSend = pendingValue;
+          pendingValue = null;
+          sendTimer = null;
+          if (sameValue(lastSent, valueToSend)) return;
+          if (sendCmd('set_phase_lookahead', { phase, value: valueToSend })) {
+            lastSent = valueToSend;
+          }
         }, 100);
       }
 
+      function sendValueNow(v) {
+        if (v == null) return;
+        cancelPendingSend();
+        if (sameValue(lastSent, v)) return;
+        if (sendCmd('set_phase_lookahead', { phase, value: v })) {
+          lastSent = v;
+        }
+      }
+
       sliderEl.addEventListener('input', () => {
-        commit(sliderEl.value, 'slider');
+        const v = normalizePhaseValue(sliderEl.value);
+        if (v == null) return;
+        syncControls(v, 'slider');
+        scheduleSend(v);
       });
+
       numEl.addEventListener('input', () => {
-        commit(numEl.value, 'num');
+        numEl.dataset.userEditing = '1';
+        const v = normalizeLiveNumberValue(numEl.value);
+        if (v == null) return;
+        syncControls(v, 'num');
       });
-      numEl.addEventListener('change', () => commit(numEl.value, 'num'));
+
+      function commitNumber() {
+        delete numEl.dataset.userEditing;
+        let v = normalizePhaseValue(numEl.value);
+        if (v == null) v = normalizePhaseValue(sliderEl.value);
+        if (v == null) v = 0;
+        syncControls(v, null);
+        sendValueNow(v);
+      }
+
+      numEl.addEventListener('change', commitNumber);
+      numEl.addEventListener('blur', commitNumber);
     });
   }
 
@@ -1284,7 +1613,7 @@
     });
   }
 
-  // ========== 防闪烁（PITFALLS #36）：拖动 slider 期间给 body 加 .dragging-slider，
+  // ========== 拖动 slider 期间给 body 加 .dragging-slider，
   // 让 .roast-section / 进度条 transition 全部静默，避免触发 transition repaint
   // 与 #charts-panel canvas 在合成层间互相干扰 ==========
   function installSliderDragGuard() {
@@ -1830,6 +2159,7 @@
       roastChart.data.datasets[2].label = '目标曲线';
       roastChart.data.datasets[3].data.length = 0;
       roastChart.data.datasets[4].data.length = 0;
+      profileCurveKey = 'compare';
       eventAnnotations = [];
 
       roastChart.update('none');
@@ -1858,9 +2188,7 @@
     roastChart.data.datasets[1].borderDash = [6, 4];
 
     // 恢复背景曲线
-    if (currentProfile) {
-      setProfileCurve(currentProfile.nodes || [], currentProfile?.name);
-    }
+    restoreProfileCurveForState(latestState);
 
     roastChart.data.datasets[3].data.length = 0;
     roastChart.update('none');

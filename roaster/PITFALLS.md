@@ -82,12 +82,12 @@
 - 解决方案：作为合法的「关闭预测」模式保留，调试 PID 时可临时归零；UI 上让用户明白滑块 0 = 关闭预测，避免「调到 0 后效果反而变差」的困惑。
 - 相关文件：`src/core/roaster_controller.py:_maybe_adjust_sv_locked`、`static/index.html` 滑块说明
 
-## 11. SQLite `ALTER TABLE ADD COLUMN` 必须 try/except 包裹
+## 11. SQLite `ALTER TABLE ADD COLUMN` 只能吞 `duplicate column`
 
 v3.10 引入 4 个新列（`seq_no` / `display_name` / `profile_snapshot_json` / `duration_sec`），但老用户 `roasts.db` 已存在；SQLite 同一列重复 ALTER 会报 `duplicate column name` 错。
 
 - 影响：后端（数据持久化）
-- 解决方案：每个 `ALTER TABLE` 语句单独 `try/except` 兜底吞异常，让 `init_db` 在新老 db 上幂等。后续再加列遵循同样模式。
+- 解决方案：每个 `ALTER TABLE` 语句单独 `try/except`；仅当 `OperationalError` 内容为 `duplicate column` 时视作幂等并跳过，其他 `OperationalError` 必须记录日志后重新抛出，避免真实迁移失败被静默吞掉。
 - 相关文件：`src/services/data_manager.py:init_db`
 
 ## 12. `profile_snapshot` 让每锅记录额外 +1~3KB
@@ -440,6 +440,50 @@ v3.17 删除前端 `handleStateUpdate` 对 `phase_lookahead_config` / `lookahead
 - **解决方案**：`estopBlink` 动画与 `confirming` 状态类**只能**绑在 `.estop-btn`，不要改在 `.estop-box`。
 - **相关文件**：`static/css/style.css`（搜索 `estopBlink`、`.estop-btn.confirming`）
 
+## v3.19 新增坑点 (2026-06-04)
+
+### 48. 本地 Claude/Git 权限不要写入版本化 `.claude/settings.json`
+
+- **问题**：本地工具权限容易被自动写入版本化的 `.claude/settings.json`，其中可能包含当前机器的绝对路径。
+- **影响**：Git / 本地开发环境；提交后会把个人路径、工具权限和团队无关配置带入仓库。
+- **解决方案**：提交前检查 `.claude/settings.json`，本机绝对路径权限应移到 ignored 的 `settings.local` 或从提交中排除。
+- **相关文件**：`.claude/settings.json`、`.claude/settings.local`
+
+### 49. 活跃烘焙 UI 必须以后端 `profile_id` / `profile_name` 为可信源
+
+- **问题**：烘焙中如果用曲线库当前选择覆盖主图表目标曲线，会把「待机选择」误当成本锅正在使用的曲线。
+- **影响**：前端（曲线显示 / 操作可信度）、后端状态理解。
+- **解决方案**：ROASTING / COOLING 期间，活跃目标曲线只认后端状态广播中的 `profile_id` / `profile_name`；曲线库的应用、删除、导入自动应用应禁用或忽略，不能覆盖正在烘焙的目标曲线。
+- **相关文件**：`static/js/app.js`、`src/core/roaster_controller.py:get_state_payload`
+
+### 50. 基础 lookahead 所有入口共用 `[0, 30]` clamp，adaptive extra 不截断
+
+- **问题**：初始化、阶段配置、fallback、状态 payload、兼容入口若各自 clamp，容易再次出现前后端上限或广播上限不一致；同时把自适应 extra 误纳入基础 clamp 会改变控制算法语义。
+- **影响**：后端（控制算法 / 状态广播）、前端（显示与输入边界）。
+- **解决方案**：基础 lookahead 的所有入口统一 clamp 到 `[0, 30]`；自适应 `extra_la` 是额外项，只在最终 `base + extra` 中叠加，不要用基础上限把它截断。
+- **相关文件**：`src/core/roaster_controller.py`、`src/core/models.py`、`static/js/app.js`
+
+### 51. WS `{error}` / `{ok}` 必须入口短路
+
+- **问题**：命令回包不是状态 payload；如果 `{error}` 或 `{ok}` 继续进入 `handleStateUpdate`，会触发不必要的 DOM 更新，甚至把非状态对象当成状态帧处理。
+- **影响**：前端（状态显示 / toast / 性能）。
+- **解决方案**：`{error}` 只 toast 并 `return`；`{ok}` 静默 `return`。两者都不得进入 `handleStateUpdate`。
+- **相关文件**：`static/js/app.js:ws.onmessage`、`static/js/app.js:handleStateUpdate`
+
+### 52. phase number 输入中间态不能发送空值或非法值
+
+- **问题**：用户正在编辑 number 输入框时会短暂出现空字符串、单个负号、小数点等中间态；若在 `input` 阶段把它当 0 或默认值发送，会意外改写后端配置。
+- **影响**：前端（输入体验）、后端（lookahead 配置）。
+- **解决方案**：`input` 期间只同步本地 UI，不发送空值或非法值；仅在 `blur/change` 时 clamp 到 `0..30` 并归一化后发送，同时用 `lastSent` 去重。
+- **相关文件**：`static/js/app.js:initPhaseLookahead`
+
+### 53. 编辑器触摸拖拽依赖 Pointer Events + pointer capture + `touch-action: none`
+
+- **问题**：触摸屏拖拽曲线节点时，如果没有 pointer capture 或禁用浏览器默认触摸行为，拖拽可能丢指针、被页面滚动打断，或与鼠标 fallback 双触发。
+- **影响**：前端（曲线编辑器触摸交互）。
+- **解决方案**：Pointer Events 作为主路径，使用 `setPointerCapture` 和 `activePointerId` 锁定当前拖拽；鼠标 fallback 只在无 Pointer Events 时启用；拖拽区域保留 `touch-action: none`。
+- **相关文件**：`static/js/editor.js`、`static/css/editor.css`
+
 ---
 
-*最后更新：v3.18 (2026-04-30)*
+*最后更新：v3.19 (2026-06-04)*

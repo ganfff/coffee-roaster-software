@@ -1,5 +1,115 @@
 # 更新记录
 
+## v3.19 (2026-06-04) — 第一批低风险硬化 / 活跃曲线可信源 / 编辑器触摸拖拽
+
+### 上一版本功能摘要（v3.18）
+- 三层超前补偿上限统一对齐到 30 秒，覆盖 Pydantic、Controller、前端输入与状态 payload fallback
+- 紧急停止按钮从浮动圆形重构为右下角嵌入小方框，保留双击确认、闪烁提示与 z-index 1020 约束
+- 源码注释清理版本前缀、评审术语和考古注释，README 回归项目当前说明，更新流水归档到 UPDATE_LOG
+- `index.html` / `editor.html` 静态资源缓存破坏字符串同步到 `?v=3.18`
+
+### 核心改进
+
+1. **Git 仓库准备与本地文件边界**
+   - 创建并切换到 `dev` 分支，作为第一批低风险优化承载分支
+   - `.gitignore` 新增忽略本地工具目录 `/.agents/` 与 `/.codex/`
+   - 未把 `roaster/data/records`、`__pycache__`、`settings.local`、`.vscode`、`readme.txt` 纳入 Git
+   - 原因：先把可提交边界与本地工具噪音隔离清楚，避免后续代码审查混入运行数据或个人环境文件
+
+2. **后端低风险硬化**
+   - `roaster/src/core/roaster_controller.py`：基础 lookahead 统一使用 `[0, 30]` clamp，覆盖初始化、阶段配置、fallback、状态 payload 与兼容 `update_lookahead` 入口；自适应 `extra` 是额外补偿项，不纳入基础 clamp 截断
+   - `roaster/src/web/web_api.py`：`/api/v1/records` Query 参数收紧为 `limit=1..200`、`offset>=0`
+   - `roaster/src/services/data_manager.py`：`list_records` 内部做防御性 clamp，避免绕过 API 层时传入异常分页参数
+   - `roaster/src/services/data_manager.py`：profile id 白名单收紧为 `^[A-Za-z0-9._-]+$`，并通过 `resolve()` / `relative_to()` 防止路径逃逸
+   - `roaster/src/services/data_manager.py`：SQLite 迁移只吞 `duplicate column`，其他 `OperationalError` 记录日志后重新抛出
+   - 原因：本批只做输入边界、路径安全与迁移错误处理等低风险防御，不改变硬件控制算法主体
+
+3. **主控前端交互与活跃曲线可信源**
+   - `roaster/static/js/app.js`：WS 收到 `{error}` 时只 toast 并 `return`，收到 `{ok}` 时静默 `return`，命令回包不再进入 `handleStateUpdate`
+   - `roaster/static/js/app.js`：`sendCmd` 在 WS 断线时对关键命令做 2 秒节流提示，避免触摸屏连续误点刷屏
+   - `roaster/static/js/app.js`：活跃烘焙曲线以后端 `profile_id` / `profile_name` 为可信源；烘焙中禁用或忽略应用、删除、导入自动应用，不用曲线库当前选择覆盖正在烘焙的目标曲线
+   - `roaster/static/js/app.js`：曲线列表为空时清空 UI、目标曲线与 ROR 预览，避免显示残留曲线
+   - `roaster/static/js/app.js`：phase number 输入在 `input` 期间不发送空值或非法值，只在 `blur/change` 归一化到 `0..30` 后发送，并通过 `lastSent` 去重
+   - `roaster/static/js/app.js`：ROR 实时点同秒覆盖，避免同一秒内追加多个抖动点；profile id 用 URL encode，HTML 属性写入做转义
+   - `roaster/static/css/style.css` / `roaster/static/js/app.js`：触摸目标优化；急停结构和 z-index 未改
+   - 原因：把「正在烘焙的目标曲线」与「曲线库当前待机选择」隔离，减少断线、空列表、触摸误操作和输入中间态造成的 UI 错判
+
+4. **曲线编辑器触摸拖拽稳定化**
+   - `roaster/static/js/editor.js`：Pointer Events 作为主路径，配合 `setPointerCapture` 与 `activePointerId` 约束单一拖拽指针
+   - `roaster/static/js/editor.js`：鼠标 fallback 避免与 Pointer Events 双触发
+   - `roaster/static/css/editor.css`：编辑器拖拽区域保持 `touch-action: none`
+   - `roaster/static/css/editor.css`：coarse pointer 下 `.node-insert-btn` 常显，并保证 44px 触控目标
+   - `roaster/static/editor.html`：编辑器静态资源 query 已同步为 `?v=3.19`
+   - 原因：树莓派触摸屏上用原生指针捕获统一鼠标与触摸路径，避免拖拽丢指针或双路径重复触发
+
+5. **源码注释清理**
+   - `roaster/static/js/app.js`、`roaster/static/css/style.css`：删除 PITFALL 编号式源代码注释引用，只保留当前代码的技术原因
+   - 原因：源码注释只说明当前实现为什么这样写，维护历史与坑点编号归档到 UPDATE_LOG / PITFALLS
+
+6. **静态资源缓存破坏字符串同步**
+   - `roaster/static/index.html` 与 `roaster/static/editor.html` 已使用 `?v=3.19`
+   - 原因：避免浏览器继续加载 v3.18 旧 CSS / JS，干扰输入边界、触摸与曲线可信源修复验证
+
+### 协议与边界变更
+
+#### REST 端点
+- `/api/v1/records` 查询参数边界明确为 `limit=1..200`、`offset>=0`
+- profile 相关路径参数仅接受 `^[A-Za-z0-9._-]+$`，并做路径解析防逃逸
+
+#### WebSocket 命令
+- 命令格式无新增；`set_phase_lookahead`、`set_lookahead_offset`、兼容 `set_lookahead` 继续使用现有 payload
+- 前端对 `{ok}` / `{error}` 命令回包做入口级短路，避免误走状态更新路径
+
+#### config.yaml
+- 无结构变更；基础 lookahead 越界值在 Controller 入口统一 clamp 到 `[0, 30]`
+
+### 修改文件清单
+- `.gitignore` —— 忽略 `/.agents/`、`/.codex/`
+- `roaster/src/core/roaster_controller.py` —— 基础 lookahead clamp 覆盖所有入口与状态 payload；保留 adaptive extra 额外叠加语义
+- `roaster/src/services/data_manager.py` —— records 分页防御性 clamp、profile id 白名单与路径防逃逸、SQLite 迁移错误处理收紧
+- `roaster/src/web/web_api.py` —— `/api/v1/records` Query 边界、WS 命令回包相关路径配套
+- `roaster/static/js/app.js` —— WS 回包 guard、断线关键命令提示节流、活跃烘焙曲线可信源、phase number 输入归一、ROR 同秒覆盖、profile id 编码与属性转义
+- `roaster/static/css/style.css` —— 主控触摸目标与注释清理
+- `roaster/static/js/editor.js` —— Pointer Events 主路径、pointer capture、active pointer 约束、鼠标 fallback
+- `roaster/static/css/editor.css` —— `touch-action: none` 与 coarse pointer 插入按钮触控目标
+- `roaster/static/index.html`、`roaster/static/editor.html` —— 静态资源 query 同步 `?v=3.19`
+
+### 未触及的范围
+- `roaster/src/hardware/tc4s_async.py`
+- TC4S / Modbus / GPIO / 串口通讯
+- 硬件安全专项与树莓派实机硬件行为
+- 急停结构和 z-index 约束
+
+### 验证
+- Reviewer：`PASS_WITH_NITS`；唯一后续建议是 `buildProfileCurveKey` 未来可加入更强摘要或 `updated_at`，进一步降低同名同点曲线误判概率
+- Verifier：不能记录为完整 `PASS`；当前验证结论为部分证据通过，运行时与硬件项仍待目标环境补测
+- `git diff --check`：通过；仅有行尾转换 warning
+- JavaScript 语法检查：此前 Verifier 使用相对路径确认 `app.js` / `editor.js` 均通过 `node --check`；最终复核 main loop 中 `app.js` 检查被权限拦截，`editor.js` 检查通过
+- Python import / clamp smoke：未完成，Windows 环境无 `python` / `python3`，`py` 被权限拦截
+- 树莓派实机 / TC4S 测试：待运行
+
+### 已知风险/提交前提醒
+- 本机 Claude/Git 权限不要提交进版本化 `.claude/settings.json`；个人权限应放入 `settings.local` 或从提交中排除
+- 本批没有覆盖硬件/树莓派实机验证，合入或部署前仍需在目标环境跑完整烘焙流程
+
+### 代码注释
+- 删除 `app.js` / `style.css` 中 PITFALL 编号式源码注释引用
+- 保留当前实现的技术原因说明；版本流水、审查记录和历史原因归档到 UPDATE_LOG / PITFALLS
+
+### 已知坑点
+- 见 PITFALLS.md #48：本地 Claude/Git 权限不要写入版本化 `.claude/settings.json` 的本机绝对路径
+- 见 PITFALLS.md #49：活跃烘焙 UI 必须以后端 `profile_id` / `profile_name` 为可信源
+- 见 PITFALLS.md #50：基础 lookahead 所有入口共用 `[0, 30]` clamp，adaptive extra 不截断
+- 见 PITFALLS.md #51：WS `{error}` / `{ok}` 必须入口短路
+- 见 PITFALLS.md #52：phase number 输入中间态不能发送空值或非法值
+- 见 PITFALLS.md #53：编辑器触摸拖拽依赖 Pointer Events + pointer capture + `touch-action: none`
+
+### 项目结构（v3.19）
+
+无文件级别结构变化；仅 Git 忽略规则、既有源码与文档内容调整。`roaster/data/records`、本地缓存、个人工具配置与编辑器配置仍不纳入 Git。
+
+---
+
 ## v3.18 (2026-04-30) — 三层 30 秒上限对齐 / 紧急停止小方框重构 / 文档归档清理
 
 ### 上一版本功能摘要（v3.17）

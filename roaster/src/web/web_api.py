@@ -1,12 +1,17 @@
 import json
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect, HTTPException, Response
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect, HTTPException, Response, Query
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import PlainTextResponse, JSONResponse, FileResponse
 
 from src.core.roaster_controller import RoasterController
-from src.services.data_manager import DataManager
+from src.services.data_manager import (
+    DataManager,
+    RECORD_LIST_DEFAULT_LIMIT,
+    RECORD_LIST_LIMIT_MAX,
+    RECORD_LIST_LIMIT_MIN,
+)
 from src.core.models import RoastProfile
 
 
@@ -262,7 +267,14 @@ async def api_import_profile(payload: dict):
 
 # --- 记录 ---
 @app.get("/api/v1/records")
-async def api_list_records(limit: int = 50, offset: int = 0):
+async def api_list_records(
+    limit: int = Query(
+        RECORD_LIST_DEFAULT_LIMIT,
+        ge=RECORD_LIST_LIMIT_MIN,
+        le=RECORD_LIST_LIMIT_MAX,
+    ),
+    offset: int = Query(0, ge=0),
+):
     dm: DataManager = app.state.dm
     records = await dm.list_records(limit=limit, offset=offset)
     return [r.model_dump() for r in records]

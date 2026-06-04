@@ -2,6 +2,7 @@ import json
 import csv
 import io
 import logging
+import re
 from pathlib import Path
 from typing import List, Optional
 from uuid import uuid4
@@ -20,6 +21,11 @@ from src.core.models import (
 
 logger = logging.getLogger(__name__)
 
+PROFILE_ID_RE = re.compile(r"^[A-Za-z0-9._-]+$")
+RECORD_LIST_LIMIT_MIN = 1
+RECORD_LIST_LIMIT_MAX = 200
+RECORD_LIST_DEFAULT_LIMIT = 50
+
 
 class DataManager:
     def __init__(self, config: dict):
@@ -31,7 +37,11 @@ class DataManager:
         self.records_dir.mkdir(parents=True, exist_ok=True)
 
     def _profile_path(self, profile_id: str) -> Optional[Path]:
-        if not profile_id or "/" in profile_id or "\\" in profile_id:
+        if (
+            not isinstance(profile_id, str)
+            or not profile_id
+            or not PROFILE_ID_RE.fullmatch(profile_id)
+        ):
             logger.warning("拒绝不安全的 profile_id: %r", profile_id)
             return None
         try:
@@ -57,7 +67,7 @@ class DataManager:
                 )
                 """
             )
-            # 向后兼容的列追加：老 db 上 ALTER 已有列会抛 OperationalError，吞掉
+            # 向后兼容的列追加：已有列只忽略 duplicate column，其他错误必须暴露。
             for col_def in (
                 "ALTER TABLE records ADD COLUMN seq_no INTEGER",
                 "ALTER TABLE records ADD COLUMN display_name TEXT",
@@ -66,8 +76,14 @@ class DataManager:
             ):
                 try:
                     await db.execute(col_def)
+                except aiosqlite.OperationalError as e:
+                    if "duplicate column" in str(e).lower():
+                        continue
+                    logger.exception("SQLite 迁移执行失败: %s", col_def)
+                    raise
                 except Exception:
-                    pass
+                    logger.exception("SQLite 迁移执行失败: %s", col_def)
+                    raise
             await db.commit()
 
     async def load_profile(self, profile_id: str) -> Optional[RoastProfile]:
@@ -171,10 +187,25 @@ class DataManager:
                     return None
                 return self._row_to_record(row)
 
-    async def list_records(self, limit: int = 50, offset: int = 0) -> List[RecordSummary]:
+    async def list_records(
+        self,
+        limit: int = RECORD_LIST_DEFAULT_LIMIT,
+        offset: int = 0,
+    ) -> List[RecordSummary]:
         """单次 SELECT 取出展示所需字段，避免 N+1。
-        老记录无 seq_no/display_name/duration_sec 时透传 None/0.0；profile_name
+        缺失 seq_no/display_name/duration_sec 的记录透传 None/0.0；profile_name
         优先来自数据库 profile_id 对应的当前曲线（删除后即为 None）。"""
+        try:
+            limit = int(limit)
+        except (TypeError, ValueError):
+            limit = RECORD_LIST_DEFAULT_LIMIT
+        try:
+            offset = int(offset)
+        except (TypeError, ValueError):
+            offset = 0
+        limit = max(RECORD_LIST_LIMIT_MIN, min(RECORD_LIST_LIMIT_MAX, limit))
+        offset = max(0, offset)
+
         summaries: List[RecordSummary] = []
         async with aiosqlite.connect(self.db_path) as db:
             async with db.execute(

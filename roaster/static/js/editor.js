@@ -18,6 +18,8 @@
   let selectedIndex = -1;
   let isDragging = false;
   let dragIndex = -1;
+  let activePointerId = null;
+  let activePointerTarget = null;
   let refreshRaf = null; // requestAnimationFrame 句柄
 
   // 撤销/重做系统
@@ -135,9 +137,7 @@
     chart.resize();
 
     const canvas = chart.canvas;
-    canvas.addEventListener('mousedown', onMouseDown);
-    canvas.addEventListener('mousemove', onMouseMove);
-    window.addEventListener('mouseup', onMouseUp);
+    installCanvasDragHandlers(canvas);
   }
 
   // ========== 坐标转换 ==========
@@ -170,18 +170,122 @@
 
   // ========== 交互事件 ==========
 
-  function onMouseDown(evt) {
-    const pt = getEventPoint(evt);
-    const idx = findNearestNode(pt.time, pt.val);
-    if (idx >= 0) {
-      isDragging = true;
-      dragIndex = idx;
-      selectNode(idx);
-      dragFinalize = pushHistory('move', '移动节点');
+  /**
+   * Pointer Events 统一鼠标与触摸主路径，旧浏览器才启用鼠标兜底以避免双触发。
+   */
+  function installCanvasDragHandlers(canvas) {
+    if (window.PointerEvent) {
+      canvas.addEventListener('pointerdown', onPointerDown);
+      canvas.addEventListener('pointermove', onPointerMove);
+      canvas.addEventListener('pointerup', onPointerUp);
+      canvas.addEventListener('pointercancel', onPointerCancel);
+      return;
     }
+
+    canvas.addEventListener('mousedown', onMouseDown);
+    canvas.addEventListener('mousemove', onMouseMove);
+    window.addEventListener('mouseup', onMouseUp);
   }
 
+  /**
+   * 保留右键等浏览器原生入口，避免误拖动曲线节点。
+   */
+  function isPrimaryButton(evt) {
+    return evt.button == null || evt.button === 0;
+  }
+
+  /**
+   * 指针捕获让触摸或鼠标移出画布后仍能稳定完成本次拖拽。
+   */
+  function onPointerDown(evt) {
+    if (!isPrimaryButton(evt) || evt.isPrimary === false || activePointerId !== null) return;
+
+    const pt = getEventPoint(evt);
+    const idx = findNearestNode(pt.time, pt.val);
+    if (idx < 0) return;
+
+    activePointerId = evt.pointerId;
+    activePointerTarget = evt.currentTarget;
+    if (typeof activePointerTarget.setPointerCapture === 'function') {
+      try { activePointerTarget.setPointerCapture(activePointerId); } catch (err) {}
+    }
+
+    evt.preventDefault();
+    beginNodeDrag(idx);
+  }
+
+  /**
+   * pointerId 过滤避免多指触控把当前节点拖拽交给其他手指。
+   */
+  function onPointerMove(evt) {
+    if (evt.pointerId !== activePointerId) return;
+    evt.preventDefault();
+    updateNodeDrag(evt);
+  }
+
+  /**
+   * 释放捕获可避免浏览器保留过期指针状态。
+   */
+  function onPointerUp(evt) {
+    if (evt.pointerId !== activePointerId) return;
+    evt.preventDefault();
+    finishNodeDrag();
+  }
+
+  /**
+   * 触摸被系统取消时也收束历史与 UI，避免悬挂拖拽状态。
+   */
+  function onPointerCancel(evt) {
+    if (evt.pointerId !== activePointerId) return;
+    finishNodeDrag();
+  }
+
+  /**
+   * 无 Pointer Events 环境继续支持鼠标拖拽。
+   */
+  function onMouseDown(evt) {
+    if (!isPrimaryButton(evt) || isDragging) return;
+
+    const pt = getEventPoint(evt);
+    const idx = findNearestNode(pt.time, pt.val);
+    if (idx < 0) return;
+
+    evt.preventDefault();
+    beginNodeDrag(idx);
+  }
+
+  /**
+   * 鼠标兜底沿用同一节点更新逻辑，保证行为一致。
+   */
   function onMouseMove(evt) {
+    if (!isDragging || dragIndex < 0) return;
+    evt.preventDefault();
+    updateNodeDrag(evt);
+  }
+
+  /**
+   * 鼠标兜底在 window 释放，避免拖出画布后无法结束。
+   */
+  function onMouseUp(evt) {
+    if (!isDragging) return;
+    if (evt) evt.preventDefault();
+    finishNodeDrag();
+  }
+
+  /**
+   * 将拖拽起点与历史快照绑定，避免空拖动污染撤销栈。
+   */
+  function beginNodeDrag(idx) {
+    isDragging = true;
+    dragIndex = idx;
+    selectNode(idx);
+    dragFinalize = pushHistory('move', '移动节点');
+  }
+
+  /**
+   * 单一路径处理指针与鼠标移动，避免触摸屏和桌面端量化规则分叉。
+   */
+  function updateNodeDrag(evt) {
     if (!isDragging || dragIndex < 0) return;
     const pt = getEventPoint(evt);
     const nodes = tempNodes;
@@ -231,20 +335,32 @@
     });
   }
 
-  function onMouseUp() {
-    if (isDragging) {
-      isDragging = false;
-      dragIndex = -1;
-      if (refreshRaf) {
-        cancelAnimationFrame(refreshRaf);
-        refreshRaf = null;
-      }
-      hideDragTooltip();
-      refresh(); // 统一更新 DOM
-      if (dragFinalize) {
-        dragFinalize();
-        dragFinalize = null;
-      }
+  /**
+   * 结束拖拽时统一释放指针、刷新 DOM 并落一条可撤销历史。
+   */
+  function finishNodeDrag() {
+    const pointerId = activePointerId;
+    const pointerTarget = activePointerTarget;
+    if (pointerId != null && pointerTarget && typeof pointerTarget.hasPointerCapture === 'function') {
+      try {
+        if (pointerTarget.hasPointerCapture(pointerId)) pointerTarget.releasePointerCapture(pointerId);
+      } catch (err) {}
+    }
+    activePointerId = null;
+    activePointerTarget = null;
+
+    if (!isDragging) return;
+    isDragging = false;
+    dragIndex = -1;
+    if (refreshRaf) {
+      cancelAnimationFrame(refreshRaf);
+      refreshRaf = null;
+    }
+    hideDragTooltip();
+    refresh(); // 统一更新 DOM
+    if (dragFinalize) {
+      dragFinalize();
+      dragFinalize = null;
     }
   }
 

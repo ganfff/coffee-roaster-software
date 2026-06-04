@@ -50,6 +50,10 @@ htmlcov/
 # Local Claude Code settings
 /.claude/settings.local.json
 
+# Local tool caches and settings
+/.agents/
+/.codex/
+
 # Editor and OS files
 .vscode/
 .idea/
