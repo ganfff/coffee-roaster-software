@@ -1,0 +1,23 @@
+name: roaster_app
+description: "咖啡烘焙机控制台 — Flutter 客户端（对接树莓派 FastAPI 后端）"
+publish_to: "none"
+version: 0.1.0+1
+
+environment:
+  sdk: ">=3.4.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  http: ^1.2.0
+  web_socket_channel: ^3.0.0
+  shared_preferences: ^2.2.0
+  file_picker: ^8.0.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true
