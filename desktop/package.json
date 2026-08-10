@@ -1,0 +1,15 @@
+{
+  "name": "roaster-desktop",
+  "private": true,
+  "version": "0.1.0",
+  "description": "咖啡烘焙机控制台 — Tauri 桌面壳（复用 roaster/static 前端）",
+  "scripts": {
+    "tauri": "tauri",
+    "dev": "tauri dev",
+    "build": "tauri build",
+    "build:debug": "tauri build --debug"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2"
+  }
+}

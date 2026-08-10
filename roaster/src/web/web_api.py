@@ -2,6 +2,7 @@ import json
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect, HTTPException, Response, Query
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import PlainTextResponse, JSONResponse, FileResponse
 
@@ -59,7 +60,15 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
-# 静态文件服务
+# Tauri 桌面壳 / 手机 App 等跨源前端需要 CORS 放行（局域网设备场景，放开即可）
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# 静态文件服务（/static 前缀，历史兼容）
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 
@@ -305,3 +314,8 @@ async def api_export_json(session_id: str):
     if json_data is None:
         raise HTTPException(status_code=404, detail="记录不存在")
     return JSONResponse(content=json.loads(json_data))
+
+
+# 根路径静态托管（兜底，必须最后注册）：让页面能用相对路径引用 css/js，
+# 这样同一份前端既能被 FastAPI 托管，也能直接打进 Tauri 桌面壳。
+app.mount("/", StaticFiles(directory="static"), name="root_static")

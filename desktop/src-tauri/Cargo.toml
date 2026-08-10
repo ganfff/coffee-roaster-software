@@ -1,0 +1,19 @@
+[package]
+name = "roaster-desktop"
+version = "0.1.0"
+description = "咖啡烘焙机控制台桌面端（Tauri 壳，UI 来自 roaster/static）"
+edition = "2021"
+rust-version = "1.77.2"
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+[profile.release]
+# 桌面壳对体积敏感、对极限性能不敏感
+lto = true
+codegen-units = 1

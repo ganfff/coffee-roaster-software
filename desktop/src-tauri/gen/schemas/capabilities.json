@@ -1,0 +1,1 @@
+{"default":{"identifier":"default","description":"主窗口默认能力；允许 window.open 打开新窗口（用于记录导出预览）","local":true,"windows":["main"],"permissions":["core:default","core:webview:allow-create-webview-window"]}}
