@@ -8,9 +8,7 @@ import '../theme.dart';
 
 class SettingsPage extends StatefulWidget {
   final RoasterStore store;
-  final Future<void> Function(String url) onChanged;
-  const SettingsPage(
-      {super.key, required this.store, required this.onChanged});
+  const SettingsPage({super.key, required this.store});
 
   @override
   State<SettingsPage> createState() => _SettingsPageState();
@@ -42,7 +40,7 @@ class _SettingsPageState extends State<SettingsPage> {
       return;
     }
     setState(() => _saving = true);
-    await widget.onChanged(url);
+    await widget.store.switchBackend(url);
     if (mounted) {
       setState(() => _saving = false);
       _toast('已保存并重连');
@@ -107,6 +105,32 @@ class _SettingsPageState extends State<SettingsPage> {
                   child: const Text('恢复默认'),
                 ),
               ]),
+              // 最近使用：一键切换
+              if (widget.store.backendHistory.isNotEmpty) ...[
+                const SizedBox(height: 16),
+                const Text('最近使用',
+                    style: TextStyle(
+                        color: RoastColors.textSecondary,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600)),
+                const SizedBox(height: 6),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    for (final url in widget.store.backendHistory)
+                      _HistoryChip(
+                        url: url,
+                        current: url == widget.store.api.baseUrl,
+                        onTap: () async {
+                          _controller.text = url;
+                          await widget.store.switchBackend(url);
+                          if (mounted) _toast('已切换到 $url');
+                        },
+                      ),
+                  ],
+                ),
+              ],
               const SizedBox(height: 24),
               const Text('连接状态',
                   style: TextStyle(
@@ -160,6 +184,52 @@ class _SettingsPageState extends State<SettingsPage> {
                     : RoastColors.danger,
                 fontSize: 12)),
       ]),
+    );
+  }
+}
+
+/// 最近使用地址芯片
+class _HistoryChip extends StatelessWidget {
+  final String url;
+  final bool current;
+  final VoidCallback onTap;
+  const _HistoryChip(
+      {required this.url, required this.current, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: current
+          ? RoastColors.accent.withValues(alpha: 0.2)
+          : RoastColors.card,
+      borderRadius: BorderRadius.circular(16),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
+        onTap: current ? null : onTap,
+        child: Container(
+          padding:
+              const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+                color:
+                    current ? RoastColors.accent : RoastColors.border),
+          ),
+          child: Row(mainAxisSize: MainAxisSize.min, children: [
+            if (current) ...[
+              const Icon(Icons.check,
+                  size: 13, color: RoastColors.accent),
+              const SizedBox(width: 4),
+            ],
+            Text(url,
+                style: TextStyle(
+                    color: current
+                        ? RoastColors.accent
+                        : RoastColors.textSecondary,
+                    fontSize: 12)),
+          ]),
+        ),
+      ),
     );
   }
 }

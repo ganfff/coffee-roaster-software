@@ -6,6 +6,7 @@ library;
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'api.dart';
 import 'models.dart';
@@ -13,10 +14,44 @@ import 'socket.dart';
 import 'spline.dart';
 
 class RoasterStore extends ChangeNotifier {
-  RoasterStore({required this.api, required this.socket});
+  RoasterStore({required this.api, required this.socket, SharedPreferences? prefs})
+      : _prefs = prefs;
 
   final RoasterApi api;
   final RoasterSocket socket;
+  final SharedPreferences? _prefs;
+
+  static const _kBackendUrlKey = 'backend_url';
+  static const _kBackendHistoryKey = 'backend_history';
+
+  /// 最近使用的后端地址（最新在前，最多 5 条）
+  List<String> backendHistory = [];
+
+  /// 启动时从持久化恢复历史记录
+  void initBackendConfig() {
+    backendHistory =
+        List<String>.from(_prefs?.getStringList(_kBackendHistoryKey) ?? []);
+    if (backendHistory.isEmpty) backendHistory = [api.baseUrl];
+  }
+
+  /// 切换后端：更新 api/socket、持久化、写入历史、重拉曲线
+  Future<void> switchBackend(String url) async {
+    url = url.trim();
+    while (url.endsWith('/')) {
+      url = url.substring(0, url.length - 1);
+    }
+    if (url.isEmpty) return;
+    api.baseUrl = url;
+    socket.updateBaseUrl(url);
+    backendHistory = [
+      url,
+      ...backendHistory.where((e) => e != url),
+    ].take(5).toList();
+    await _prefs?.setString(_kBackendUrlKey, url);
+    await _prefs?.setStringList(_kBackendHistoryKey, backendHistory);
+    notifyListeners();
+    await refreshProfiles();
+  }
 
   static const int maxPoints = 2400;
   static const double rorEwmaAlpha = 0.3;

@@ -175,7 +175,11 @@ class _RoastChartPainter extends CustomPainter {
     final gridPaint = Paint()
       ..color = RoastColors.grid
       ..strokeWidth = 1;
-    const textStyle = TextStyle(color: RoastColors.axisLabel, fontSize: 10);
+    const textStyle = TextStyle(
+        color: RoastColors.axisLabel,
+        fontSize: 10,
+        fontFamily: kFontFamily,
+        fontFamilyFallback: kFontFallback);
 
     // 横向网格 + 左轴温度刻度（每 50°C）
     for (int temp = 0; temp <= 300; temp += 50) {
@@ -187,7 +191,11 @@ class _RoastChartPainter extends CustomPainter {
     }
     // 右轴 ROR 刻度（约 5 格）
     final rorStep = _niceStep(t.rorMax - t.rorMin, 5);
-    const rorStyle = TextStyle(color: RoastColors.rorAxisLabel, fontSize: 10);
+    const rorStyle = TextStyle(
+        color: RoastColors.rorAxisLabel,
+        fontSize: 10,
+        fontFamily: kFontFamily,
+        fontFamilyFallback: kFontFallback);
     for (double v = (t.rorMin / rorStep).ceil() * rorStep;
         v <= t.rorMax;
         v += rorStep) {
@@ -316,7 +324,11 @@ class _RoastChartPainter extends CustomPainter {
       final tp = TextPainter(
         text: TextSpan(
             text: ann.label,
-            style: TextStyle(color: ann.color, fontSize: 11)),
+            style: TextStyle(
+                color: ann.color,
+                fontSize: 11,
+                fontFamily: kFontFamily,
+                fontFamilyFallback: kFontFallback)),
         textDirection: TextDirection.ltr,
       )..layout();
       final labelX = math.min(x + 4, t.plotRect.right - tp.width - 8);

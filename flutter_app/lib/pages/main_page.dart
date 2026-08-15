@@ -902,9 +902,118 @@ class _BottomStatusBar extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
       child: Row(children: [
         dot(store.wsConnected, 'WS'),
+        const SizedBox(width: 10),
+        _BackendQuickSwitch(store: store),
         const Spacer(),
         dot(store.status.connected, 'TC4S'),
       ]),
+    );
+  }
+}
+
+/// 后端快速切换：点击弹出历史地址菜单 + 手动输入
+class _BackendQuickSwitch extends StatelessWidget {
+  final RoasterStore store;
+  const _BackendQuickSwitch({required this.store});
+
+  String get _display {
+    final u = store.api.baseUrl;
+    return u.replaceFirst(RegExp(r'^https?://'), '');
+  }
+
+  Future<void> _customInput(BuildContext context) async {
+    final ctrl = TextEditingController(text: store.api.baseUrl);
+    final url = await showDialog<String>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: RoastColors.card,
+        title: const Text('切换后端地址', style: TextStyle(fontSize: 15)),
+        content: TextField(
+          controller: ctrl,
+          autofocus: true,
+          keyboardType: TextInputType.url,
+          style: const TextStyle(color: RoastColors.textPrimary),
+          decoration: const InputDecoration(
+            hintText: 'http://192.168.1.50:8000',
+            hintStyle: TextStyle(color: RoastColors.textMuted),
+          ),
+          onSubmitted: (v) => Navigator.pop(ctx, v.trim()),
+        ),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: const Text('取消')),
+          FilledButton(
+              onPressed: () => Navigator.pop(ctx, ctrl.text.trim()),
+              child: const Text('切换')),
+        ],
+      ),
+    );
+    if (url != null && url.isNotEmpty) {
+      await store.switchBackend(url);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return PopupMenuButton<String>(
+      tooltip: '切换后端地址',
+      color: RoastColors.card,
+      offset: const Offset(0, -8),
+      onSelected: (v) {
+        if (v == '__custom__') {
+          _customInput(context);
+        } else {
+          store.switchBackend(v);
+        }
+      },
+      itemBuilder: (context) => [
+        for (final url in store.backendHistory)
+          PopupMenuItem<String>(
+            value: url,
+            height: 36,
+            child: Row(children: [
+              Icon(
+                url == store.api.baseUrl
+                    ? Icons.radio_button_checked
+                    : Icons.radio_button_off,
+                size: 14,
+                color: url == store.api.baseUrl
+                    ? RoastColors.accent
+                    : RoastColors.textMuted,
+              ),
+              const SizedBox(width: 8),
+              Text(url, style: const TextStyle(fontSize: 12)),
+            ]),
+          ),
+        const PopupMenuDivider(),
+        const PopupMenuItem<String>(
+          value: '__custom__',
+          height: 36,
+          child: Row(children: [
+            Icon(Icons.edit, size: 14, color: RoastColors.textMuted),
+            SizedBox(width: 8),
+            Text('手动输入…', style: TextStyle(fontSize: 12)),
+          ]),
+        ),
+      ],
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+        decoration: BoxDecoration(
+          color: RoastColors.card,
+          borderRadius: BorderRadius.circular(6),
+        ),
+        child: Row(mainAxisSize: MainAxisSize.min, children: [
+          const Icon(Icons.dns_outlined,
+              size: 11, color: RoastColors.textMuted),
+          const SizedBox(width: 4),
+          Text(_display,
+              style: const TextStyle(
+                  color: RoastColors.textSecondary, fontSize: 10)),
+          const Icon(Icons.arrow_drop_down,
+              size: 12, color: RoastColors.textMuted),
+        ]),
+      ),
     );
   }
 }

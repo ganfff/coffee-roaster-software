@@ -825,7 +825,11 @@ class _ControlPointsPainter extends CustomPainter {
       final tp = TextPainter(
         text: TextSpan(
             text: text,
-            style: const TextStyle(color: Colors.white, fontSize: 11)),
+            style: const TextStyle(
+                color: Colors.white,
+                fontSize: 11,
+                fontFamily: kFontFamily,
+                fontFamilyFallback: kFontFallback)),
         textDirection: TextDirection.ltr,
       )..layout();
       var dx = dragPointer!.dx + 15;

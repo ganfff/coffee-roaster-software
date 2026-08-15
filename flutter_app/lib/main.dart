@@ -22,7 +22,8 @@ Future<void> main() async {
       prefs.getString('backend_url') ?? 'http://localhost:8000';
   final api = RoasterApi(baseUrl);
   final socket = RoasterSocket(baseUrl);
-  final store = RoasterStore(api: api, socket: socket);
+  final store = RoasterStore(api: api, socket: socket, prefs: prefs);
+  store.initBackendConfig();
   runApp(RoastApp(store: store, prefs: prefs));
 }
 
@@ -104,13 +105,6 @@ class _AppShellState extends State<AppShell> {
     });
   }
 
-  Future<void> _onBackendUrlChanged(String url) async {
-    await widget.prefs.setString('backend_url', url);
-    store.api.baseUrl = url;
-    store.socket.updateBaseUrl(url);
-    await store.refreshProfiles();
-  }
-
   @override
   void dispose() {
     _toastSub?.cancel();
@@ -124,7 +118,7 @@ class _AppShellState extends State<AppShell> {
       MainPage(store: store),
       ProfilesPage(store: store),
       RecordsPage(store: store),
-      SettingsPage(store: store, onChanged: _onBackendUrlChanged),
+      SettingsPage(store: store),
     ];
 
     return LayoutBuilder(builder: (context, constraints) {

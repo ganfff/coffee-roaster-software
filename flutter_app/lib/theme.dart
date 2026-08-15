@@ -3,6 +3,15 @@ library;
 
 import 'package:flutter/material.dart';
 
+/// 全局字体（用户指定宋体；其他平台回退到各自的宋体系/衬线字体）
+const String kFontFamily = 'SimSun';
+const List<String> kFontFallback = [
+  'NSimSun', // Windows 新宋体
+  'Songti SC', // macOS
+  'Noto Serif CJK SC', // Linux/Android 衬线
+  'Source Han Serif SC',
+];
+
 class RoastColors {
   // 背景层级
   static const bg = Color(0xFF0A0A0A);
@@ -62,6 +71,14 @@ ThemeData buildRoastTheme() {
       primary: RoastColors.accent,
       surface: RoastColors.surface,
       error: RoastColors.danger,
+    ),
+    textTheme: base.textTheme.apply(
+      fontFamily: kFontFamily,
+      fontFamilyFallback: kFontFallback,
+    ),
+    primaryTextTheme: base.primaryTextTheme.apply(
+      fontFamily: kFontFamily,
+      fontFamilyFallback: kFontFallback,
     ),
     appBarTheme: const AppBarTheme(
       backgroundColor: RoastColors.surface,
