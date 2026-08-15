@@ -65,6 +65,18 @@ flutter run -d chrome          # 也可先跑 web 版调布局
 首次启动到「设置」页填后端地址（如 `http://192.168.1.50:8000`），
 持久化存储，之后自动重连。本机调试填 `http://localhost:8000`。
 
+### 没有后端？用内置模拟后端
+
+`tools/mock_backend.js`（零依赖 Node 脚本）实现了与树莓派后端相同的
+REST + WebSocket 协议，内置热仿真模型（一阶滞后 + 噪声），
+点开始烘焙即可看到温度沿曲线爬升的完整过程：
+
+```bash
+node tools/mock_backend.js 8000   # 然后 App 设置页填 http://localhost:8000
+```
+
+支持：开始/事件/出豆自动结束/保存记录/阶段统计/超前预测回显/记录导出。
+
 ## 三、测试与静态检查
 
 ```bash
