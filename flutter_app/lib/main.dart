@@ -38,6 +38,14 @@ class RoastApp extends StatelessWidget {
       title: '咖啡烘焙机控制台',
       debugShowCheckedModeBanner: false,
       theme: buildRoastTheme(),
+      // 全局字号放大（Text 控件统一缩放；图表手绘文字在 painter 里单独放大）
+      builder: (context, child) {
+        final mq = MediaQuery.of(context);
+        return MediaQuery(
+          data: mq.copyWith(textScaler: const TextScaler.linear(kFontScale)),
+          child: child!,
+        );
+      },
       home: AppShell(store: store, prefs: prefs),
     );
   }

@@ -3,14 +3,19 @@ library;
 
 import 'package:flutter/material.dart';
 
-/// 全局字体（用户指定宋体；其他平台回退到各自的宋体系/衬线字体）
-const String kFontFamily = 'SimSun';
+/// 全局字体：英文/数字用 Times New Roman（新罗马），
+/// 中文按回退链落到宋体（SimSun）；其他平台回退到各自衬线字体。
+const String kFontFamily = 'Times New Roman';
 const List<String> kFontFallback = [
-  'NSimSun', // Windows 新宋体
+  'SimSun', // Windows 宋体（中文）
+  'NSimSun',
   'Songti SC', // macOS
   'Noto Serif CJK SC', // Linux/Android 衬线
   'Source Han Serif SC',
 ];
+
+/// 全局字号缩放（用户要求整体调大）
+const double kFontScale = 1.15;
 
 class RoastColors {
   // 背景层级

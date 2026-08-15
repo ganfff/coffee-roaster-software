@@ -23,15 +23,39 @@ class RoasterStore extends ChangeNotifier {
 
   static const _kBackendUrlKey = 'backend_url';
   static const _kBackendHistoryKey = 'backend_history';
+  static const _kRealPresetKey = 'preset_real_url';
+
+  /// 模拟器预设地址（本机 mock_backend.js）
+  static const String simulatorUrl = 'http://localhost:8000';
+
+  /// 实机预设地址（树莓派，默认识别 mDNS 主机名，可在设置页修改）
+  static const String defaultRealUrl = 'http://raspberrypi.local:8000';
 
   /// 最近使用的后端地址（最新在前，最多 5 条）
   List<String> backendHistory = [];
 
-  /// 启动时从持久化恢复历史记录
+  /// 实机预设地址（可编辑，持久化）
+  String realPresetUrl = defaultRealUrl;
+
+  /// 启动时从持久化恢复历史记录与实机预设
   void initBackendConfig() {
     backendHistory =
         List<String>.from(_prefs?.getStringList(_kBackendHistoryKey) ?? []);
     if (backendHistory.isEmpty) backendHistory = [api.baseUrl];
+    realPresetUrl =
+        _prefs?.getString(_kRealPresetKey) ?? defaultRealUrl;
+  }
+
+  /// 修改实机预设地址
+  Future<void> setRealPreset(String url) async {
+    url = url.trim();
+    while (url.endsWith('/')) {
+      url = url.substring(0, url.length - 1);
+    }
+    if (url.isEmpty) return;
+    realPresetUrl = url;
+    await _prefs?.setString(_kRealPresetKey, url);
+    notifyListeners();
   }
 
   /// 切换后端：更新 api/socket、持久化、写入历史、重拉曲线

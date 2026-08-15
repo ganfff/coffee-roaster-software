@@ -827,7 +827,7 @@ class _ControlPointsPainter extends CustomPainter {
             text: text,
             style: const TextStyle(
                 color: Colors.white,
-                fontSize: 11,
+                fontSize: 12.5,
                 fontFamily: kFontFamily,
                 fontFamilyFallback: kFontFallback)),
         textDirection: TextDirection.ltr,

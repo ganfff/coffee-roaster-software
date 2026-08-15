@@ -177,7 +177,7 @@ class _RoastChartPainter extends CustomPainter {
       ..strokeWidth = 1;
     const textStyle = TextStyle(
         color: RoastColors.axisLabel,
-        fontSize: 10,
+        fontSize: 12,
         fontFamily: kFontFamily,
         fontFamilyFallback: kFontFallback);
 
@@ -193,7 +193,7 @@ class _RoastChartPainter extends CustomPainter {
     final rorStep = _niceStep(t.rorMax - t.rorMin, 5);
     const rorStyle = TextStyle(
         color: RoastColors.rorAxisLabel,
-        fontSize: 10,
+        fontSize: 12,
         fontFamily: kFontFamily,
         fontFamilyFallback: kFontFallback);
     for (double v = (t.rorMin / rorStep).ceil() * rorStep;
@@ -326,7 +326,7 @@ class _RoastChartPainter extends CustomPainter {
             text: ann.label,
             style: TextStyle(
                 color: ann.color,
-                fontSize: 11,
+                fontSize: 12.5,
                 fontFamily: kFontFamily,
                 fontFamilyFallback: kFontFallback)),
         textDirection: TextDirection.ltr,

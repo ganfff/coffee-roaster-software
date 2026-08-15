@@ -911,7 +911,7 @@ class _BottomStatusBar extends StatelessWidget {
   }
 }
 
-/// 后端快速切换：点击弹出历史地址菜单 + 手动输入
+/// 后端快速切换：点击弹出预设/历史菜单 + 手动输入
 class _BackendQuickSwitch extends StatelessWidget {
   final RoasterStore store;
   const _BackendQuickSwitch({required this.store});
@@ -919,6 +919,40 @@ class _BackendQuickSwitch extends StatelessWidget {
   String get _display {
     final u = store.api.baseUrl;
     return u.replaceFirst(RegExp(r'^https?://'), '');
+  }
+
+  PopupMenuItem<String> _presetItem(String value, String title,
+      String subtitle, String url, IconData icon) {
+    final current = store.api.baseUrl == url;
+    return PopupMenuItem<String>(
+      value: value,
+      height: 44,
+      child: Row(children: [
+        Icon(icon,
+            size: 16,
+            color: current ? RoastColors.accent : RoastColors.textMuted),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(title,
+                    style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: current
+                            ? RoastColors.accent
+                            : RoastColors.textPrimary)),
+                Text(subtitle,
+                    style: const TextStyle(
+                        fontSize: 9, color: RoastColors.textMuted)),
+              ]),
+        ),
+        if (current)
+          const Icon(Icons.check, size: 14, color: RoastColors.accent),
+      ]),
+    );
   }
 
   Future<void> _customInput(BuildContext context) async {
@@ -963,11 +997,22 @@ class _BackendQuickSwitch extends StatelessWidget {
       onSelected: (v) {
         if (v == '__custom__') {
           _customInput(context);
+        } else if (v == '__sim__') {
+          store.switchBackend(RoasterStore.simulatorUrl);
+        } else if (v == '__real__') {
+          store.switchBackend(store.realPresetUrl);
         } else {
           store.switchBackend(v);
         }
       },
       itemBuilder: (context) => [
+        // 两个一键预设
+        _presetItem('__sim__', '模拟器', '本机模拟后端 · 无需硬件',
+            RoasterStore.simulatorUrl, Icons.computer),
+        _presetItem('__real__', '实机', '树莓派 · 真实温控器',
+            store.realPresetUrl, Icons.precision_manufacturing),
+        if (store.backendHistory.isNotEmpty) const PopupMenuDivider(),
+        // 历史记录
         for (final url in store.backendHistory)
           PopupMenuItem<String>(
             value: url,

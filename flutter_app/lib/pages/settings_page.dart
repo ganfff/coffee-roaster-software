@@ -16,17 +16,21 @@ class SettingsPage extends StatefulWidget {
 
 class _SettingsPageState extends State<SettingsPage> {
   late final TextEditingController _controller;
+  late final TextEditingController _realPresetController;
   bool _saving = false;
 
   @override
   void initState() {
     super.initState();
     _controller = TextEditingController(text: widget.store.api.baseUrl);
+    _realPresetController =
+        TextEditingController(text: widget.store.realPresetUrl);
   }
 
   @override
   void dispose() {
     _controller.dispose();
+    _realPresetController.dispose();
     super.dispose();
   }
 
@@ -68,12 +72,80 @@ class _SettingsPageState extends State<SettingsPage> {
                       color: RoastColors.textPrimary,
                       fontSize: 16,
                       fontWeight: FontWeight.w700)),
+              const SizedBox(height: 10),
+              // 两个一键预设
+              Row(children: [
+                Expanded(
+                  child: _PresetCard(
+                    icon: Icons.computer,
+                    title: '模拟器',
+                    subtitle: '本机模拟后端 · 无需硬件',
+                    url: RoasterStore.simulatorUrl,
+                    current: widget.store.api.baseUrl ==
+                        RoasterStore.simulatorUrl,
+                    onTap: () =>
+                        widget.store.switchBackend(RoasterStore.simulatorUrl),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: _PresetCard(
+                    icon: Icons.precision_manufacturing,
+                    title: '实机',
+                    subtitle: '树莓派 · 真实温控器',
+                    url: widget.store.realPresetUrl,
+                    current: widget.store.api.baseUrl ==
+                        widget.store.realPresetUrl,
+                    onTap: () => widget.store
+                        .switchBackend(widget.store.realPresetUrl),
+                  ),
+                ),
+              ]),
+              const SizedBox(height: 10),
+              // 实机地址修改
+              Row(children: [
+                Expanded(
+                  child: TextField(
+                    controller: _realPresetController,
+                    style: const TextStyle(
+                        color: RoastColors.textPrimary, fontSize: 13),
+                    decoration: InputDecoration(
+                      labelText: '实机地址（树莓派 IP）',
+                      labelStyle:
+                          const TextStyle(color: RoastColors.textMuted),
+                      isDense: true,
+                      filled: true,
+                      fillColor: RoastColors.card,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide:
+                            const BorderSide(color: RoastColors.border),
+                      ),
+                    ),
+                    keyboardType: TextInputType.url,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                OutlinedButton(
+                  onPressed: () async {
+                    await widget.store
+                        .setRealPreset(_realPresetController.text);
+                    if (mounted) _toast('实机预设已保存');
+                  },
+                  child: const Text('保存预设'),
+                ),
+              ]),
+              const Divider(height: 24),
+              const Text('手动指定',
+                  style: TextStyle(
+                      color: RoastColors.textSecondary,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600)),
               const SizedBox(height: 6),
-              const Text('烘焙机后端（FastAPI）地址。本机调试填 localhost；'
-                  '连接局域网树莓派填其 IP，例如 http://192.168.1.50:8000',
+              const Text('烘焙机后端（FastAPI）地址，例如 http://192.168.1.50:8000',
                   style: TextStyle(
                       color: RoastColors.textMuted, fontSize: 12)),
-              const SizedBox(height: 12),
+              const SizedBox(height: 8),
               TextField(
                 controller: _controller,
                 style: const TextStyle(color: RoastColors.textPrimary),
@@ -100,7 +172,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 const SizedBox(width: 12),
                 TextButton(
                   onPressed: () {
-                    _controller.text = 'http://localhost:8000';
+                    _controller.text = RoasterStore.simulatorUrl;
                   },
                   child: const Text('恢复默认'),
                 ),
@@ -184,6 +256,80 @@ class _SettingsPageState extends State<SettingsPage> {
                     : RoastColors.danger,
                 fontSize: 12)),
       ]),
+    );
+  }
+}
+
+/// 后端预设选择卡片（模拟器 / 实机）
+class _PresetCard extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final String url;
+  final bool current;
+  final VoidCallback onTap;
+
+  const _PresetCard({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.url,
+    required this.current,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: current
+          ? RoastColors.accent.withValues(alpha: 0.12)
+          : RoastColors.card,
+      borderRadius: BorderRadius.circular(10),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(10),
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(
+              color: current ? RoastColors.accent : RoastColors.border,
+              width: current ? 1.5 : 1,
+            ),
+          ),
+          child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(children: [
+                  Icon(icon,
+                      size: 18,
+                      color: current
+                          ? RoastColors.accent
+                          : RoastColors.textSecondary),
+                  const SizedBox(width: 6),
+                  Text(title,
+                      style: TextStyle(
+                          color: current
+                              ? RoastColors.accent
+                              : RoastColors.textPrimary,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700)),
+                  const Spacer(),
+                  if (current)
+                    const Icon(Icons.check_circle,
+                        size: 16, color: RoastColors.accent),
+                ]),
+                const SizedBox(height: 4),
+                Text(subtitle,
+                    style: const TextStyle(
+                        color: RoastColors.textMuted, fontSize: 10)),
+                Text(url,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                        color: RoastColors.textSecondary, fontSize: 10)),
+              ]),
+        ),
+      ),
     );
   }
 }
