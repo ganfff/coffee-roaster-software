@@ -260,6 +260,23 @@ class _RecordDetailViewState extends State<_RecordDetailView> {
 
     // 统计信息（对齐网页版 detail-stats）
     final stats = <String>['总时长: ${formatTime(record.duration)}'];
+    // 回温点：入豆后前 120 秒内 PV 最低点（Artisan TP）
+    if (record.data.isNotEmpty) {
+      double? minPv;
+      double? minT;
+      for (final d in record.data) {
+        if (d.isNotEmpty && d[0] <= 120) {
+          if (minPv == null || d[1] < minPv) {
+            minPv = d[1];
+            minT = d[0];
+          }
+        }
+      }
+      if (minPv != null && minT != null) {
+        stats.add(
+            '回温点: ${formatTime(minT)} @ ${minPv.toStringAsFixed(1)}°C');
+      }
+    }
     final charge = find('charge');
     final firstCrack = find('first_crack');
     final drop = find('drop');

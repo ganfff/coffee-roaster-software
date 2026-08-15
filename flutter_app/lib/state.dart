@@ -6,6 +6,7 @@ library;
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'api.dart';
@@ -103,7 +104,51 @@ class RoasterStore extends ChangeNotifier {
     'profile': true,
     'ror': true,
     'rorPreview': true,
+    'projection': true,
   };
+
+  // ---- Artisan 风格辅助：回温点 / 目标偏差 / 温度预测 / 接近提醒 ----
+  /// 回温点（Turning Point）：入豆后 PV 探底回升的最低点，回升 2°C 后锁定
+  double? tpTime;
+  double? tpTemp;
+  double? _minPv;
+  double? _minPvTime;
+  bool _endApproachAlerted = false;
+
+  /// 当前 PV 与目标曲线在同时刻的偏差（°C，正=超前）
+  double? get targetDelta {
+    final p = displayProfile;
+    final pv = status.pv;
+    if (status.state != 'ROASTING' ||
+        p == null ||
+        p.nodes.isEmpty ||
+        pv == null) {
+      return null;
+    }
+    return pv - getSplineTemp(p.nodes, status.elapsed);
+  }
+
+  /// 按当前 ROR 线性预测 60 秒后的温度（Artisan projection）
+  double? get projectedPv60 {
+    final pv = status.pv;
+    if (status.state != 'ROASTING' || pv == null) return null;
+    return pv + status.ror; // ror 单位 °C/min → 60s 增量即数值本身
+  }
+
+  /// 预计到达结束温度的剩余秒数（ROR 过低无法估计时返回 null）
+  double? get etaToEndTempSec {
+    final p = displayProfile;
+    final pv = status.pv;
+    if (status.state != 'ROASTING' ||
+        p == null ||
+        p.endTemp <= 0 ||
+        pv == null) {
+      return null;
+    }
+    if (pv >= p.endTemp) return 0;
+    if (status.ror < 0.5) return null;
+    return (p.endTemp - pv) / status.ror * 60;
+  }
 
   // ---- 曲线选择（对齐 app.js: currentProfile/activeRoastProfile）----
   Map<String, RoastProfile> profileMap = {};
@@ -186,6 +231,12 @@ class RoasterStore extends ChangeNotifier {
         svSeries = [];
         rorSeries = [];
         _rorEwma = 0;
+        // 每锅重置回温点与接近提醒
+        tpTime = null;
+        tpTemp = null;
+        _minPv = null;
+        _minPvTime = null;
+        _endApproachAlerted = false;
       }
       _lastState = msg.state;
 
@@ -195,6 +246,33 @@ class RoasterStore extends ChangeNotifier {
         _appendPoint(svSeries, t, msg.sv);
         _rorEwma = rorEwmaAlpha * msg.ror + (1 - rorEwmaAlpha) * _rorEwma;
         _appendPoint(rorSeries, t, _rorEwma);
+
+        // 回温点检测：追踪 PV 最低点，回升 ≥2°C 锁定（对齐 Artisan TP）
+        final pvNow = msg.pv;
+        if (pvNow != null) {
+          if (_minPv == null || pvNow < _minPv!) {
+            _minPv = pvNow;
+            _minPvTime = t;
+          } else if (tpTime == null &&
+              pvNow - _minPv! >= 2.0 &&
+              (_minPvTime ?? 0) >= 5) {
+            tpTime = _minPvTime;
+            tpTemp = _minPv;
+          }
+          // 接近结束温度提醒（每锅一次，提前 10°C）
+          if (!_endApproachAlerted) {
+            final p = displayProfile;
+            if (p != null &&
+                p.endTemp > 0 &&
+                pvNow >= p.endTemp - 10 &&
+                pvNow < p.endTemp) {
+              _endApproachAlerted = true;
+              _toast('接近结束温度 ${p.endTemp.toStringAsFixed(0)}°C'
+                  '（当前 ${pvNow.toStringAsFixed(1)}°C）');
+              SystemSound.play(SystemSoundType.alert);
+            }
+          }
+        }
       } else if (msg.state == 'COOLING') {
         // COOLING 只定格温度与 SV，不再追加 ROR
         final t = msg.elapsed.floorToDouble().clamp(0.0, double.infinity).toDouble();
@@ -303,7 +381,7 @@ class RoasterStore extends ChangeNotifier {
       profileMap[backendId] = profile;
       _showProfileCurve(profile, 'active');
       notifyListeners();
-    });
+    }).catchError((_) => null);
   }
 
   void _restoreProfileCurveForState(String state) {

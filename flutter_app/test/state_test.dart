@@ -87,4 +87,41 @@ void main() {
     expect(store.status.state, 'IDLE');
     expect(store.pvSeries, isEmpty);
   });
+
+  group('回温点（TP）自动检测', () {
+    test('PV 探底回升 2°C 后锁定最低点', () {
+      final store = _makeStore();
+      // 入豆后 PV 下探（模拟室温豆吸热）
+      store.handleStatus(_status(pv: 100, sv: 100, elapsed: 0));
+      store.handleStatus(_status(pv: 92, sv: 100, elapsed: 10));
+      store.handleStatus(_status(pv: 88, sv: 100, elapsed: 20));
+      store.handleStatus(_status(pv: 85.5, sv: 100, elapsed: 30)); // 最低点
+      store.handleStatus(_status(pv: 86.0, sv: 100, elapsed: 31));
+      expect(store.tpTime, isNull); // 回升不足 2°C，未锁定
+      store.handleStatus(_status(pv: 87.8, sv: 100, elapsed: 35));
+      expect(store.tpTemp, 85.5); // 回升 2.3°C → 锁定
+      expect(store.tpTime, 30);
+    });
+
+    test('新一锅重置 TP', () {
+      final store = _makeStore();
+      store.handleStatus(_status(pv: 90, sv: 100, elapsed: 10));
+      store.handleStatus(_status(pv: 93, sv: 100, elapsed: 20));
+      expect(store.tpTemp, 90);
+      store.handleStatus(_status(state: 'IDLE', pv: 50, elapsed: 0));
+      expect(store.tpTime, isNull);
+      expect(store.tpTemp, isNull);
+    });
+  });
+
+  test('接近结束温度时每锅只提醒一次', () async {
+    final store = _makeStore();
+    final toasts = <String>[];
+    final sub = store.toasts.listen(toasts.add);
+    // 无活跃曲线（displayProfile 为 null）时不提醒——不报错即可
+    store.handleStatus(_status(pv: 200, sv: 205, elapsed: 300));
+    store.handleStatus(_status(pv: 201, sv: 205, elapsed: 301));
+    expect(toasts.where((t) => t.contains('接近结束温度')), isEmpty);
+    await sub.cancel();
+  });
 }

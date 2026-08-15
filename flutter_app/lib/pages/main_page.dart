@@ -104,7 +104,7 @@ class _MainPageState extends State<MainPage> {
               child: Column(
                 children: [
                   _TopBar(store: store, clockText: _clockText),
-                  _EventTempsBar(status: st),
+                  _EventTempsBar(status: st, store: store),
                   _EventActionsBar(store: store),
                   _SegmentBar(status: st),
                   Expanded(
@@ -164,34 +164,76 @@ class _TopBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final st = store.status;
-    return Container(
-      color: RoastColors.surface,
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      child: Row(children: [
-        const Text("Ganf's咖啡烘焙机",
-            style: TextStyle(
-                color: RoastColors.textPrimary,
-                fontSize: 15,
-                fontWeight: FontWeight.w600)),
-        const SizedBox(width: 8),
-        _StateBadge(state: st.state, label: st.stateLabel),
-        const Spacer(),
-        _Readout('温度 (°C)', st.pv?.toStringAsFixed(1) ?? '--', RoastColors.pv),
-        _Readout(
-            '设定温度', st.sv?.toStringAsFixed(1) ?? '--', RoastColors.sv),
-        _Readout('升温率 (°C/min)', st.ror.toStringAsFixed(1), RoastColors.ror),
-        const SizedBox(width: 10),
-        Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
-          Text(formatTime(st.elapsed),
-              style: const TextStyle(
-                  color: RoastColors.textPrimary,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                  fontFeatures: [])),
-          Text(clockText,
-              style: const TextStyle(
-                  color: RoastColors.textMuted, fontSize: 11)),
+    return LayoutBuilder(builder: (context, c) {
+      final narrow = c.maxWidth < 640;
+      return Container(
+        color: RoastColors.surface,
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        child: Row(children: [
+          if (!narrow) ...[
+            const Text("Ganf's咖啡烘焙机",
+                style: TextStyle(
+                    color: RoastColors.textPrimary,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600)),
+            const SizedBox(width: 8),
+          ],
+          _StateBadge(state: st.state, label: st.stateLabel),
+          const Spacer(),
+          _Readout('温度 (°C)', st.pv?.toStringAsFixed(1) ?? '--',
+              RoastColors.pv),
+          _Readout(
+              '设定温度', st.sv?.toStringAsFixed(1) ?? '--', RoastColors.sv),
+          _Readout(
+              '升温率 (°C/min)', st.ror.toStringAsFixed(1), RoastColors.ror),
+          _DeltaReadout(store: store),
+          const SizedBox(width: 10),
+          Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
+            Text(formatTime(st.elapsed),
+                style: const TextStyle(
+                    color: RoastColors.textPrimary,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600)),
+            Text(clockText,
+                style: const TextStyle(
+                    color: RoastColors.textMuted, fontSize: 11)),
+          ]),
         ]),
+      );
+    });
+  }
+}
+
+/// 目标偏差读数（Artisan 风格 ahead/behind）
+class _DeltaReadout extends StatelessWidget {
+  final RoasterStore store;
+  const _DeltaReadout({required this.store});
+
+  @override
+  Widget build(BuildContext context) {
+    final d = store.targetDelta;
+    String text;
+    Color color;
+    if (d == null) {
+      text = '--';
+      color = RoastColors.textMuted;
+    } else {
+      text = '${d >= 0 ? '+' : ''}${d.toStringAsFixed(1)}°C';
+      if (d.abs() <= 2) {
+        color = RoastColors.development; // 贴着曲线走：绿
+      } else {
+        color = d > 0 ? RoastColors.dropOrange : RoastColors.drying;
+      }
+    }
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8),
+      child: Column(children: [
+        Text(text,
+            style: TextStyle(
+                color: color, fontSize: 20, fontWeight: FontWeight.w700)),
+        const Text('目标偏差',
+            style:
+                TextStyle(color: RoastColors.textMuted, fontSize: 10)),
       ]),
     );
   }
@@ -250,7 +292,8 @@ class _Readout extends StatelessWidget {
 
 class _EventTempsBar extends StatelessWidget {
   final RoasterStatus status;
-  const _EventTempsBar({required this.status});
+  final RoasterStore store;
+  const _EventTempsBar({required this.status, required this.store});
 
   @override
   Widget build(BuildContext context) {
@@ -279,16 +322,24 @@ class _EventTempsBar extends StatelessWidget {
           child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
             Text('$label ',
                 style: TextStyle(color: color, fontSize: 11)),
-            Text(value,
-                style: const TextStyle(
-                    color: RoastColors.textPrimary, fontSize: 11)),
+            Flexible(
+              child: Text(value,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                      color: RoastColors.textPrimary, fontSize: 11)),
+            ),
           ]),
         );
+
+    final tpText = (store.tpTime != null && store.tpTemp != null)
+        ? '${formatTimeShort(store.tpTime!)} @ ${store.tpTemp!.toStringAsFixed(1)}°C'
+        : '--';
 
     return Container(
       color: RoastColors.surface,
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(children: [
+        item('回温点', tpText, const Color(0xFF26A69A)),
         item('转黄', fmt(find('yellowing')), RoastColors.maillard),
         item('一爆', fmt(find('first_crack')), RoastColors.danger),
         item('发展期', devInfo, RoastColors.development),
@@ -477,6 +528,15 @@ class _ChartArea extends StatelessWidget {
   final RoasterStore store;
   const _ChartArea({required this.store});
 
+  /// 预测线两端点：最新 PV 点 → 60 秒后（按平滑 ROR 外推）
+  static List<ChartPoint> _projectionPoints(
+      RoasterStore store, RoasterStatus st) {
+    final lastPv = store.pvSeries.last;
+    final r = store.rorSeries.isNotEmpty ? store.rorSeries.last.y : st.ror;
+    final projEnd = (lastPv.y + r).clamp(0.0, 300.0);
+    return [lastPv, ChartPoint(lastPv.x + 60, projEnd)];
+  }
+
   @override
   Widget build(BuildContext context) {
     final st = store.status;
@@ -530,11 +590,24 @@ class _ChartArea extends StatelessWidget {
             width: 1.5,
             axis: 1,
             visible: vis['rorPreview'] ?? true),
+        // Artisan 风格：按当前 ROR 线性外推 60 秒的温度预测线
+        if (st.state == 'ROASTING' && store.pvSeries.isNotEmpty)
+          ChartSeriesSpec(
+            label: '预测',
+            points: _projectionPoints(store, st),
+            color: RoastColors.pv.withValues(alpha: 0.45),
+            dashed: true,
+            width: 1.5,
+            visible: vis['projection'] ?? true,
+          ),
       ];
       annotations = [
         for (final e in st.events)
           EventAnnotation(e.time, e.label,
               RoastColors.event[e.type] ?? RoastColors.maillard),
+        if (store.tpTime != null)
+          EventAnnotation(
+              store.tpTime!, '回温点', const Color(0xFF26A69A)),
       ];
     }
 
@@ -567,6 +640,7 @@ class _ChartArea extends StatelessWidget {
                   (key: 'profile', label: profileLabel, color: RoastColors.profile, visible: store.legendVisible['profile'] ?? true),
                   (key: 'ror', label: 'ROR', color: RoastColors.ror, visible: store.legendVisible['ror'] ?? true),
                   (key: 'rorPreview', label: 'ROR 预览', color: RoastColors.rorPreview, visible: store.legendVisible['rorPreview'] ?? true),
+                  (key: 'projection', label: '预测', color: RoastColors.pv, visible: store.legendVisible['projection'] ?? true),
                 ],
                 onToggle: store.toggleLegend,
               ),
@@ -774,6 +848,24 @@ class _ControlPanel extends StatelessWidget {
                 style: TextStyle(color: RoastColors.drying, fontSize: 12)),
           ),
         const SizedBox(height: 16),
+
+        // 预计到达结束温度（Artisan 风格 ETA）
+        if (store.etaToEndTempSec != null && store.etaToEndTempSec! > 0) ...[
+          Row(children: [
+            const Icon(Icons.timer_outlined,
+                size: 14, color: RoastColors.textMuted),
+            const SizedBox(width: 6),
+            Expanded(
+              child: Text(
+                '预计 ${formatTimeShort(store.etaToEndTempSec!)} 后到达结束温度'
+                ' ${store.displayProfile?.endTemp.toStringAsFixed(0) ?? '--'}°C',
+                style: const TextStyle(
+                    color: RoastColors.textSecondary, fontSize: 12),
+              ),
+            ),
+          ]),
+          const SizedBox(height: 12),
+        ],
 
         // 超前预测阶段设置
         const Text('超前预测阶段设置',
