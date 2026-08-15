@@ -12,6 +12,21 @@ RoasterStore _makeStore() => RoasterStore(
       socket: RoasterSocket('http://localhost:8000'),
     );
 
+/// 捕获 sendCmd 的测试仓库
+class _TestStore extends RoasterStore {
+  final sent = <Map<String, dynamic>>[];
+  _TestStore()
+      : super(
+          api: RoasterApi('http://localhost:8000'),
+          socket: RoasterSocket('http://localhost:8000'),
+        );
+  @override
+  bool sendCmd(String cmd, [Map<String, dynamic> payload = const {}]) {
+    sent.add({'cmd': cmd, ...payload});
+    return true;
+  }
+}
+
 RoasterStatus _status({
   String state = 'ROASTING',
   double? pv,
@@ -19,6 +34,7 @@ RoasterStatus _status({
   double ror = 0,
   double elapsed = 0,
   String? sessionId,
+  List<RoastEvent> events = const [],
 }) =>
     RoasterStatus(
       state: state,
@@ -27,10 +43,12 @@ RoasterStatus _status({
       ror: ror,
       elapsed: elapsed,
       sessionId: sessionId,
+      events: events,
       connected: true,
     );
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
   test('ROASTING 中追加实时点；同秒覆盖最新值', () {
     final store = _makeStore();
     store.handleStatus(_status(pv: 100, sv: 100, ror: 10, elapsed: 5));
@@ -123,5 +141,100 @@ void main() {
     store.handleStatus(_status(pv: 201, sv: 205, elapsed: 301));
     expect(toasts.where((t) => t.contains('接近结束温度')), isEmpty);
     await sub.cancel();
+  });
+
+  test('TP 两分钟兜底：无下探也锁定最低点（Artisan TP_max_roasttime）', () {
+    final store = _makeStore();
+    store.handleStatus(_status(pv: 100, sv: 100, elapsed: 0));
+    for (var i = 1; i <= 125; i += 5) {
+      store.handleStatus(
+          _status(pv: 100 + i * 0.4, sv: 120, elapsed: i.toDouble()));
+    }
+    // PV 一路爬升无 2°C 回升信号，但超过 120s → 按最低点兜底锁定
+    expect(store.tpTime, 0);
+    expect(store.tpTemp, 100);
+  });
+
+  group('自定义报警', () {
+    test('温度报警触发一次，新一锅重置', () async {
+      final store = _TestStore();
+      final toasts = <String>[];
+      final sub = store.toasts.listen(toasts.add);
+      store.alarms = [RoastAlarm(value: 150, note: '检查脱水')];
+
+      store.handleStatus(_status(pv: 149, sv: 150, elapsed: 100));
+      await Future.delayed(Duration.zero);
+      expect(toasts, isEmpty);
+      store.handleStatus(_status(pv: 151, sv: 150, elapsed: 105));
+      store.handleStatus(_status(pv: 152, sv: 150, elapsed: 110));
+      await Future.delayed(Duration.zero);
+      expect(toasts.where((t) => t.contains('检查脱水')).length, 1);
+
+      // 新一锅报警重置
+      store.handleStatus(_status(state: 'IDLE', pv: 50, elapsed: 0));
+      store.handleStatus(_status(pv: 151, sv: 160, elapsed: 100));
+      await Future.delayed(Duration.zero);
+      expect(toasts.where((t) => t.contains('检查脱水')).length, 2);
+      await sub.cancel();
+    });
+
+    test('时间报警按 elapsed 触发', () async {
+      final store = _TestStore();
+      final toasts = <String>[];
+      final sub = store.toasts.listen(toasts.add);
+      store.alarms = [
+        RoastAlarm(type: AlarmType.time, value: 300, note: '五分钟了')
+      ];
+      store.handleStatus(_status(pv: 150, sv: 150, elapsed: 299));
+      await Future.delayed(Duration.zero);
+      expect(toasts, isEmpty);
+      store.handleStatus(_status(pv: 152, sv: 150, elapsed: 301));
+      await Future.delayed(Duration.zero);
+      expect(toasts.where((t) => t.contains('五分钟了')).length, 1);
+      await sub.cancel();
+    });
+
+    test('停用的报警不触发', () async {
+      final store = _TestStore();
+      final toasts = <String>[];
+      final sub = store.toasts.listen(toasts.add);
+      store.alarms = [RoastAlarm(enabled: false, value: 100, note: '关')];
+      store.handleStatus(_status(pv: 200, sv: 200, elapsed: 500));
+      await Future.delayed(Duration.zero);
+      expect(toasts, isEmpty);
+      await sub.cancel();
+    });
+  });
+
+  group('自动事件标记（autoDRY/autoFCs）', () {
+    test('越过阈值自动下发事件，且不重复', () {
+      final store = _TestStore();
+      store.autoDryEnabled = true;
+      store.autoDryTemp = 150;
+
+      store.handleStatus(_status(pv: 149, sv: 150, elapsed: 100));
+      expect(store.sent, isEmpty);
+      store.handleStatus(_status(pv: 151, sv: 155, elapsed: 105));
+      expect(
+          store.sent
+              .where((c) => c['cmd'] == 'event' && c['type'] == 'yellowing')
+              .length,
+          1);
+      // 后端已记录事件后不再重复下发
+      store.handleStatus(_status(pv: 152, sv: 156, elapsed: 110, events: [
+        RoastEvent(time: 105, type: 'yellowing', temperature: 151),
+      ]));
+      expect(
+          store.sent
+              .where((c) => c['cmd'] == 'event' && c['type'] == 'yellowing')
+              .length,
+          1);
+    });
+
+    test('默认关闭时不自动标记', () {
+      final store = _TestStore();
+      store.handleStatus(_status(pv: 210, sv: 210, elapsed: 400));
+      expect(store.sent, isEmpty);
+    });
   });
 }

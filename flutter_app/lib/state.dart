@@ -4,6 +4,7 @@
 library;
 
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
@@ -25,6 +26,21 @@ class RoasterStore extends ChangeNotifier {
   static const _kBackendUrlKey = 'backend_url';
   static const _kBackendHistoryKey = 'backend_history';
   static const _kRealPresetKey = 'preset_real_url';
+  static const _kAutoDryEnabledKey = 'auto_dry_enabled';
+  static const _kAutoDryTempKey = 'auto_dry_temp';
+  static const _kAutoFCsEnabledKey = 'auto_fcs_enabled';
+  static const _kAutoFCsTempKey = 'auto_fcs_temp';
+  static const _kAlarmsKey = 'alarms_json';
+
+  // ---- 自动事件标记（对齐 Artisan autoDRY / autoFCs，默认关）----
+  bool autoDryEnabled = false;
+  double autoDryTemp = 150;
+  bool autoFCsEnabled = false;
+  double autoFCsTemp = 200;
+
+  // ---- 自定义报警（Artisan alarms 精简版）----
+  List<RoastAlarm> alarms = [];
+  final Set<int> _firedAlarms = {};
 
   /// 模拟器预设地址（本机 mock_backend.js）
   static const String simulatorUrl = 'http://localhost:8000';
@@ -45,6 +61,43 @@ class RoasterStore extends ChangeNotifier {
     if (backendHistory.isEmpty) backendHistory = [api.baseUrl];
     realPresetUrl =
         _prefs?.getString(_kRealPresetKey) ?? defaultRealUrl;
+    autoDryEnabled = _prefs?.getBool(_kAutoDryEnabledKey) ?? false;
+    autoDryTemp = _prefs?.getDouble(_kAutoDryTempKey) ?? 150;
+    autoFCsEnabled = _prefs?.getBool(_kAutoFCsEnabledKey) ?? false;
+    autoFCsTemp = _prefs?.getDouble(_kAutoFCsTempKey) ?? 200;
+    final alarmsJson = _prefs?.getString(_kAlarmsKey);
+    if (alarmsJson != null && alarmsJson.isNotEmpty) {
+      try {
+        alarms = (jsonDecode(alarmsJson) as List)
+            .map((e) => RoastAlarm.fromJson(Map<String, dynamic>.from(e as Map)))
+            .toList();
+      } catch (_) {
+        alarms = [];
+      }
+    }
+  }
+
+  Future<void> setAutoDry(bool enabled, double temp) async {
+    autoDryEnabled = enabled;
+    autoDryTemp = temp;
+    await _prefs?.setBool(_kAutoDryEnabledKey, enabled);
+    await _prefs?.setDouble(_kAutoDryTempKey, temp);
+    notifyListeners();
+  }
+
+  Future<void> setAutoFCs(bool enabled, double temp) async {
+    autoFCsEnabled = enabled;
+    autoFCsTemp = temp;
+    await _prefs?.setBool(_kAutoFCsEnabledKey, enabled);
+    await _prefs?.setDouble(_kAutoFCsTempKey, temp);
+    notifyListeners();
+  }
+
+  Future<void> setAlarms(List<RoastAlarm> list) async {
+    alarms = list;
+    await _prefs?.setString(
+        _kAlarmsKey, jsonEncode(alarms.map((a) => a.toJson()).toList()));
+    notifyListeners();
   }
 
   /// 修改实机预设地址
@@ -237,6 +290,7 @@ class RoasterStore extends ChangeNotifier {
         _minPv = null;
         _minPvTime = null;
         _endApproachAlerted = false;
+        _firedAlarms.clear();
       }
       _lastState = msg.state;
 
@@ -247,7 +301,6 @@ class RoasterStore extends ChangeNotifier {
         _rorEwma = rorEwmaAlpha * msg.ror + (1 - rorEwmaAlpha) * _rorEwma;
         _appendPoint(rorSeries, t, _rorEwma);
 
-        // 回温点检测：追踪 PV 最低点，回升 ≥2°C 锁定（对齐 Artisan TP）
         final pvNow = msg.pv;
         if (pvNow != null) {
           if (_minPv == null || pvNow < _minPv!) {
@@ -256,6 +309,11 @@ class RoasterStore extends ChangeNotifier {
           } else if (tpTime == null &&
               pvNow - _minPv! >= 2.0 &&
               (_minPvTime ?? 0) >= 5) {
+            tpTime = _minPvTime;
+            tpTemp = _minPv;
+          }
+          // TP 两分钟兜底（对齐 Artisan TP_max_roasttime）
+          if (tpTime == null && _minPv != null && t >= 120) {
             tpTime = _minPvTime;
             tpTemp = _minPv;
           }
@@ -269,6 +327,35 @@ class RoasterStore extends ChangeNotifier {
               _endApproachAlerted = true;
               _toast('接近结束温度 ${p.endTemp.toStringAsFixed(0)}°C'
                   '（当前 ${pvNow.toStringAsFixed(1)}°C）');
+              SystemSound.play(SystemSoundType.alert);
+            }
+          }
+          // 自动事件标记（Artisan autoDRY/autoFCs）
+          if (autoDryEnabled &&
+              pvNow >= autoDryTemp &&
+              !msg.events.any((e) => e.type == 'yellowing')) {
+            sendCmd('event', {'type': 'yellowing'});
+          }
+          if (autoFCsEnabled &&
+              pvNow >= autoFCsTemp &&
+              !msg.events.any((e) => e.type == 'first_crack')) {
+            sendCmd('event', {'type': 'first_crack'});
+          }
+          // 自定义报警（每锅每条只触发一次）
+          for (int i = 0; i < alarms.length; i++) {
+            if (_firedAlarms.contains(i)) continue;
+            final a = alarms[i];
+            if (!a.enabled) continue;
+            final hit = a.type == AlarmType.temp
+                ? pvNow >= a.value
+                : msg.elapsed >= a.value;
+            if (hit) {
+              _firedAlarms.add(i);
+              _toast(a.note.isNotEmpty
+                  ? a.note
+                  : (a.type == AlarmType.temp
+                      ? '报警：温度到达 ${a.value.toStringAsFixed(0)}°C'
+                      : '报警：已烘焙 ${formatTime(a.value)}'));
               SystemSound.play(SystemSoundType.alert);
             }
           }

@@ -73,6 +73,39 @@ class RoastEvent {
   String get label => labels[type] ?? type;
 }
 
+/// 自定义报警（参考 Artisan alarms 的精简版）
+enum AlarmType { temp, time }
+
+class RoastAlarm {
+  bool enabled;
+  AlarmType type;
+
+  /// temp 类型为温度 °C；time 类型为烘焙秒数
+  double value;
+  String note;
+
+  RoastAlarm({
+    this.enabled = true,
+    this.type = AlarmType.temp,
+    this.value = 150,
+    this.note = '',
+  });
+
+  factory RoastAlarm.fromJson(Map<String, dynamic> j) => RoastAlarm(
+        enabled: j['enabled'] != false,
+        type: j['type'] == 'time' ? AlarmType.time : AlarmType.temp,
+        value: (j['value'] as num?)?.toDouble() ?? 0,
+        note: (j['note'] ?? '').toString(),
+      );
+
+  Map<String, dynamic> toJson() => {
+        'enabled': enabled,
+        'type': type == AlarmType.time ? 'time' : 'temp',
+        'value': value,
+        'note': note,
+      };
+}
+
 /// 分阶段超前预测配置
 class PhaseLookaheadConfig {
   final double drying;
