@@ -263,9 +263,10 @@
               <button id="btn-detail-json" class="ctrl-btn small">导出 JSON</button>
             </div>
           </div>
+        </div>
 
-          <!-- 设置 -->
-          <div class="tab-content" id="tab-settings">
+        <!-- 设置 -->
+        <div class="tab-content" id="tab-settings">
             <!-- 后端连接：仅 Tauri 桌面版显示（由 tauri-adapter.js 接管），浏览器版始终隐藏 -->
             <div class="roast-section" id="backend-section" style="display:none">
               <div class="section-title">后端连接</div>
@@ -324,7 +325,7 @@
               <div class="phase-input-row">
                 <label>结束提醒</label>
                 <span class="unit">提前</span>
-                <select id="ui-alert-offset" class="phase-number" style="width:auto;flex:1;">
+                <select id="ui-alert-offset" class="phase-number" style="width:auto;flex:1;min-width:104px;">
                   <option value="5">5 °C</option>
                   <option value="10">10 °C（默认）</option>
                   <option value="15">15 °C</option>
@@ -362,7 +363,6 @@
               <div class="section-hint">Ganf's 咖啡烘焙机控制台 · 网页/Tauri 版</div>
             </div>
           </div>
-        </div>
       </aside>
     </main>
 

@@ -1392,6 +1392,12 @@
         }
       });
     });
+    // 支持 #tab 深链（如 index.html#settings 直达设置页）
+    const hash = (location.hash || '').replace('#', '');
+    if (hash && document.getElementById('tab-' + hash)) {
+      const target = document.querySelector('.tab-btn[data-tab="' + hash + '"]');
+      if (target) target.click();
+    }
   }
 
   // ========== 全屏 ==========
@@ -1403,6 +1409,15 @@
       } else {
         document.exitFullscreen().catch(() => {});
       }
+    });
+
+    // 全屏切换（尤其退出）后 Chart.js 偶发不重测容器，导致图表停留在全屏尺寸。
+    // fullscreenchange 后延迟强制 resize 两次：一次等布局落地，一次兜底 transition 长尾。
+    document.addEventListener('fullscreenchange', () => {
+      [60, 260].forEach(delay => setTimeout(() => {
+        if (roastChart) roastChart.resize();
+        if (recordChart) recordChart.resize();
+      }, delay));
     });
   }
 
