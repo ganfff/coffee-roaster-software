@@ -36,6 +36,50 @@
   let rorEwma = 0;
   const ROR_EWMA_ALPHA = 0.3;
 
+  // Artisan 风格辅助：回温点自动检测 / 接近结束提醒 / 自动标记 / 自定义报警
+  let tpTime = null, tpTemp = null, minPv = null, minPvTime = null;
+  let endApproachAlerted = false;
+  let lastProjectionSig = '';
+  const AUTO_DEFAULTS = { autoDryEnabled: false, autoDryTemp: 150, autoFCsEnabled: false, autoFCsTemp: 200 };
+  let autoCfg = { ...AUTO_DEFAULTS };
+  let alarms = [];
+  let firedAlarms = new Set();
+
+  function loadAutomation() {
+    try {
+      const a = JSON.parse(localStorage.getItem('roaster.automation') || '{}');
+      autoCfg = { ...AUTO_DEFAULTS, ...(a.auto || {}) };
+      alarms = Array.isArray(a.alarms) ? a.alarms : [];
+    } catch (e) {
+      autoCfg = { ...AUTO_DEFAULTS };
+      alarms = [];
+    }
+  }
+
+  function saveAutomation() {
+    try {
+      localStorage.setItem('roaster.automation', JSON.stringify({ auto: autoCfg, alarms }));
+    } catch (e) { /* 隐私模式等 */ }
+  }
+
+  let audioCtx = null;
+  function beep() {
+    try {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      const o = audioCtx.createOscillator();
+      const g = audioCtx.createGain();
+      o.type = 'sine';
+      o.frequency.value = 880;
+      g.gain.setValueAtTime(0.15, audioCtx.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.6);
+      o.connect(g);
+      g.connect(audioCtx.destination);
+      o.start();
+      o.stop(audioCtx.currentTime + 0.6);
+    } catch (e) { /* 无音频设备时静默 */ }
+  }
+
   // ========== Chart.js 自定义插件：事件垂直线 ==========
   const eventLinesPlugin = {
     id: 'eventLines',
@@ -134,6 +178,18 @@
             borderWidth: 1.5,
             fill: false,
             yAxisID: 'y1',
+          },
+          {
+            label: '预测',
+            data: [],
+            borderColor: 'rgba(0,230,118,0.45)',
+            backgroundColor: 'transparent',
+            borderDash: [4, 4],
+            tension: 0,
+            pointRadius: 0,
+            borderWidth: 1.5,
+            fill: false,
+            yAxisID: 'y',
           },
         ]
       },
@@ -521,6 +577,10 @@
       label: eventLabel(e.type),
       color: colors[e.type] || '#f59e0b'
     }));
+    // 回温点（前端自动检测）一并标注
+    if (tpTime != null) {
+      eventAnnotations.push({ time: tpTime, label: '回温点', color: '#26a69a' });
+    }
     if (roastChart) roastChart.update('none');
   }
 
@@ -584,6 +644,22 @@
     setTextIfChanged(document.getElementById('sv-val'), msg.sv != null ? msg.sv.toFixed(1) : '--');
     setTextIfChanged(document.getElementById('ror-val'), msg.ror != null ? msg.ror.toFixed(1) : '--');
 
+    // 目标偏差（Artisan 风格 ahead/behind 读数）
+    const deltaEl = document.getElementById('delta-val');
+    if (deltaEl) {
+      const deltaProf = getProfileForState(msg.state);
+      if (msg.state === 'ROASTING' && deltaProf && Array.isArray(deltaProf.nodes)
+          && deltaProf.nodes.length >= 2 && msg.pv != null) {
+        const d = msg.pv - getSplineTemp(deltaProf.nodes, msg.elapsed || 0);
+        setTextIfChanged(deltaEl, (d >= 0 ? '+' : '') + d.toFixed(1) + '°C');
+        const dc = Math.abs(d) <= 2 ? '#22c55e' : (d > 0 ? '#f97316' : '#3b82f6');
+        if (deltaEl.style.color !== dc) deltaEl.style.color = dc;
+      } else {
+        setTextIfChanged(deltaEl, '--');
+        if (deltaEl.style.color) deltaEl.style.color = '';
+      }
+    }
+
     // 超前预测实际使用值反馈
     const laUsedEl = document.getElementById('lookahead-used');
     setTextIfChanged(laUsedEl, (msg.lookahead_used != null) ? msg.lookahead_used.toFixed(1) : '--');
@@ -636,17 +712,27 @@
         chartDirty = clearDatasetIfNeeded(0) || chartDirty;
         chartDirty = clearDatasetIfNeeded(1) || chartDirty;
         chartDirty = clearDatasetIfNeeded(3) || chartDirty;
+        chartDirty = clearDatasetIfNeeded(5) || chartDirty;
         chartDirty = eventAnnotations.length > 0 || chartDirty;
         eventAnnotations = [];
         rorEwma = 0;
+        tpTime = null; tpTemp = null; minPv = null; minPvTime = null;
+        endApproachAlerted = false;
+        firedAlarms = new Set();
+        lastProjectionSig = '';
       }
       if (enteringIdle) {
         chartDirty = clearDatasetIfNeeded(0) || chartDirty;
         chartDirty = clearDatasetIfNeeded(1) || chartDirty;
         chartDirty = clearDatasetIfNeeded(3) || chartDirty;
+        chartDirty = clearDatasetIfNeeded(5) || chartDirty;
         chartDirty = eventAnnotations.length > 0 || chartDirty;
         eventAnnotations = [];
         rorEwma = 0;
+        tpTime = null; tpTemp = null; minPv = null; minPvTime = null;
+        endApproachAlerted = false;
+        firedAlarms = new Set();
+        lastProjectionSig = '';
       }
       lastState = msg.state;
 
@@ -661,11 +747,83 @@
           rorEwma = ROR_EWMA_ALPHA * msg.ror + (1 - ROR_EWMA_ALPHA) * rorEwma;
           chartDirty = appendRealtimePoint(3, t, rorEwma) || chartDirty;
         }
+
+        if (msg.pv != null) {
+          // 回温点检测（Artisan TP：最低点回升 2°C 锁定；2 分钟无信号兜底）
+          if (minPv == null || msg.pv < minPv) {
+            minPv = msg.pv;
+            minPvTime = t;
+          } else if (tpTime == null && msg.pv - minPv >= 2.0 && (minPvTime || 0) >= 5) {
+            tpTime = minPvTime;
+            tpTemp = minPv;
+          }
+          if (tpTime == null && minPv != null && t >= 120) {
+            tpTime = minPvTime;
+            tpTemp = minPv;
+          }
+
+          // 接近结束温度提醒（每锅一次，提前 10°C）
+          const alertProf = getProfileForState(msg.state);
+          if (!endApproachAlerted && alertProf && alertProf.end_temp > 0
+              && msg.pv >= alertProf.end_temp - 10 && msg.pv < alertProf.end_temp) {
+            endApproachAlerted = true;
+            showToast('接近结束温度 ' + alertProf.end_temp.toFixed(0) + '°C（当前 ' + msg.pv.toFixed(1) + '°C）');
+            beep();
+          }
+
+          // 自动事件标记（Artisan autoDRY / autoFCs，默认关）
+          const evtsNow = Array.isArray(msg.events) ? msg.events : [];
+          if (autoCfg.autoDryEnabled && msg.pv >= autoCfg.autoDryTemp
+              && !evtsNow.some(e => e.type === 'yellowing')) {
+            sendCmd('event', { type: 'yellowing' });
+          }
+          if (autoCfg.autoFCsEnabled && msg.pv >= autoCfg.autoFCsTemp
+              && !evtsNow.some(e => e.type === 'first_crack')) {
+            sendCmd('event', { type: 'first_crack' });
+          }
+
+          // 自定义报警（每锅每条一次，提示音 + 弹窗）
+          alarms.forEach((a, i) => {
+            if (!a.enabled || firedAlarms.has(i)) return;
+            const hit = a.type === 'time' ? (msg.elapsed || 0) >= a.value : msg.pv >= a.value;
+            if (hit) {
+              firedAlarms.add(i);
+              showToast(a.note || (a.type === 'time'
+                ? '报警：已烘焙 ' + formatTime(a.value)
+                : '报警：温度到达 ' + a.value + '°C'));
+              beep();
+            }
+          });
+        }
+
+        // 预测线（dataset 5）：从最新 PV 点按平滑 ROR 外推 60 秒
+        {
+          const pvDs = roastChart.data.datasets[0].data;
+          const ds5 = roastChart.data.datasets[5].data;
+          let sig = '';
+          if (pvDs.length) {
+            const last = pvDs[pvDs.length - 1];
+            const endY = Math.max(0, Math.min(300, last.y + rorEwma));
+            sig = last.x + '|' + endY.toFixed(2);
+            if (sig !== lastProjectionSig) {
+              lastProjectionSig = sig;
+              ds5.length = 0;
+              ds5.push({ x: last.x, y: last.y }, { x: last.x + 60, y: endY });
+              chartDirty = true;
+            }
+          } else if (ds5.length) {
+            lastProjectionSig = '';
+            ds5.length = 0;
+            chartDirty = true;
+          }
+        }
       } else if (msg.state === 'COOLING') {
         // COOLING 时只定格温度与 SV，不再追加 ROR
         const t = Math.max(0, Math.floor(msg.elapsed || 0));
         chartDirty = appendRealtimePoint(0, t, msg.pv) || chartDirty;
         chartDirty = appendRealtimePoint(1, t, msg.sv) || chartDirty;
+        chartDirty = clearDatasetIfNeeded(5) || chartDirty;
+        lastProjectionSig = '';
       }
       if (chartDirty) roastChart.update('none');
     } else {
@@ -685,6 +843,29 @@
 
     if (msg.event_stats) {
       updateSegmentBar(msg.event_stats);
+    }
+
+    // 回温点信息条
+    setTextIfChanged(document.getElementById('tp-info'),
+      tpTime != null ? `${formatTimeShort(tpTime)} @ ${tpTemp.toFixed(1)}°C` : '--');
+
+    // 预计到达结束温度（Artisan 风格 ETA）
+    const etaRow = document.getElementById('eta-row');
+    const etaInfo = document.getElementById('eta-info');
+    if (etaRow && etaInfo) {
+      const etaProf = getProfileForState(msg.state);
+      let etaText = '';
+      if (msg.state === 'ROASTING' && etaProf && etaProf.end_temp > 0
+          && msg.pv != null && msg.ror >= 0.5 && msg.pv < etaProf.end_temp) {
+        const etaSec = (etaProf.end_temp - msg.pv) / msg.ror * 60;
+        etaText = `预计 ${formatTimeShort(etaSec)} 后到达结束温度 ${etaProf.end_temp.toFixed(0)}°C`;
+      }
+      if (etaText) {
+        setTextIfChanged(etaInfo, etaText);
+        if (etaRow.style.display === 'none') etaRow.style.display = '';
+      } else if (etaRow.style.display !== 'none') {
+        etaRow.style.display = 'none';
+      }
     }
 
     // COOLING 状态弹窗确认保存（session-scoped，确保只弹一次）
@@ -736,11 +917,16 @@
     activeRoastProfileFetchId = null;
     activeRoastProfileRequestSeq++;
     rorEwma = 0;
+    tpTime = null; tpTemp = null; minPv = null; minPvTime = null;
+    endApproachAlerted = false;
+    firedAlarms = new Set();
+    lastProjectionSig = '';
 
     // 清空实时曲线
     roastChart.data.datasets[0].data = [];
     roastChart.data.datasets[1].data = [];
     roastChart.data.datasets[3].data = [];
+    roastChart.data.datasets[5].data = [];
     eventAnnotations = [];
     roastChart.update('none');
 
@@ -768,6 +954,12 @@
     setTextIfChanged(document.getElementById('yellowing-info'), '--');
     setTextIfChanged(document.getElementById('first-crack-info'), '--');
     setTextIfChanged(document.getElementById('development-info'), '--');
+    setTextIfChanged(document.getElementById('tp-info'), '--');
+    const resetDelta = document.getElementById('delta-val');
+    if (resetDelta) {
+      setTextIfChanged(resetDelta, '--');
+      resetDelta.style.color = '';
+    }
   }
 
   function showToast(message) {
@@ -1887,6 +2079,23 @@
       }
       statsHtml += `<span>终温: ${actualEndTemp != null ? actualEndTemp.toFixed(1) : '--'}°C</span>`;
 
+      // 回温点：入豆后前 120s 内 PV 最低点（Artisan TP）
+      if (dataArr.length) {
+        let tpMin = null;
+        let tpMinT = 0;
+        dataArr.forEach(d => {
+          const tt = Array.isArray(d) ? d[0] : null;
+          const vv = Array.isArray(d) ? d[1] : null;
+          if (tt != null && vv != null && tt <= 120 && (tpMin == null || vv < tpMin)) {
+            tpMin = vv;
+            tpMinT = tt;
+          }
+        });
+        if (tpMin != null) {
+          statsHtml += `<span>回温点: ${formatTime(tpMinT)} @ ${tpMin.toFixed(1)}°C</span>`;
+        }
+      }
+
       // 背景曲线快照信息
       if (record.profile_snapshot && record.profile_snapshot.nodes && record.profile_snapshot.nodes.length) {
         const snap = record.profile_snapshot;
@@ -2154,11 +2363,12 @@
       roastChart.data.datasets[1].backgroundColor = '#e040fb';
       roastChart.data.datasets[1].borderDash = [];
 
-      // 隐藏背景曲线、ROR 和 ROR 预览
+      // 隐藏背景曲线、ROR、ROR 预览与预测线
       roastChart.data.datasets[2].data.length = 0;
       roastChart.data.datasets[2].label = '目标曲线';
       roastChart.data.datasets[3].data.length = 0;
       roastChart.data.datasets[4].data.length = 0;
+      roastChart.data.datasets[5].data.length = 0;
       profileCurveKey = 'compare';
       eventAnnotations = [];
 
@@ -2197,6 +2407,82 @@
     document.getElementById('btn-exit-compare').style.display = 'none';
   }
 
+  // ========== 自动化设置（自动标记 + 报警，localStorage 持久化） ==========
+  function initAutomationUI() {
+    const dryEn = document.getElementById('auto-dry-enabled');
+    const dryTemp = document.getElementById('auto-dry-temp');
+    const fcsEn = document.getElementById('auto-fcs-enabled');
+    const fcsTemp = document.getElementById('auto-fcs-temp');
+    if (!dryEn || !dryTemp || !fcsEn || !fcsTemp) return;
+
+    dryEn.checked = !!autoCfg.autoDryEnabled;
+    dryTemp.value = autoCfg.autoDryTemp;
+    fcsEn.checked = !!autoCfg.autoFCsEnabled;
+    fcsTemp.value = autoCfg.autoFCsTemp;
+
+    const clampTemp = (v, fb) => {
+      const n = parseFloat(v);
+      return Number.isFinite(n) ? Math.max(0, Math.min(300, n)) : fb;
+    };
+    dryEn.addEventListener('change', () => { autoCfg.autoDryEnabled = dryEn.checked; saveAutomation(); });
+    dryTemp.addEventListener('change', () => { autoCfg.autoDryTemp = clampTemp(dryTemp.value, autoCfg.autoDryTemp); dryTemp.value = autoCfg.autoDryTemp; saveAutomation(); });
+    fcsEn.addEventListener('change', () => { autoCfg.autoFCsEnabled = fcsEn.checked; saveAutomation(); });
+    fcsTemp.addEventListener('change', () => { autoCfg.autoFCsTemp = clampTemp(fcsTemp.value, autoCfg.autoFCsTemp); fcsTemp.value = autoCfg.autoFCsTemp; saveAutomation(); });
+
+    const addBtn = document.getElementById('btn-add-alarm');
+    if (addBtn) {
+      addBtn.addEventListener('click', () => {
+        alarms.push({ enabled: true, type: 'temp', value: 150, note: '' });
+        saveAutomation();
+        renderAlarms();
+      });
+    }
+    renderAlarms();
+  }
+
+  function renderAlarms() {
+    const list = document.getElementById('alarms-list');
+    if (!list) return;
+    if (!alarms.length) {
+      list.innerHTML = '<div style="color:#737373;font-size:12px;padding:6px 0">暂无报警，点「+ 添加」创建</div>';
+      return;
+    }
+    list.innerHTML = alarms.map((a, i) => `
+      <div class="alarm-row" data-idx="${i}" style="display:flex;gap:6px;align-items:center;margin:6px 0;">
+        <input type="checkbox" data-k="enabled" ${a.enabled ? 'checked' : ''} title="启用">
+        <select data-k="type" style="background:#2c2c2e;color:#e5e5e5;border:1px solid #3a3a3c;border-radius:6px;padding:4px 2px;font-size:12px;">
+          <option value="temp" ${a.type === 'temp' ? 'selected' : ''}>温度≥</option>
+          <option value="time" ${a.type === 'time' ? 'selected' : ''}>时间≥</option>
+        </select>
+        <input type="number" data-k="value" value="${a.value}" min="0" step="1" class="phase-number" style="width:64px;">
+        <input type="text" data-k="note" value="${escapeAttr(a.note || '')}" placeholder="备注（如：检查脱水）"
+               style="flex:1;min-width:60px;background:#2c2c2e;color:#e5e5e5;border:1px solid #3a3a3c;border-radius:6px;padding:5px 6px;font-size:12px;">
+        <button class="ctrl-btn small danger" data-k="del">删除</button>
+      </div>`).join('');
+
+    list.querySelectorAll('.alarm-row').forEach(row => {
+      const i = parseInt(row.dataset.idx, 10);
+      row.querySelectorAll('[data-k]').forEach(el => {
+        const k = el.dataset.k;
+        if (k === 'del') {
+          el.addEventListener('click', () => {
+            alarms.splice(i, 1);
+            saveAutomation();
+            renderAlarms();
+          });
+        } else {
+          el.addEventListener('change', () => {
+            if (k === 'enabled') alarms[i].enabled = el.checked;
+            else if (k === 'type') alarms[i].type = el.value;
+            else if (k === 'value') alarms[i].value = parseFloat(el.value) || 0;
+            else if (k === 'note') alarms[i].note = el.value;
+            saveAutomation();
+          });
+        }
+      });
+    });
+  }
+
   // ========== 时钟 ==========
   function updateClock() {
     const now = new Date();
@@ -2213,6 +2499,8 @@
     initLookaheadOffset();
     installSliderDragGuard();
     initControls();
+    loadAutomation();
+    initAutomationUI();
     connectWS();
     await loadProfiles();
     setInterval(updateClock, 1000);

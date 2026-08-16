@@ -20,17 +20,40 @@
   if (!isTauri) return;
 
   var STORAGE_KEY = 'roaster.backendUrl';
-  var DEFAULT_BACKEND = 'http://localhost:8000';
+  var HISTORY_KEY = 'roaster.backendHistory';
+  var REAL_PRESET_KEY = 'roaster.realPresetUrl';
+  var SIMULATOR_URL = 'http://localhost:8000';
+  var DEFAULT_REAL_URL = 'http://raspberrypi.local:8000';
+  var DEFAULT_BACKEND = SIMULATOR_URL;
+
+  function lsGet(k) { try { return localStorage.getItem(k) || ''; } catch (e) { return ''; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) { /* ignore */ } }
+
+  function normalizeUrl(v) {
+    return String(v || '').trim().replace(/\/+$/, '');
+  }
 
   function getBackend() {
-    var v = '';
-    try { v = localStorage.getItem(STORAGE_KEY) || ''; } catch (e) { /* 隐私模式等 */ }
-    v = v.trim().replace(/\/+$/, '');
-    return v || DEFAULT_BACKEND;
+    return normalizeUrl(lsGet(STORAGE_KEY)) || DEFAULT_BACKEND;
+  }
+
+  function getRealPreset() {
+    return normalizeUrl(lsGet(REAL_PRESET_KEY)) || DEFAULT_REAL_URL;
+  }
+
+  function getHistory() {
+    try {
+      var h = JSON.parse(lsGet(HISTORY_KEY) || '[]');
+      return Array.isArray(h) ? h.filter(Boolean) : [];
+    } catch (e) { return []; }
   }
 
   function setBackend(url) {
-    try { localStorage.setItem(STORAGE_KEY, url); } catch (e) { /* ignore */ }
+    url = normalizeUrl(url);
+    if (!url) return;
+    lsSet(STORAGE_KEY, url);
+    var h = [url].concat(getHistory().filter(function (e) { return e !== url; })).slice(0, 5);
+    lsSet(HISTORY_KEY, JSON.stringify(h));
   }
 
   /** 将以 / 开头的同源路径改写到后端地址；其余原样返回 */
@@ -102,26 +125,71 @@
     overlay.style.cssText =
       'position:fixed;inset:0;z-index:1031;background:rgba(0,0,0,.55);display:none;' +
       'align-items:center;justify-content:center;';
-    overlay.innerHTML =
+
+    var panel =
       '<div style="background:#1c1c1e;border:1px solid rgba(255,255,255,.15);border-radius:12px;' +
-      'padding:20px 22px;width:340px;color:#eee;font-family:inherit;">' +
-      '<div style="font-size:15px;font-weight:600;margin-bottom:10px;">后端连接设置</div>' +
-      '<div style="font-size:12px;color:#999;margin-bottom:8px;">烘焙机后端（FastAPI）的地址，' +
-      '本机运行填 localhost；连局域网树莓派填其 IP。</div>' +
+      'padding:20px 22px;width:380px;color:#eee;font-family:inherit;">' +
+      '<div style="font-size:15px;font-weight:600;margin-bottom:12px;">后端连接设置</div>' +
+
+      '<div style="display:flex;gap:8px;margin-bottom:10px;">' +
+      '<button data-preset="sim" style="flex:1;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,.2);' +
+      'background:#2c2c2e;color:#eee;cursor:pointer;font-size:13px;text-align:left;">' +
+      '<div style="font-weight:600;">模拟器</div>' +
+      '<div style="font-size:10px;color:#999;">本机模拟后端</div></button>' +
+      '<button data-preset="real" style="flex:1;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,.2);' +
+      'background:#2c2c2e;color:#eee;cursor:pointer;font-size:13px;text-align:left;">' +
+      '<div style="font-weight:600;">实机</div>' +
+      '<div style="font-size:10px;color:#999;">树莓派 · 真实温控器</div></button>' +
+      '</div>' +
+
+      '<div style="display:flex;gap:6px;margin-bottom:12px;align-items:center;">' +
+      '<input id="tauri-real-preset" type="text" spellcheck="false" style="flex:1;padding:6px 8px;border-radius:6px;' +
+      'border:1px solid rgba(255,255,255,.2);background:#2c2c2e;color:#eee;font-size:11px;outline:none;" />' +
+      '<button id="tauri-save-preset" style="padding:6px 10px;border-radius:6px;border:1px solid rgba(255,255,255,.2);' +
+      'background:transparent;color:#bbb;cursor:pointer;font-size:11px;white-space:nowrap;">存为实机预设</button>' +
+      '</div>' +
+
+      '<div id="tauri-history" style="margin-bottom:12px;"></div>' +
+
       '<input id="tauri-backend-input" type="text" spellcheck="false" style="width:100%;box-sizing:border-box;' +
       'padding:8px 10px;border-radius:8px;border:1px solid rgba(255,255,255,.2);background:#2c2c2e;' +
       'color:#eee;font-size:13px;outline:none;" />' +
       '<div style="display:flex;gap:8px;margin-top:14px;justify-content:flex-end;">' +
-      '<button id="tauri-backend-default" style="padding:6px 12px;border-radius:8px;border:1px solid ' +
-      'rgba(255,255,255,.2);background:transparent;color:#bbb;cursor:pointer;font-size:13px;">恢复默认</button>' +
       '<button id="tauri-backend-cancel" style="padding:6px 12px;border-radius:8px;border:1px solid ' +
       'rgba(255,255,255,.2);background:transparent;color:#bbb;cursor:pointer;font-size:13px;">取消</button>' +
       '<button id="tauri-backend-save" style="padding:6px 12px;border-radius:8px;border:none;' +
       'background:#0a84ff;color:#fff;cursor:pointer;font-size:13px;font-weight:600;">保存并重连</button>' +
       '</div></div>';
+    overlay.innerHTML = panel;
+
+    function renderHistory() {
+      var box = overlay.querySelector('#tauri-history');
+      var h = getHistory();
+      if (!h.length) { box.innerHTML = ''; return; }
+      box.innerHTML = '<div style="font-size:11px;color:#999;margin-bottom:5px;">最近使用</div>' +
+        h.map(function (u) {
+          var cur = u === getBackend();
+          return '<button data-url="' + u.replace(/"/g, '&quot;') + '" style="margin:0 6px 6px 0;padding:4px 10px;' +
+            'border-radius:12px;font-size:11px;cursor:pointer;border:1px solid ' +
+            (cur ? '#0a84ff' : 'rgba(255,255,255,.2)') + ';background:' +
+            (cur ? 'rgba(10,132,255,.18)' : '#2c2c2e') + ';color:' + (cur ? '#0a84ff' : '#ccc') + ';">' +
+            u + '</button>';
+        }).join('');
+      box.querySelectorAll('button[data-url]').forEach(function (b) {
+        b.addEventListener('click', function () { applyAndReload(b.dataset.url); });
+      });
+    }
+
+    function applyAndReload(url) {
+      if (!/^https?:\/\/.+/.test(url)) return;
+      setBackend(url);
+      window.location.reload();
+    }
 
     function openModal() {
       overlay.querySelector('#tauri-backend-input').value = getBackend();
+      overlay.querySelector('#tauri-real-preset').value = getRealPreset();
+      renderHistory();
       overlay.style.display = 'flex';
     }
     function closeModal() { overlay.style.display = 'none'; }
@@ -129,17 +197,29 @@
     btn.addEventListener('click', openModal);
     overlay.addEventListener('click', function (e) { if (e.target === overlay) closeModal(); });
     overlay.querySelector('#tauri-backend-cancel').addEventListener('click', closeModal);
-    overlay.querySelector('#tauri-backend-default').addEventListener('click', function () {
-      overlay.querySelector('#tauri-backend-input').value = DEFAULT_BACKEND;
+    overlay.querySelector('[data-preset="sim"]').addEventListener('click', function () {
+      applyAndReload(SIMULATOR_URL);
+    });
+    overlay.querySelector('[data-preset="real"]').addEventListener('click', function () {
+      applyAndReload(getRealPreset());
+    });
+    overlay.querySelector('#tauri-save-preset').addEventListener('click', function () {
+      var v = normalizeUrl(overlay.querySelector('#tauri-real-preset').value);
+      if (/^https?:\/\/.+/.test(v)) {
+        lsSet(REAL_PRESET_KEY, v);
+        overlay.querySelector('#tauri-save-preset').textContent = '已保存 ✓';
+        setTimeout(function () {
+          overlay.querySelector('#tauri-save-preset').textContent = '存为实机预设';
+        }, 1200);
+      }
     });
     overlay.querySelector('#tauri-backend-save').addEventListener('click', function () {
-      var v = overlay.querySelector('#tauri-backend-input').value.trim().replace(/\/+$/, '');
+      var v = normalizeUrl(overlay.querySelector('#tauri-backend-input').value);
       if (!/^https?:\/\/.+/.test(v)) {
         overlay.querySelector('#tauri-backend-input').style.borderColor = '#ff453a';
         return;
       }
-      setBackend(v);
-      window.location.reload();
+      applyAndReload(v);
     });
 
     document.body.appendChild(btn);

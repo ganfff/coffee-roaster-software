@@ -29,6 +29,10 @@
             <span class="readout-val" id="ror-val">--</span>
             <span class="readout-label">升温率 (°C/min)</span>
           </div>
+          <div class="readout-item">
+            <span class="readout-val" id="delta-val">--</span>
+            <span class="readout-label">目标偏差</span>
+          </div>
         </div>
       </div>
       <div class="header-right">
@@ -46,6 +50,10 @@
 
     <!-- 关键事件温度显示条 + 快捷事件按钮 -->
     <div id="event-temps-bar">
+      <div class="event-temp-item tp">
+        <span class="event-temp-label">回温点</span>
+        <span class="event-temp-val" id="tp-info">--</span>
+      </div>
       <div class="event-temp-item yellowing">
         <span class="event-temp-label">转黄</span>
         <span class="event-temp-val" id="yellowing-info">--</span>
@@ -116,6 +124,7 @@
           <button class="tab-btn active" data-tab="roast">烘焙控制</button>
           <button class="tab-btn" data-tab="profile">曲线管理</button>
           <button class="tab-btn" data-tab="records">烘焙记录</button>
+          <button class="tab-btn" data-tab="settings">设置</button>
         </div>
 
         <!-- 烘焙控制 -->
@@ -135,6 +144,11 @@
 
           <div class="roast-section btn-grid" id="cooling-btn-grid" style="display:none">
             <div class="cooling-notice">烘焙已结束，正在等待保存确认...</div>
+          </div>
+
+          <!-- 预计到达结束温度 -->
+          <div class="roast-section" id="eta-row" style="display:none">
+            <div class="section-hint" id="eta-info"></div>
           </div>
 
           <!-- 超前预测阶段设置 -->
@@ -247,6 +261,34 @@
             <div class="record-actions">
               <button id="btn-detail-csv" class="ctrl-btn small">导出 CSV</button>
               <button id="btn-detail-json" class="ctrl-btn small">导出 JSON</button>
+            </div>
+          </div>
+
+          <!-- 设置 -->
+          <div class="tab-content" id="tab-settings">
+            <div class="roast-section">
+              <div class="section-title">自动标记</div>
+              <div class="section-hint">温度到达阈值时自动记录事件（对齐 Artisan autoDRY / autoFCs）</div>
+              <div class="phase-input-row">
+                <label>转黄 ≥</label>
+                <input type="checkbox" id="auto-dry-enabled" title="启用自动标记转黄">
+                <input type="number" id="auto-dry-temp" class="phase-number" min="0" max="300" step="1" value="150">
+                <span class="unit">°C</span>
+              </div>
+              <div class="phase-input-row">
+                <label>一爆 ≥</label>
+                <input type="checkbox" id="auto-fcs-enabled" title="启用自动标记一爆">
+                <input type="number" id="auto-fcs-temp" class="phase-number" min="0" max="300" step="1" value="200">
+                <span class="unit">°C</span>
+              </div>
+            </div>
+            <div class="roast-section">
+              <div class="section-title" style="display:flex;align-items:center;justify-content:space-between;">
+                <span>报警</span>
+                <button id="btn-add-alarm" class="ctrl-btn small">+ 添加</button>
+              </div>
+              <div class="section-hint">烘焙中触发：提示音 + 弹窗，每锅每条一次</div>
+              <div id="alarms-list"></div>
             </div>
           </div>
         </div>
