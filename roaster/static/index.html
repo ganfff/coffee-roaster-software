@@ -366,7 +366,7 @@
       </aside>
     </main>
 
-    <!-- 底部状态栏 -->
+    <!-- 底部状态栏（右侧集成急停按钮） -->
     <footer id="footer">
       <div class="footer-left">
         <div class="conn-status-group">
@@ -377,6 +377,9 @@
           <span class="status-dot offline" id="conn-status-tc4s" title="TC4S"></span>
           <span class="conn-label">TC4S</span>
         </div>
+      </div>
+      <div class="footer-right">
+        <button id="btn-e-stop" class="estop-btn" aria-label="紧急停止">E-STOP</button>
       </div>
     </footer>
   </div>
@@ -389,11 +392,6 @@
       <p id="error-reason">--</p>
       <button id="btn-error-reset" class="error-reset-btn">复位系统</button>
     </div>
-  </div>
-
-  <!-- 紧急停止按钮 -->
-  <div class="estop-box" id="estop-box">
-    <button id="btn-e-stop" class="estop-btn" aria-label="紧急停止">E-STOP</button>
   </div>
 
   <script src="js/tauri-adapter.js?v=3.19"></script>

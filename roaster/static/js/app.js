@@ -1180,7 +1180,7 @@
   /**
    * 根据当前烘焙状态显示/隐藏控制按钮
    * 仅 IDLE 显示开始烘焙按钮；ROASTING 不展示中间按钮（drop 事件即结束烘焙）。
-   * 紧急停止按钮固定在右下角嵌入小方框（.estop-box > .estop-btn），id 为 #btn-e-stop。
+   * 紧急停止按钮集成在底部状态栏右侧（#footer .footer-right），id 为 #btn-e-stop。
    * @param {string} state - 当前状态 (IDLE/ROASTING/COOLING/ERROR)
    */
   function updateButtonVisibility(state) {

@@ -1453,35 +1453,25 @@ body.state-roasting .drop-prominent:not(.active) {
 /* 紧急停止小方框
    不使用 backdrop-filter，避免树莓派 Chromium 软件回退。
    z-index=1020，高于 1010 普通模态、低于 9999 错误浮层。 */
-.estop-box {
-  position: fixed;
-  right: 16px;
-  bottom: 16px;
-  z-index: 1020;
-  padding: 10px;
-  background: rgba(20, 22, 26, 0.92);
-  border: 1px solid #2a2e35;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+.footer-right {
   display: flex;
   align-items: center;
-  justify-content: center;
 }
+
 .estop-btn {
-  width: 88px;
-  height: 56px;
-  border-radius: 8px;
+  height: 32px;
+  padding: 0 18px;
+  border-radius: 7px;
   background: #ff453a;
   color: #fff;
   font-weight: 700;
-  font-size: 16px;
+  font-size: 13px;
   letter-spacing: 0.5px;
-  border: 2px solid #7f1d1d;
-  box-shadow: 0 2px 8px rgba(255, 69, 58, 0.35);
+  border: 1px solid #7f1d1d;
+  box-shadow: 0 1px 6px rgba(255, 69, 58, 0.3);
   cursor: pointer;
   transition: background 0.18s var(--ease-apple),
-              filter 0.18s var(--ease-apple),
-              box-shadow 0.18s var(--ease-apple);
+    box-shadow 0.18s var(--ease-apple);
 }
 /* 触摸屏上 :hover 可能残留，悬停样式只在真鼠标设备生效 */
 @media (hover: hover) and (pointer: fine) {
