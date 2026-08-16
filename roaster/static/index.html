@@ -266,6 +266,72 @@
 
           <!-- 设置 -->
           <div class="tab-content" id="tab-settings">
+            <!-- 后端连接：仅 Tauri 桌面版显示（由 tauri-adapter.js 接管），浏览器版始终隐藏 -->
+            <div class="roast-section" id="backend-section" style="display:none">
+              <div class="section-title">后端连接</div>
+              <div class="section-hint">当前：<span id="backend-current">--</span></div>
+              <div style="display:flex;gap:8px;margin:8px 0;">
+                <button id="backend-preset-sim" class="ctrl-btn small" style="flex:1">模拟器</button>
+                <button id="backend-preset-real" class="ctrl-btn small" style="flex:1">实机</button>
+              </div>
+              <div class="phase-input-row">
+                <label>实机地址</label>
+                <input type="text" id="backend-real-preset" class="phase-number" style="width:auto;flex:1;" placeholder="http://192.168.1.50:8000">
+                <button id="backend-save-preset" class="ctrl-btn small">存预设</button>
+              </div>
+              <div id="backend-history" style="margin:6px 0;"></div>
+              <div class="phase-input-row">
+                <label>手动指定</label>
+                <input type="text" id="backend-custom" class="phase-number" style="width:auto;flex:1;" placeholder="http://...:8000">
+                <button id="backend-apply" class="ctrl-btn small primary">切换</button>
+              </div>
+            </div>
+
+            <div class="roast-section">
+              <div class="section-title">界面</div>
+              <div class="phase-input-row">
+                <label>界面缩放</label>
+                <select id="ui-scale" class="phase-number" style="width:auto;flex:1;">
+                  <option value="100">100%（默认）</option>
+                  <option value="115">115%</option>
+                  <option value="130">130%</option>
+                </select>
+              </div>
+              <div class="phase-input-row">
+                <label>ROR 平滑</label>
+                <input type="range" id="ui-ror-alpha" class="phase-slider" min="0.05" max="0.6" step="0.05" value="0.3">
+                <input type="number" id="ui-ror-alpha-num" class="phase-number" min="0.05" max="0.6" step="0.05" value="0.3">
+                <span class="unit">α</span>
+              </div>
+              <div class="phase-input-row">
+                <label>预测线</label>
+                <select id="ui-projection" class="phase-number" style="width:auto;flex:1;">
+                  <option value="30">30 秒</option>
+                  <option value="60">60 秒（默认）</option>
+                  <option value="90">90 秒</option>
+                  <option value="0">关闭</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="roast-section">
+              <div class="section-title">提醒</div>
+              <div class="phase-input-row">
+                <label>提示音</label>
+                <input type="checkbox" id="ui-sound" checked>
+                <button id="ui-sound-test" class="ctrl-btn small">测试</button>
+              </div>
+              <div class="phase-input-row">
+                <label>结束提醒</label>
+                <span class="unit">提前</span>
+                <select id="ui-alert-offset" class="phase-number" style="width:auto;flex:1;">
+                  <option value="5">5 °C</option>
+                  <option value="10">10 °C（默认）</option>
+                  <option value="15">15 °C</option>
+                </select>
+              </div>
+            </div>
+
             <div class="roast-section">
               <div class="section-title">自动标记</div>
               <div class="section-hint">温度到达阈值时自动记录事件（对齐 Artisan autoDRY / autoFCs）</div>
@@ -289,6 +355,11 @@
               </div>
               <div class="section-hint">烘焙中触发：提示音 + 弹窗，每锅每条一次</div>
               <div id="alarms-list"></div>
+            </div>
+
+            <div class="roast-section">
+              <div class="section-title">关于</div>
+              <div class="section-hint">Ganf's 咖啡烘焙机控制台 · 网页/Tauri 版</div>
             </div>
           </div>
         </div>

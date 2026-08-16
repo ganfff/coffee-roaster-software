@@ -106,8 +106,59 @@
     return null;
   };
 
-  // ---- 注入后端地址设置 UI（自定义弹窗，Tauri 里 prompt() 不可用）----
-  function injectSettingsUI() {
+  // ---- 后端设置 UI ----
+  // 主页面：接管原生「设置」tab 里的后端连接区（#backend-section）
+  // 编辑器页：没有设置 tab，退回浮动 ⚙ 弹窗
+  function applyAndReload(url) {
+    url = normalizeUrl(url);
+    if (!/^https?:\/\/.+/.test(url)) return;
+    setBackend(url);
+    window.location.reload();
+  }
+
+  function wireBackendSection(section) {
+    section.style.display = '';
+    var currentEl = section.querySelector('#backend-current');
+    var realInput = section.querySelector('#backend-real-preset');
+    var customInput = section.querySelector('#backend-custom');
+    if (currentEl) currentEl.textContent = getBackend();
+    if (realInput) realInput.value = getRealPreset();
+    if (customInput) customInput.value = getBackend();
+
+    section.querySelector('#backend-preset-sim').addEventListener('click', function () {
+      applyAndReload(SIMULATOR_URL);
+    });
+    section.querySelector('#backend-preset-real').addEventListener('click', function () {
+      applyAndReload(getRealPreset());
+    });
+    section.querySelector('#backend-save-preset').addEventListener('click', function () {
+      var v = normalizeUrl(realInput.value);
+      if (/^https?:\/\/.+/.test(v)) {
+        lsSet(REAL_PRESET_KEY, v);
+        this.textContent = '已保存 ✓';
+        var btn = this;
+        setTimeout(function () { btn.textContent = '存预设'; }, 1200);
+      }
+    });
+    section.querySelector('#backend-apply').addEventListener('click', function () {
+      applyAndReload(customInput.value);
+    });
+
+    var histBox = section.querySelector('#backend-history');
+    var h = getHistory();
+    if (histBox && h.length) {
+      histBox.innerHTML = h.map(function (u) {
+        var cur = u === getBackend();
+        return '<button data-url="' + u.replace(/"/g, '&quot;') + '" class="ctrl-btn small" style="margin:0 6px 6px 0;' +
+          (cur ? 'border-color:#0a84ff;color:#0a84ff;' : '') + '">' + u + '</button>';
+      }).join('');
+      histBox.querySelectorAll('button[data-url]').forEach(function (b) {
+        b.addEventListener('click', function () { applyAndReload(b.dataset.url); });
+      });
+    }
+  }
+
+  function injectFloatingUI() {
     if (document.getElementById('tauri-settings-btn')) return;
 
     var btn = document.createElement('button');
@@ -125,32 +176,10 @@
     overlay.style.cssText =
       'position:fixed;inset:0;z-index:1031;background:rgba(0,0,0,.55);display:none;' +
       'align-items:center;justify-content:center;';
-
-    var panel =
+    overlay.innerHTML =
       '<div style="background:#1c1c1e;border:1px solid rgba(255,255,255,.15);border-radius:12px;' +
-      'padding:20px 22px;width:380px;color:#eee;font-family:inherit;">' +
-      '<div style="font-size:15px;font-weight:600;margin-bottom:12px;">后端连接设置</div>' +
-
-      '<div style="display:flex;gap:8px;margin-bottom:10px;">' +
-      '<button data-preset="sim" style="flex:1;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,.2);' +
-      'background:#2c2c2e;color:#eee;cursor:pointer;font-size:13px;text-align:left;">' +
-      '<div style="font-weight:600;">模拟器</div>' +
-      '<div style="font-size:10px;color:#999;">本机模拟后端</div></button>' +
-      '<button data-preset="real" style="flex:1;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,.2);' +
-      'background:#2c2c2e;color:#eee;cursor:pointer;font-size:13px;text-align:left;">' +
-      '<div style="font-weight:600;">实机</div>' +
-      '<div style="font-size:10px;color:#999;">树莓派 · 真实温控器</div></button>' +
-      '</div>' +
-
-      '<div style="display:flex;gap:6px;margin-bottom:12px;align-items:center;">' +
-      '<input id="tauri-real-preset" type="text" spellcheck="false" style="flex:1;padding:6px 8px;border-radius:6px;' +
-      'border:1px solid rgba(255,255,255,.2);background:#2c2c2e;color:#eee;font-size:11px;outline:none;" />' +
-      '<button id="tauri-save-preset" style="padding:6px 10px;border-radius:6px;border:1px solid rgba(255,255,255,.2);' +
-      'background:transparent;color:#bbb;cursor:pointer;font-size:11px;white-space:nowrap;">存为实机预设</button>' +
-      '</div>' +
-
-      '<div id="tauri-history" style="margin-bottom:12px;"></div>' +
-
+      'padding:20px 22px;width:340px;color:#eee;font-family:inherit;">' +
+      '<div style="font-size:15px;font-weight:600;margin-bottom:10px;">后端连接设置</div>' +
       '<input id="tauri-backend-input" type="text" spellcheck="false" style="width:100%;box-sizing:border-box;' +
       'padding:8px 10px;border-radius:8px;border:1px solid rgba(255,255,255,.2);background:#2c2c2e;' +
       'color:#eee;font-size:13px;outline:none;" />' +
@@ -160,36 +189,9 @@
       '<button id="tauri-backend-save" style="padding:6px 12px;border-radius:8px;border:none;' +
       'background:#0a84ff;color:#fff;cursor:pointer;font-size:13px;font-weight:600;">保存并重连</button>' +
       '</div></div>';
-    overlay.innerHTML = panel;
-
-    function renderHistory() {
-      var box = overlay.querySelector('#tauri-history');
-      var h = getHistory();
-      if (!h.length) { box.innerHTML = ''; return; }
-      box.innerHTML = '<div style="font-size:11px;color:#999;margin-bottom:5px;">最近使用</div>' +
-        h.map(function (u) {
-          var cur = u === getBackend();
-          return '<button data-url="' + u.replace(/"/g, '&quot;') + '" style="margin:0 6px 6px 0;padding:4px 10px;' +
-            'border-radius:12px;font-size:11px;cursor:pointer;border:1px solid ' +
-            (cur ? '#0a84ff' : 'rgba(255,255,255,.2)') + ';background:' +
-            (cur ? 'rgba(10,132,255,.18)' : '#2c2c2e') + ';color:' + (cur ? '#0a84ff' : '#ccc') + ';">' +
-            u + '</button>';
-        }).join('');
-      box.querySelectorAll('button[data-url]').forEach(function (b) {
-        b.addEventListener('click', function () { applyAndReload(b.dataset.url); });
-      });
-    }
-
-    function applyAndReload(url) {
-      if (!/^https?:\/\/.+/.test(url)) return;
-      setBackend(url);
-      window.location.reload();
-    }
 
     function openModal() {
       overlay.querySelector('#tauri-backend-input').value = getBackend();
-      overlay.querySelector('#tauri-real-preset').value = getRealPreset();
-      renderHistory();
       overlay.style.display = 'flex';
     }
     function closeModal() { overlay.style.display = 'none'; }
@@ -197,22 +199,6 @@
     btn.addEventListener('click', openModal);
     overlay.addEventListener('click', function (e) { if (e.target === overlay) closeModal(); });
     overlay.querySelector('#tauri-backend-cancel').addEventListener('click', closeModal);
-    overlay.querySelector('[data-preset="sim"]').addEventListener('click', function () {
-      applyAndReload(SIMULATOR_URL);
-    });
-    overlay.querySelector('[data-preset="real"]').addEventListener('click', function () {
-      applyAndReload(getRealPreset());
-    });
-    overlay.querySelector('#tauri-save-preset').addEventListener('click', function () {
-      var v = normalizeUrl(overlay.querySelector('#tauri-real-preset').value);
-      if (/^https?:\/\/.+/.test(v)) {
-        lsSet(REAL_PRESET_KEY, v);
-        overlay.querySelector('#tauri-save-preset').textContent = '已保存 ✓';
-        setTimeout(function () {
-          overlay.querySelector('#tauri-save-preset').textContent = '存为实机预设';
-        }, 1200);
-      }
-    });
     overlay.querySelector('#tauri-backend-save').addEventListener('click', function () {
       var v = normalizeUrl(overlay.querySelector('#tauri-backend-input').value);
       if (!/^https?:\/\/.+/.test(v)) {
@@ -224,6 +210,15 @@
 
     document.body.appendChild(btn);
     document.body.appendChild(overlay);
+  }
+
+  function injectSettingsUI() {
+    var section = document.getElementById('backend-section');
+    if (section) {
+      wireBackendSection(section);
+    } else {
+      injectFloatingUI();
+    }
   }
 
   if (document.readyState === 'loading') {

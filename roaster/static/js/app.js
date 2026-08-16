@@ -32,38 +32,46 @@
   // ERROR 状态标记
   let inErrorState = false;
 
-  // ROR 前端 EWMA 平滑
+  // ROR 前端 EWMA 平滑（α 可在设置页调整）
   let rorEwma = 0;
-  const ROR_EWMA_ALPHA = 0.3;
+  let ROR_EWMA_ALPHA = 0.3;
 
   // Artisan 风格辅助：回温点自动检测 / 接近结束提醒 / 自动标记 / 自定义报警
   let tpTime = null, tpTemp = null, minPv = null, minPvTime = null;
   let endApproachAlerted = false;
   let lastProjectionSig = '';
   const AUTO_DEFAULTS = { autoDryEnabled: false, autoDryTemp: 150, autoFCsEnabled: false, autoFCsTemp: 200 };
+  const UI_DEFAULTS = { sound: true, scale: 100, rorAlpha: 0.3, projectionSec: 60, alertOffsetC: 10 };
   let autoCfg = { ...AUTO_DEFAULTS };
+  let uiCfg = { ...UI_DEFAULTS };
   let alarms = [];
   let firedAlarms = new Set();
 
-  function loadAutomation() {
-    try {
-      const a = JSON.parse(localStorage.getItem('roaster.automation') || '{}');
-      autoCfg = { ...AUTO_DEFAULTS, ...(a.auto || {}) };
-      alarms = Array.isArray(a.alarms) ? a.alarms : [];
-    } catch (e) {
-      autoCfg = { ...AUTO_DEFAULTS };
-      alarms = [];
-    }
+  function loadSettings() {
+    let s = {};
+    try { s = JSON.parse(localStorage.getItem('roaster.settings') || '{}'); } catch (e) {}
+    // 兼容旧键 roaster.automation
+    let legacy = {};
+    try { legacy = JSON.parse(localStorage.getItem('roaster.automation') || '{}'); } catch (e) {}
+    autoCfg = { ...AUTO_DEFAULTS, ...(legacy.auto || {}), ...(s.auto || {}) };
+    alarms = Array.isArray(s.alarms) ? s.alarms : (Array.isArray(legacy.alarms) ? legacy.alarms : []);
+    uiCfg = { ...UI_DEFAULTS, ...(s.ui || {}) };
+    ROR_EWMA_ALPHA = uiCfg.rorAlpha;
   }
 
-  function saveAutomation() {
+  function saveSettings() {
     try {
-      localStorage.setItem('roaster.automation', JSON.stringify({ auto: autoCfg, alarms }));
+      localStorage.setItem('roaster.settings', JSON.stringify({ auto: autoCfg, alarms, ui: uiCfg }));
     } catch (e) { /* 隐私模式等 */ }
   }
 
+  function applyUiScale() {
+    try { document.body.style.zoom = uiCfg.scale + '%'; } catch (e) {}
+  }
+
   let audioCtx = null;
-  function beep() {
+  function beep(force) {
+    if (!force && !uiCfg.sound) return;
     try {
       if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
       if (audioCtx.state === 'suspended') audioCtx.resume();
@@ -765,7 +773,7 @@
           // 接近结束温度提醒（每锅一次，提前 10°C）
           const alertProf = getProfileForState(msg.state);
           if (!endApproachAlerted && alertProf && alertProf.end_temp > 0
-              && msg.pv >= alertProf.end_temp - 10 && msg.pv < alertProf.end_temp) {
+              && msg.pv >= alertProf.end_temp - uiCfg.alertOffsetC && msg.pv < alertProf.end_temp) {
             endApproachAlerted = true;
             showToast('接近结束温度 ' + alertProf.end_temp.toFixed(0) + '°C（当前 ' + msg.pv.toFixed(1) + '°C）');
             beep();
@@ -796,19 +804,19 @@
           });
         }
 
-        // 预测线（dataset 5）：从最新 PV 点按平滑 ROR 外推 60 秒
-        {
+        // 预测线（dataset 5）：从最新 PV 点按平滑 ROR 外推（时长可在设置页调整/关闭）
+        if (uiCfg.projectionSec > 0) {
           const pvDs = roastChart.data.datasets[0].data;
           const ds5 = roastChart.data.datasets[5].data;
           let sig = '';
           if (pvDs.length) {
             const last = pvDs[pvDs.length - 1];
-            const endY = Math.max(0, Math.min(300, last.y + rorEwma));
+            const endY = Math.max(0, Math.min(300, last.y + rorEwma * (uiCfg.projectionSec / 60)));
             sig = last.x + '|' + endY.toFixed(2);
             if (sig !== lastProjectionSig) {
               lastProjectionSig = sig;
               ds5.length = 0;
-              ds5.push({ x: last.x, y: last.y }, { x: last.x + 60, y: endY });
+              ds5.push({ x: last.x, y: last.y }, { x: last.x + uiCfg.projectionSec, y: endY });
               chartDirty = true;
             }
           } else if (ds5.length) {
@@ -816,6 +824,9 @@
             ds5.length = 0;
             chartDirty = true;
           }
+        } else {
+          chartDirty = clearDatasetIfNeeded(5) || chartDirty;
+          lastProjectionSig = '';
         }
       } else if (msg.state === 'COOLING') {
         // COOLING 时只定格温度与 SV，不再追加 ROR
@@ -2407,6 +2418,67 @@
     document.getElementById('btn-exit-compare').style.display = 'none';
   }
 
+  // ========== 界面/提醒设置 ==========
+  function initSettingsUI() {
+    const scaleSel = document.getElementById('ui-scale');
+    if (scaleSel) {
+      scaleSel.value = String(uiCfg.scale);
+      scaleSel.addEventListener('change', () => {
+        uiCfg.scale = parseInt(scaleSel.value, 10) || 100;
+        saveSettings();
+        applyUiScale();
+      });
+    }
+
+    const ra = document.getElementById('ui-ror-alpha');
+    const ran = document.getElementById('ui-ror-alpha-num');
+    if (ra && ran) {
+      ra.value = uiCfg.rorAlpha;
+      ran.value = uiCfg.rorAlpha;
+      const applyAlpha = (v, src) => {
+        v = Math.max(0.05, Math.min(0.6, parseFloat(v) || 0.3));
+        v = Math.round(v * 100) / 100;
+        uiCfg.rorAlpha = v;
+        ROR_EWMA_ALPHA = v;
+        if (src !== 'slider') ra.value = v;
+        if (src !== 'num') ran.value = v;
+        saveSettings();
+      };
+      ra.addEventListener('input', () => applyAlpha(ra.value, 'slider'));
+      ran.addEventListener('change', () => applyAlpha(ran.value, 'num'));
+    }
+
+    const projSel = document.getElementById('ui-projection');
+    if (projSel) {
+      projSel.value = String(uiCfg.projectionSec);
+      projSel.addEventListener('change', () => {
+        uiCfg.projectionSec = parseInt(projSel.value, 10) || 0;
+        lastProjectionSig = '';
+        saveSettings();
+      });
+    }
+
+    const snd = document.getElementById('ui-sound');
+    if (snd) {
+      snd.checked = !!uiCfg.sound;
+      snd.addEventListener('change', () => {
+        uiCfg.sound = snd.checked;
+        saveSettings();
+      });
+    }
+    const sndTest = document.getElementById('ui-sound-test');
+    if (sndTest) sndTest.addEventListener('click', () => beep(true));
+
+    const offSel = document.getElementById('ui-alert-offset');
+    if (offSel) {
+      offSel.value = String(uiCfg.alertOffsetC);
+      offSel.addEventListener('change', () => {
+        uiCfg.alertOffsetC = parseInt(offSel.value, 10) || 10;
+        saveSettings();
+      });
+    }
+  }
+
   // ========== 自动化设置（自动标记 + 报警，localStorage 持久化） ==========
   function initAutomationUI() {
     const dryEn = document.getElementById('auto-dry-enabled');
@@ -2424,16 +2496,16 @@
       const n = parseFloat(v);
       return Number.isFinite(n) ? Math.max(0, Math.min(300, n)) : fb;
     };
-    dryEn.addEventListener('change', () => { autoCfg.autoDryEnabled = dryEn.checked; saveAutomation(); });
-    dryTemp.addEventListener('change', () => { autoCfg.autoDryTemp = clampTemp(dryTemp.value, autoCfg.autoDryTemp); dryTemp.value = autoCfg.autoDryTemp; saveAutomation(); });
-    fcsEn.addEventListener('change', () => { autoCfg.autoFCsEnabled = fcsEn.checked; saveAutomation(); });
-    fcsTemp.addEventListener('change', () => { autoCfg.autoFCsTemp = clampTemp(fcsTemp.value, autoCfg.autoFCsTemp); fcsTemp.value = autoCfg.autoFCsTemp; saveAutomation(); });
+    dryEn.addEventListener('change', () => { autoCfg.autoDryEnabled = dryEn.checked; saveSettings(); });
+    dryTemp.addEventListener('change', () => { autoCfg.autoDryTemp = clampTemp(dryTemp.value, autoCfg.autoDryTemp); dryTemp.value = autoCfg.autoDryTemp; saveSettings(); });
+    fcsEn.addEventListener('change', () => { autoCfg.autoFCsEnabled = fcsEn.checked; saveSettings(); });
+    fcsTemp.addEventListener('change', () => { autoCfg.autoFCsTemp = clampTemp(fcsTemp.value, autoCfg.autoFCsTemp); fcsTemp.value = autoCfg.autoFCsTemp; saveSettings(); });
 
     const addBtn = document.getElementById('btn-add-alarm');
     if (addBtn) {
       addBtn.addEventListener('click', () => {
         alarms.push({ enabled: true, type: 'temp', value: 150, note: '' });
-        saveAutomation();
+        saveSettings();
         renderAlarms();
       });
     }
@@ -2467,7 +2539,7 @@
         if (k === 'del') {
           el.addEventListener('click', () => {
             alarms.splice(i, 1);
-            saveAutomation();
+            saveSettings();
             renderAlarms();
           });
         } else {
@@ -2476,7 +2548,7 @@
             else if (k === 'type') alarms[i].type = el.value;
             else if (k === 'value') alarms[i].value = parseFloat(el.value) || 0;
             else if (k === 'note') alarms[i].note = el.value;
-            saveAutomation();
+            saveSettings();
           });
         }
       });
@@ -2499,7 +2571,9 @@
     initLookaheadOffset();
     installSliderDragGuard();
     initControls();
-    loadAutomation();
+    loadSettings();
+    applyUiScale();
+    initSettingsUI();
     initAutomationUI();
     connectWS();
     await loadProfiles();
