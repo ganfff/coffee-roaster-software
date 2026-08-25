@@ -560,6 +560,13 @@ v3.17 删除前端 `handleStateUpdate` 对 `phase_lookahead_config` / `lookahead
 - **解决方案**：使用 `npm run dev:sim`；模拟器只监听 127.0.0.1 的 HTTP/WebSocket，覆盖 IDLE/ROASTING/COOLING/ERROR 与管理数据，不导入硬件代码。最终截图来自 `roaster-desktop.exe`，不能用普通浏览器代替。
 - **相关文件**：`desktop/tools/roaster-simulator.mjs`、`desktop/tools/dev-sim.mjs`。
 
+### 65. 跨分支平台生成目录会伪装成项目源码
+
+- **问题**：从 `feature/flutter-app` 切回 Tauri 分支后，`.dart_tool/`、IDE 元数据、Gradle wrapper、插件注册文件和 `flutter/ephemeral/` 可能作为忽略或未跟踪残留继续留在 `flutter_app/`，让当前分支看起来像包含一份不完整 Flutter 项目。
+- **影响**：项目结构、Git 审查、磁盘占用；开发者可能误把生成残留当成需要维护的源码。
+- **解决方案**：完整 Flutter 源码以 `feature/flutter-app` 分支为准；切换分支前保持工作区干净，切回后先用 `git ls-files -- flutter_app` 确认当前分支没有跟踪内容，再清理生成残留。通用依赖与缓存使用根目录 `scripts/clean-workspace.ps1`，不要让脚本删除可能包含未提交源码的整个业务目录。
+- **相关文件**：根 `.gitignore`、`docs/project-structure.md`、`scripts/clean-workspace.ps1`。
+
 ---
 
 *最后更新：v3.21 (2026-08-25)*

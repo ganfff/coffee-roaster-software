@@ -25,7 +25,15 @@
 
 ### 未触及范围
 
-- `roaster/src/` 控制算法与硬件通信、`flutter_app/`、真实设备端口均未修改。
+- `roaster/src/` 控制算法与硬件通信、`feature/flutter-app` 分支中的 Flutter 源码、真实设备端口均未修改。
+
+### 项目结构整理（2026-08-25）
+
+- 根目录收敛为唯一入口 README、Git 配置和一级模块；Flutter 迁移指南、Calm Canvas QA 与设计截图分别归入 `docs/guides/`、`docs/qa/`、`docs/design/calm-canvas/`。
+- 新增 `docs/README.md` 和 `docs/project-structure.md`，明确 `roaster/`、`desktop/`、Flutter 分支、生成物和本机工具配置的边界。
+- 新增默认只预览、必须显式 `-Apply` 的 `scripts/clean-workspace.ps1`，只清理可再生依赖、构建与缓存目录，并校验目标仍位于工作区内。
+- 当前工作区清除了约 4.1GB Tauri `target/`、约 59MB Node 依赖、Python 缓存、旧 v3.18 临时需求便笺和当前分支残留的 Flutter 生成目录；完整 Flutter 源码仍保存在 `feature/flutter-app` 分支。
+- 稳定源码相对路径、Tauri `frontendDist`、REST/WebSocket、硬件控制和 v3.21 前端均未改变。
 
 ## v3.20 (2026-08-16) — 苹果式设计语言重构 / 深色·浅色双主题 / 全链路动画
 

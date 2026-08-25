@@ -54,6 +54,13 @@ htmlcov/
 /.agents/
 /.codex/
 
+# Flutter generated workspace files
+.dart_tool/
+.flutter-plugins-dependencies
+*.iml
+**/local.properties
+**/flutter/ephemeral/
+
 # Editor and OS files
 .vscode/
 .idea/

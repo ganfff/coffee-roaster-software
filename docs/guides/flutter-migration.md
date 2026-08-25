@@ -1,5 +1,7 @@
 # Flutter 移植与开发指南
 
+> 完整 Flutter 源码位于 Git 分支 `feature/flutter-app`。当前 Tauri 分支不保留 Flutter 平台生成目录，切换分支后再按本文档验证。
+
 > 目标：把 `roaster/static/` 网页前端用 Flutter（Dart）重写一份，得到可上架应用商店的
 > 原生 iOS/Android App，同时可编译为 Windows/Linux/macOS 桌面程序。
 > **后端（FastAPI + 树莓派/ESP32）一行不用改**——Flutter 只是又一个 HTTP/WebSocket 客户端。

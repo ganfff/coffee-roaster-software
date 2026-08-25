@@ -2,12 +2,12 @@
 
 ## 基准与证据
 
-- 设计基准：`docs/design/calm-canvas-reference.png`（原始 1639×960）。
-- 第一轮原生截图：`docs/design/calm-canvas-pass-1.jpg`（Tauri 窗口 1369×831，WebView 内容 1366×800）。
-- 第一轮同帧对照：`docs/design/calm-canvas-comparison-pass-1.jpg`。
-- 第二轮原生截图：`docs/design/calm-canvas-pass-2.jpg`（同窗口、同 ROASTING / 05:42 状态）。
-- 第二轮同帧对照：`docs/design/calm-canvas-comparison-pass-2.jpg`。
-- 最小窗口证据：`docs/design/calm-canvas-1024x640.jpg`（Tauri 窗口 1027×671，WebView 内容 1024×640）。
+- 设计基准：`docs/design/calm-canvas/calm-canvas-reference.png`（原始 1639×960）。
+- 第一轮原生截图：`docs/design/calm-canvas/calm-canvas-pass-1.jpg`（Tauri 窗口 1369×831，WebView 内容 1366×800）。
+- 第一轮同帧对照：`docs/design/calm-canvas/calm-canvas-comparison-pass-1.jpg`。
+- 第二轮原生截图：`docs/design/calm-canvas/calm-canvas-pass-2.jpg`（同窗口、同 ROASTING / 05:42 状态）。
+- 第二轮同帧对照：`docs/design/calm-canvas/calm-canvas-comparison-pass-2.jpg`。
+- 最小窗口证据：`docs/design/calm-canvas/calm-canvas-1024x640.jpg`（Tauri 窗口 1027×671，WebView 内容 1024×640）。
 
 对照板把参考图归一化到 1369×831，并与同状态的原生 Tauri 截图并排放入同一张图片。截图中的蓝色光晕是 Windows Computer Use 的鼠标定位标记，不属于产品界面。
 
