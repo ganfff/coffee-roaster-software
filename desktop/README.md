@@ -45,6 +45,18 @@ npm install        # 首次：装 @tauri-apps/cli
 npm run dev        # 开发模式：打开桌面窗口，改 roaster/static/ 里文件后自动热重载
 ```
 
+只做界面开发或验收时，使用完全隔离真实串口的模拟器：
+
+```bash
+npm run dev:sim -- --freeze             # 固定在 05:42 的烘焙中场景
+npm run dev:sim -- --scenario=idle      # 待机
+npm run dev:sim -- --scenario=cooling   # 冷却
+npm run dev:sim -- --scenario=error     # 错误
+npm run check:frontend                  # 静态契约与资源检查
+```
+
+模拟器只绑定本机 HTTP/WebSocket，不导入 Python 硬件模块，也不会打开 TC4S/RS485 端口。最终界面验收仍应在 `roaster-desktop.exe` 原生窗口内完成。
+
 窗口打开后，默认连 `http://localhost:8000`（本机后端）。
 
 **连局域网上的树莓派**：点窗口右下角半透明的 **⚙** 按钮 → 填 `http://<树莓派IP>:8000`
@@ -102,7 +114,11 @@ manifest 格式与完整步骤见官方文档 https://v2.tauri.app/plugin/update
 desktop/
 ├── package.json            # npm 脚本与 Tauri CLI
 ├── tools/
-│   ├── gen-icon.js         # 图标生成器（纯 Node，无依赖）
+│   ├── check-frontend.mjs  # HTML/CSS/JS/资源与安全契约检查
+│   ├── dev-sim.mjs         # 安全模拟器 + Tauri 联合启动
+│   ├── roaster-simulator.mjs # 仅本机 HTTP/WebSocket 模拟数据
+│   ├── sync-icons.mjs      # 可重复生成离线 Phosphor 图标子集
+│   ├── gen-icon.js         # 应用图标生成器（纯 Node，无依赖）
 │   └── icon-source.png     # 1024x1024 源图标
 └── src-tauri/
     ├── tauri.conf.json     # 窗口尺寸/标题/CSP/打包配置（frontendDist 指向 ../../roaster/static）

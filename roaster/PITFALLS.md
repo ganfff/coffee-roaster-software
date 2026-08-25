@@ -528,6 +528,38 @@ v3.17 删除前端 `handleStateUpdate` 对 `phase_lookahead_config` / `lookahead
 - **解决方案**：浅色主题下新增「橙色文字/细线」用途时，优先复用已加深的令牌；实心橙底上的文字用 `--on-accent`（深底黑字 / 浅底白字）而非固定色。编辑器等小字场景实测后再微调。
 - **相关文件**：`static/css/theme.css:[data-theme="light"]`
 
+## v3.21 新增坑点 (2026-08-25)
+
+### 60. 工作区切换后必须延迟 resize Chart.js
+
+- **问题**：隐藏工作区中的 canvas 宽高为零或沿用旧容器尺寸，切回主控台/记录详情后会出现压扁、留白或命中区域错位。
+- **解决方案**：只切换包装容器与 `data-view`，保留稳定 DOM ID；工作区变为可见后下一帧调用对应 Chart.js `resize()` / `update('none')`。
+- **相关文件**：`static/js/app.js:activateWorkspace`、记录详情与对比恢复路径。
+
+### 61. 离线图标必须由锁定版本可重复生成
+
+- **问题**：运行时 CDN 会在离线 Tauri/树莓派环境丢图标；手工复制字体又无法审计来源和许可证。
+- **解决方案**：锁定 `@phosphor-icons/web` 版本，由 `desktop/tools/sync-icons.mjs` 生成最小 CSS、字体与许可证；提交前运行 `npm run icons:sync` 和 `npm run check:frontend`。
+- **相关文件**：`desktop/package.json`、`desktop/tools/sync-icons.mjs`、`static/assets/icons/phosphor/`。
+
+### 62. 首次主题默认 auto，主页面和编辑器必须共用首帧加载顺序
+
+- **问题**：只有一个页面在样式前同步加载 theme.js，或无历史值仍回退到固定主题，会造成两个页面观感不一致与首帧闪烁。
+- **解决方案**：`roaster.theme` 无值时返回 `auto`；`index.html` 与 `editor.html` 都必须在任何 CSS 前同步外链 `theme.js`。
+- **相关文件**：`static/js/theme.js`、`static/index.html`、`static/editor.html`。
+
+### 63. 全工作区导航必须保留稳定 ID 和业务绑定
+
+- **问题**：为重新布局而重建烘焙控件，会让已有事件监听、状态短路与硬件安全语义失效。
+- **解决方案**：保留原 ID 和控制函数，仅用包装容器、`data-view` 与 ARIA 状态切换工作区；视觉层不得重写 REST/WebSocket 命令。
+- **相关文件**：`static/index.html`、`static/js/app.js`。
+
+### 64. 桌面视觉验收只能使用本机协议模拟器，禁止碰真实串口
+
+- **问题**：为了截图启动完整 Python 后端可能自动连接 TC4S/RS485，让视觉测试影响真实机器。
+- **解决方案**：使用 `npm run dev:sim`；模拟器只监听 127.0.0.1 的 HTTP/WebSocket，覆盖 IDLE/ROASTING/COOLING/ERROR 与管理数据，不导入硬件代码。最终截图来自 `roaster-desktop.exe`，不能用普通浏览器代替。
+- **相关文件**：`desktop/tools/roaster-simulator.mjs`、`desktop/tools/dev-sim.mjs`。
+
 ---
 
-*最后更新：v3.20 (2026-08-16)*
+*最后更新：v3.21 (2026-08-25)*

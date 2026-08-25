@@ -7,6 +7,8 @@
 - 项目说明：[`roaster/README.md`](roaster/README.md)
 - 更新记录：[`UPDATE_LOG.md`](roaster/UPDATE_LOG.md)
 - 避坑说明：[`PITFALLS.md`](roaster/PITFALLS.md)
+- Calm Canvas 设计验收：[`design-qa.md`](design-qa.md)
+- v3.21 设计基准：[`docs/design/calm-canvas-reference.png`](docs/design/calm-canvas-reference.png)
 
 ## 开发与运行环境
 
