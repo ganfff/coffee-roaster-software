@@ -9,7 +9,7 @@
  * 在普通浏览器里（FastAPI 直接托管页面时）本文件完全不起作用，零副作用。
  *
  * 后端地址存 localStorage['roaster.backendUrl']，默认 http://localhost:8000；
- * 页面右下角会注入一个 ⚙ 按钮可随时修改（仅在 Tauri 内出现）。
+ * 编辑器页面会注入一个图标按钮，可随时修改后端地址（仅在 Tauri 内出现）。
  */
 
 (function () {
@@ -135,7 +135,7 @@
       var v = normalizeUrl(realInput.value);
       if (/^https?:\/\/.+/.test(v)) {
         lsSet(REAL_PRESET_KEY, v);
-        this.textContent = '已保存 ✓';
+        this.textContent = '已保存';
         var btn = this;
         setTimeout(function () { btn.textContent = '存预设'; }, 1200);
       }
@@ -149,8 +149,8 @@
     if (histBox && h.length) {
       histBox.innerHTML = h.map(function (u) {
         var cur = u === getBackend();
-        return '<button data-url="' + u.replace(/"/g, '&quot;') + '" class="ctrl-btn small" style="margin:0 6px 6px 0;' +
-          (cur ? 'border-color:var(--info);color:var(--info);' : '') + '">' + u + '</button>';
+        return '<button data-url="' + u.replace(/"/g, '&quot;') + '" class="ctrl-btn small backend-history-item' +
+          (cur ? ' active' : '') + '">' + u + '</button>';
       }).join('');
       histBox.querySelectorAll('button[data-url]').forEach(function (b) {
         b.addEventListener('click', function () { applyAndReload(b.dataset.url); });
@@ -163,40 +163,28 @@
 
     var btn = document.createElement('button');
     btn.id = 'tauri-settings-btn';
-    btn.textContent = '⚙';
+    btn.innerHTML = '<i class="ph ph-plugs-connected" aria-hidden="true"></i>';
     btn.title = '后端连接设置（仅桌面版显示）';
-    // 颜色全部走 theme.css 令牌(var 在内联样式中同样生效),深浅主题自适应
-    btn.style.cssText =
-      'position:fixed;right:12px;bottom:64px;z-index:1030;width:36px;height:36px;' +
-      'border-radius:50%;border:1px solid var(--border);background:var(--surface-2);' +
-      'box-shadow:var(--shadow-card);color:var(--text-secondary);font-size:17px;cursor:pointer;' +
-      'opacity:.65;transition:opacity .15s;';
-    btn.onmouseenter = function () { btn.style.opacity = '1'; };
-    btn.onmouseleave = function () { btn.style.opacity = '.65'; };
+    btn.setAttribute('aria-label', '后端连接设置');
+    btn.className = 'tauri-settings-btn';
 
     var overlay = document.createElement('div');
-    overlay.style.cssText =
-      'position:fixed;inset:0;z-index:1031;background:rgba(0,0,0,.55);display:none;' +
-      'align-items:center;justify-content:center;';
+    overlay.className = 'tauri-settings-overlay';
     overlay.innerHTML =
-      '<div style="background:var(--surface-2);border:1px solid var(--border);border-radius:14px;' +
-      'box-shadow:var(--shadow-pop);padding:20px 22px;width:340px;color:var(--text);font-family:inherit;">' +
-      '<div style="font-size:15px;font-weight:600;margin-bottom:10px;">后端连接设置</div>' +
-      '<input id="tauri-backend-input" type="text" spellcheck="false" style="width:100%;box-sizing:border-box;' +
-      'padding:8px 10px;border-radius:10px;border:1px solid var(--border);background:var(--surface-3);' +
-      'color:var(--text);font-size:13px;outline:none;" />' +
-      '<div style="display:flex;gap:8px;margin-top:14px;justify-content:flex-end;">' +
-      '<button id="tauri-backend-cancel" style="padding:6px 12px;border-radius:8px;border:1px solid ' +
-      'var(--border);background:transparent;color:var(--text-secondary);cursor:pointer;font-size:13px;">取消</button>' +
-      '<button id="tauri-backend-save" style="padding:6px 12px;border-radius:8px;border:none;' +
-      'background:var(--info);color:#fff;cursor:pointer;font-size:13px;font-weight:600;">保存并重连</button>' +
+      '<div class="tauri-settings-dialog">' +
+      '<div class="tauri-settings-title"><i class="ph ph-plugs-connected" aria-hidden="true"></i><span>后端连接设置</span></div>' +
+      '<p>切换后将重新加载当前页面。</p>' +
+      '<input id="tauri-backend-input" type="text" spellcheck="false" aria-label="后端地址" />' +
+      '<div class="tauri-settings-actions">' +
+      '<button id="tauri-backend-cancel" class="tauri-dialog-button">取消</button>' +
+      '<button id="tauri-backend-save" class="tauri-dialog-button primary">保存并重连</button>' +
       '</div></div>';
 
     function openModal() {
       overlay.querySelector('#tauri-backend-input').value = getBackend();
-      overlay.style.display = 'flex';
+      overlay.classList.add('open');
     }
-    function closeModal() { overlay.style.display = 'none'; }
+    function closeModal() { overlay.classList.remove('open'); }
 
     btn.addEventListener('click', openModal);
     overlay.addEventListener('click', function (e) { if (e.target === overlay) closeModal(); });

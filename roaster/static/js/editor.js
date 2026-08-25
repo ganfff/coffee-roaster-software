@@ -719,7 +719,7 @@
           <span class="node-time">${formatTimeShort(n.time)}</span>
           <span class="node-val">${n.temperature.toFixed(1)}</span>
           <span class="node-slope">${slope}</span>
-          <button class="node-insert-btn" data-idx="${i}" title="在下方插入节点">+</button>
+          <button class="node-insert-btn" data-idx="${i}" title="在下方插入节点" aria-label="在下方插入节点"><i class="ph ph-plus"></i></button>
         </div>
       `;
     }).join('');
