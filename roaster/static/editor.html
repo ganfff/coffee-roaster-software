@@ -3,8 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="dark light" />
   <title>曲线编辑器 - Ganf's咖啡烘焙机</title>
-  <link rel="stylesheet" href="css/editor.css?v=3.19" />
+  <!-- theme.js 必须在样式表之前同步执行:把 data-theme 写到 <html>,首帧即是目标主题(防 FOUC) -->
+  <script src="js/theme.js?v=3.20"></script>
+  <link rel="stylesheet" href="css/theme.css?v=3.20" />
+  <link rel="stylesheet" href="css/editor.css?v=3.20" />
   <script src="js/vendor/chart.umd.min.js"></script>
 </head>
 <body>
@@ -84,8 +88,8 @@
     </main>
   </div>
 
-  <script src="js/tauri-adapter.js?v=3.19"></script>
-  <script src="js/utils.js?v=3.19"></script>
-  <script src="js/editor.js?v=3.19"></script>
+  <script src="js/tauri-adapter.js?v=3.20"></script>
+  <script src="js/utils.js?v=3.20"></script>
+  <script src="js/editor.js?v=3.20"></script>
 </body>
 </html>

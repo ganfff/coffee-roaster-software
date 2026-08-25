@@ -150,7 +150,7 @@
       histBox.innerHTML = h.map(function (u) {
         var cur = u === getBackend();
         return '<button data-url="' + u.replace(/"/g, '&quot;') + '" class="ctrl-btn small" style="margin:0 6px 6px 0;' +
-          (cur ? 'border-color:#0a84ff;color:#0a84ff;' : '') + '">' + u + '</button>';
+          (cur ? 'border-color:var(--info);color:var(--info);' : '') + '">' + u + '</button>';
       }).join('');
       histBox.querySelectorAll('button[data-url]').forEach(function (b) {
         b.addEventListener('click', function () { applyAndReload(b.dataset.url); });
@@ -165,10 +165,12 @@
     btn.id = 'tauri-settings-btn';
     btn.textContent = '⚙';
     btn.title = '后端连接设置（仅桌面版显示）';
+    // 颜色全部走 theme.css 令牌(var 在内联样式中同样生效),深浅主题自适应
     btn.style.cssText =
       'position:fixed;right:12px;bottom:64px;z-index:1030;width:36px;height:36px;' +
-      'border-radius:50%;border:1px solid rgba(255,255,255,.25);background:rgba(40,40,42,.85);' +
-      'color:#ddd;font-size:17px;cursor:pointer;opacity:.65;transition:opacity .15s;';
+      'border-radius:50%;border:1px solid var(--border);background:var(--surface-2);' +
+      'box-shadow:var(--shadow-card);color:var(--text-secondary);font-size:17px;cursor:pointer;' +
+      'opacity:.65;transition:opacity .15s;';
     btn.onmouseenter = function () { btn.style.opacity = '1'; };
     btn.onmouseleave = function () { btn.style.opacity = '.65'; };
 
@@ -177,17 +179,17 @@
       'position:fixed;inset:0;z-index:1031;background:rgba(0,0,0,.55);display:none;' +
       'align-items:center;justify-content:center;';
     overlay.innerHTML =
-      '<div style="background:#1c1c1e;border:1px solid rgba(255,255,255,.15);border-radius:12px;' +
-      'padding:20px 22px;width:340px;color:#eee;font-family:inherit;">' +
+      '<div style="background:var(--surface-2);border:1px solid var(--border);border-radius:14px;' +
+      'box-shadow:var(--shadow-pop);padding:20px 22px;width:340px;color:var(--text);font-family:inherit;">' +
       '<div style="font-size:15px;font-weight:600;margin-bottom:10px;">后端连接设置</div>' +
       '<input id="tauri-backend-input" type="text" spellcheck="false" style="width:100%;box-sizing:border-box;' +
-      'padding:8px 10px;border-radius:8px;border:1px solid rgba(255,255,255,.2);background:#2c2c2e;' +
-      'color:#eee;font-size:13px;outline:none;" />' +
+      'padding:8px 10px;border-radius:10px;border:1px solid var(--border);background:var(--surface-3);' +
+      'color:var(--text);font-size:13px;outline:none;" />' +
       '<div style="display:flex;gap:8px;margin-top:14px;justify-content:flex-end;">' +
       '<button id="tauri-backend-cancel" style="padding:6px 12px;border-radius:8px;border:1px solid ' +
-      'rgba(255,255,255,.2);background:transparent;color:#bbb;cursor:pointer;font-size:13px;">取消</button>' +
+      'var(--border);background:transparent;color:var(--text-secondary);cursor:pointer;font-size:13px;">取消</button>' +
       '<button id="tauri-backend-save" style="padding:6px 12px;border-radius:8px;border:none;' +
-      'background:#0a84ff;color:#fff;cursor:pointer;font-size:13px;font-weight:600;">保存并重连</button>' +
+      'background:var(--info);color:#fff;cursor:pointer;font-size:13px;font-weight:600;">保存并重连</button>' +
       '</div></div>';
 
     function openModal() {
@@ -202,7 +204,7 @@
     overlay.querySelector('#tauri-backend-save').addEventListener('click', function () {
       var v = normalizeUrl(overlay.querySelector('#tauri-backend-input').value);
       if (!/^https?:\/\/.+/.test(v)) {
-        overlay.querySelector('#tauri-backend-input').style.borderColor = '#ff453a';
+        overlay.querySelector('#tauri-backend-input').style.borderColor = 'var(--danger)';
         return;
       }
       applyAndReload(v);

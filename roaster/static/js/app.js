@@ -22,6 +22,7 @@
   let lastPromptedSessionId = null;
   let lastOfflineCommandToastAt = 0;
   let compareMode = false;
+  let lastDeltaColor = '';
   let selectedRecords = new Set();
   let selectedProfileId = null;
 
@@ -102,18 +103,18 @@
         ctx.beginPath();
         ctx.setLineDash([5, 4]);
         ctx.lineWidth = 1.5;
-        ctx.strokeStyle = ann.color || '#f59e0b';
+        ctx.strokeStyle = ann.color || chartPalette.eventDefault;
         ctx.moveTo(xPos, y.top);
         ctx.lineTo(xPos, y.bottom);
         ctx.stroke();
         const text = ann.label;
-        ctx.font = '11px Fira Sans';
+        ctx.font = '11px ' + (chartPalette.fontMono || 'monospace');
         const textWidth = ctx.measureText(text).width;
         const padding = 4;
         const labelY = y.top + 6;
-        ctx.fillStyle = 'rgba(10,10,10,0.8)';
+        ctx.fillStyle = chartPalette.eventLabelBg || 'rgba(10,10,10,0.82)';
         ctx.fillRect(xPos + 4, labelY, textWidth + padding * 2, 16);
-        ctx.fillStyle = ann.color || '#f59e0b';
+        ctx.fillStyle = ann.color || chartPalette.eventDefault;
         ctx.fillText(text, xPos + 4 + padding, labelY + 12);
       });
       ctx.restore();
@@ -121,10 +122,60 @@
   };
   Chart.register(eventLinesPlugin);
 
+  // ========== 主题色板(Chart.js / canvas 颜色与 theme.css 令牌同源) ==========
+  // refreshChartPalette 在 initCharts 与 'roaster-themechange' 时重读 CSS 变量;
+  // 事件插件在绘制时实时引用 chartPalette,换主题后下一帧自然生效。
+  let chartPalette = {};
+
+  function refreshChartPalette() {
+    chartPalette = {
+      fontUi: cssVar('--font-ui', 'sans-serif'),
+      fontMono: cssVar('--font-mono', 'monospace'),
+      grid: cssVar('--chart-grid', '#1f1f1f'),
+      tick: cssVar('--chart-tick', '#a3a3a3'),
+      legend: cssVar('--chart-legend', '#e5e5e5'),
+      temp: cssVar('--chart-temp', '#00e676'),
+      setpoint: cssVar('--chart-setpoint', '#ff5252'),
+      target: cssVar('--chart-target', '#9e9e9e'),
+      targetFill: cssVar('--chart-target-fill', 'rgba(158,158,158,0.06)'),
+      ror: cssVar('--chart-ror', '#448aff'),
+      rorFill: cssVar('--chart-ror-fill', 'rgba(68,138,255,0.12)'),
+      rorPreview: cssVar('--chart-ror-preview', '#82b1ff'),
+      projection: cssVar('--chart-projection', 'rgba(0,230,118,0.45)'),
+      y1Tick: cssVar('--chart-y1-tick', '#60a5fa'),
+      compareA: cssVar('--chart-compare-a', '#ff9800'),
+      compareB: cssVar('--chart-compare-b', '#e040fb'),
+      eventLabelBg: cssVar('--chart-event-label-bg', 'rgba(10,10,10,0.82)'),
+      tooltipBg: cssVar('--chart-tooltip-bg', 'rgba(24,24,27,0.96)'),
+      tooltipBorder: cssVar('--chart-tooltip-border', 'rgba(255,255,255,0.1)'),
+      tooltipText: cssVar('--chart-tooltip-text', '#f5f5f7'),
+      eventDefault: cssVar('--event-yellowing', '#f59e0b'),
+      eventColors: {
+        charge: cssVar('--event-charge', '#22c55e'),
+        yellowing: cssVar('--event-yellowing', '#f59e0b'),
+        first_crack: cssVar('--event-first-crack', '#ef4444'),
+        first_crack_end: cssVar('--event-first-crack', '#ef4444'),
+        second_crack: cssVar('--event-second-crack', '#a855f7'),
+        second_crack_end: cssVar('--event-second-crack', '#a855f7'),
+        drop: cssVar('--event-drop', '#3b82f6'),
+        tp: cssVar('--event-tp', '#26a69a')
+      },
+      deltaGood: cssVar('--delta-good', '#22c55e'),
+      deltaWarn: cssVar('--delta-warn', '#f97316'),
+      deltaInfo: cssVar('--delta-info', '#3b82f6')
+    };
+  }
+
+  function eventColor(type) {
+    return (chartPalette.eventColors && chartPalette.eventColors[type]) || chartPalette.eventDefault || '#f59e0b';
+  }
+
   // ========== Chart.js 初始化 ==========
   function initCharts() {
-    Chart.defaults.color = '#a3a3a3';
-    Chart.defaults.borderColor = '#262626';
+    refreshChartPalette();
+    Chart.defaults.color = chartPalette.tick;
+    Chart.defaults.borderColor = chartPalette.grid;
+    Chart.defaults.font.family = chartPalette.fontUi;
 
     const ctx = document.getElementById('roast-chart').getContext('2d');
     roastChart = new Chart(ctx, {
@@ -134,8 +185,8 @@
           {
             label: '温度',
             data: [],
-            borderColor: '#00e676',
-            backgroundColor: '#00e676',
+            borderColor: chartPalette.temp,
+            backgroundColor: chartPalette.temp,
             tension: 0.3,
             pointRadius: 0,
             borderWidth: 2.5,
@@ -144,8 +195,8 @@
           {
             label: '设定温度',
             data: [],
-            borderColor: '#ff5252',
-            backgroundColor: '#ff5252',
+            borderColor: chartPalette.setpoint,
+            backgroundColor: chartPalette.setpoint,
             borderDash: [6, 4],
             tension: 0.3,
             pointRadius: 0,
@@ -155,8 +206,8 @@
           {
             label: '目标曲线',
             data: [],
-            borderColor: '#9e9e9e',
-            backgroundColor: 'rgba(158,158,158,0.06)',
+            borderColor: chartPalette.target,
+            backgroundColor: chartPalette.targetFill,
             borderDash: [8, 4],
             tension: 0.3,
             pointRadius: 0,
@@ -167,8 +218,8 @@
           {
             label: 'ROR',
             data: [],
-            borderColor: '#448aff',
-            backgroundColor: 'rgba(68,138,255,0.12)',
+            borderColor: chartPalette.ror,
+            backgroundColor: chartPalette.rorFill,
             tension: 0.3,
             pointRadius: 0,
             borderWidth: 2,
@@ -178,7 +229,7 @@
           {
             label: 'ROR 预览',
             data: [],
-            borderColor: '#82b1ff',
+            borderColor: chartPalette.rorPreview,
             backgroundColor: 'transparent',
             borderDash: [4, 4],
             tension: 0.3,
@@ -190,7 +241,7 @@
           {
             label: '预测',
             data: [],
-            borderColor: 'rgba(0,230,118,0.45)',
+            borderColor: chartPalette.projection,
             backgroundColor: 'transparent',
             borderDash: [4, 4],
             tension: 0,
@@ -209,7 +260,7 @@
         plugins: {
           legend: {
             labels: {
-              color: '#e5e5e5',
+              color: chartPalette.legend,
               font: { size: 13, weight: '500' },
               usePointStyle: true,
               pointStyle: 'rectRounded',
@@ -233,6 +284,11 @@
             enabled: true,
             mode: 'index',
             intersect: false,
+            backgroundColor: chartPalette.tooltipBg,
+            titleColor: chartPalette.tooltipText,
+            bodyColor: chartPalette.tooltipText,
+            borderColor: chartPalette.tooltipBorder,
+            borderWidth: 1,
             filter: function(context) {
               // dataset[2]=目标曲线(profile target), dataset[4]=ROR预览 — 插值曲线始终有数据，始终显示
               if (context.datasetIndex === 2 || context.datasetIndex === 4) return true;
@@ -267,10 +323,10 @@
         scales: {
           x: {
             type: 'linear',
-            title: { display: true, text: '时间 (min)', color: '#a3a3a3', font: { size: 12 } },
-            grid: { color: '#1f1f1f' },
+            title: { display: true, text: '时间 (min)', color: chartPalette.tick, font: { size: 12 } },
+            grid: { color: chartPalette.grid },
             ticks: {
-              color: '#a3a3a3',
+              color: chartPalette.tick,
               callback: function(value) {
                 const m = Math.floor(value / 60);
                 const s = Math.floor(value % 60);
@@ -284,23 +340,93 @@
             position: 'left',
             min: 0,
             max: 300,
-            title: { display: true, text: '温度 (°C)', color: '#a3a3a3', font: { size: 12 } },
-            grid: { color: '#1f1f1f' },
-            ticks: { color: '#a3a3a3' }
+            title: { display: true, text: '温度 (°C)', color: chartPalette.tick, font: { size: 12 } },
+            grid: { color: chartPalette.grid },
+            ticks: { color: chartPalette.tick }
           },
           y1: {
             type: 'linear',
             display: true,
             position: 'right',
-            title: { display: true, text: 'ROR (°C/min)', color: '#a3a3a3', font: { size: 12 } },
+            title: { display: true, text: 'ROR (°C/min)', color: chartPalette.tick, font: { size: 12 } },
             grid: { drawOnChartArea: false },
-            ticks: { color: '#60a5fa' },
+            ticks: { color: chartPalette.y1Tick },
             suggestedMin: -5,
             suggestedMax: 25
           },
         }
       }
     });
+  }
+
+  /**
+   * tooltip 配色随主题写入(两张图共用)。
+   */
+  function applyTooltipTheme(tip) {
+    if (!tip) return;
+    tip.backgroundColor = chartPalette.tooltipBg;
+    tip.titleColor = chartPalette.tooltipText;
+    tip.bodyColor = chartPalette.tooltipText;
+    tip.borderColor = chartPalette.tooltipBorder;
+    tip.borderWidth = 1;
+  }
+
+  /**
+   * 主题切换后给常驻图表原地换色:只改颜色配置并 update('none'),
+   * 不触碰数据、动画与交互配置(PITFALLS #33/#43)。
+   * 事件标注对象带 annType,颜色可无损重映射。
+   */
+  function applyChartTheme() {
+    refreshChartPalette();
+    const p = chartPalette;
+    Chart.defaults.color = p.tick;
+    Chart.defaults.borderColor = p.grid;
+
+    if (roastChart) {
+      const ds = roastChart.data.datasets;
+      // 全部数据集先按常规色板重染(compare 模式只清 ds[2..5] 的数据不清颜色,
+      // 不无条件重染会导致退出 compare 后残留旧主题色),compare 模式再覆盖 ds[0]/ds[1]
+      ds[0].borderColor = p.temp;      ds[0].backgroundColor = p.temp;
+      ds[1].borderColor = p.setpoint;  ds[1].backgroundColor = p.setpoint;
+      ds[2].borderColor = p.target;    ds[2].backgroundColor = p.targetFill;
+      ds[3].borderColor = p.ror;       ds[3].backgroundColor = p.rorFill;
+      ds[4].borderColor = p.rorPreview;
+      ds[5].borderColor = p.projection;
+      if (compareMode) {
+        ds[0].borderColor = p.compareA; ds[0].backgroundColor = p.compareA;
+        ds[1].borderColor = p.compareB; ds[1].backgroundColor = p.compareB;
+      }
+      roastChart.options.plugins.legend.labels.color = p.legend;
+      applyTooltipTheme(roastChart.options.plugins.tooltip);
+      const sx = roastChart.options.scales.x;
+      const sy = roastChart.options.scales.y;
+      const sy1 = roastChart.options.scales.y1;
+      sx.title.color = p.tick;  sx.grid.color = p.grid;  sx.ticks.color = p.tick;
+      sy.title.color = p.tick;  sy.grid.color = p.grid;  sy.ticks.color = p.tick;
+      sy1.title.color = p.tick; sy1.ticks.color = p.y1Tick;
+      eventAnnotations.forEach(a => { a.color = eventColor(a.annType); });
+      roastChart.update('none');
+    }
+
+    if (recordChart) {
+      // renderRecordChart 数据集顺序:0 温度 / 1 设定 / 2 ROR / [3 背景曲线]
+      const ds = recordChart.data.datasets;
+      if (ds[0]) { ds[0].borderColor = p.temp;     ds[0].backgroundColor = p.temp; }
+      if (ds[1]) { ds[1].borderColor = p.setpoint; ds[1].backgroundColor = p.setpoint; }
+      if (ds[2]) { ds[2].borderColor = p.ror;      ds[2].backgroundColor = p.rorFill; }
+      if (ds[3]) { ds[3].borderColor = p.target; }
+      if (recordChart.options.plugins.legend) {
+        recordChart.options.plugins.legend.labels.color = p.legend;
+      }
+      applyTooltipTheme(recordChart.options.plugins.tooltip);
+      const s = recordChart.options.scales;
+      if (s.x)  { s.x.title.color = p.tick;  s.x.grid.color = p.grid;  s.x.ticks.color = p.tick; }
+      if (s.y)  { s.y.title.color = p.tick;  s.y.grid.color = p.grid;  s.y.ticks.color = p.tick; }
+      if (s.y1) { s.y1.title.color = p.tick; s.y1.ticks.color = p.y1Tick; }
+      const ann = recordChart.options.plugins.eventLines && recordChart.options.plugins.eventLines.annotations;
+      if (Array.isArray(ann)) ann.forEach(a => { a.color = eventColor(a.annType); });
+      recordChart.update('none');
+    }
   }
 
   /**
@@ -571,23 +697,15 @@
     if (sig === lastEventsSig) return;
     lastEventsSig = sig;
 
-    const colors = {
-      charge: '#22c55e',
-      yellowing: '#f59e0b',
-      first_crack: '#ef4444',
-      first_crack_end: '#ef4444',
-      second_crack: '#a855f7',
-      second_crack_end: '#a855f7',
-      drop: '#3b82f6'
-    };
     eventAnnotations = list.map(e => ({
       time: e.time,
       label: eventLabel(e.type),
-      color: colors[e.type] || '#f59e0b'
+      color: eventColor(e.type),
+      annType: e.type
     }));
     // 回温点（前端自动检测）一并标注
     if (tpTime != null) {
-      eventAnnotations.push({ time: tpTime, label: '回温点', color: '#26a69a' });
+      eventAnnotations.push({ time: tpTime, label: '回温点', color: eventColor('tp'), annType: 'tp' });
     }
     if (roastChart) roastChart.update('none');
   }
@@ -660,11 +778,13 @@
           && deltaProf.nodes.length >= 2 && msg.pv != null) {
         const d = msg.pv - getSplineTemp(deltaProf.nodes, msg.elapsed || 0);
         setTextIfChanged(deltaEl, (d >= 0 ? '+' : '') + d.toFixed(1) + '°C');
-        const dc = Math.abs(d) <= 2 ? '#22c55e' : (d > 0 ? '#f97316' : '#3b82f6');
-        if (deltaEl.style.color !== dc) deltaEl.style.color = dc;
+        // 浏览器会把 style.color 序列化成 rgb(...),直接比对恒为假,
+        // 用模块级缓存比对才能真正短路(PITFALLS #43 精神)
+        const dc = Math.abs(d) <= 2 ? chartPalette.deltaGood : (d > 0 ? chartPalette.deltaWarn : chartPalette.deltaInfo);
+        if (lastDeltaColor !== dc) { deltaEl.style.color = dc; lastDeltaColor = dc; }
       } else {
         setTextIfChanged(deltaEl, '--');
-        if (deltaEl.style.color) deltaEl.style.color = '';
+        if (lastDeltaColor !== '') { deltaEl.style.color = ''; lastDeltaColor = ''; }
       }
     }
 
@@ -1381,17 +1501,29 @@
 
   // ========== Tabs ==========
   function initTabs() {
+    // iOS 分段控件滑动拇指:按实测 offsetLeft/offsetWidth 定位,对等宽 flex 分段天然适配
+    const glider = document.querySelector('.tabs .tab-glider');
+    const moveGlider = (btn) => {
+      if (!glider || !btn) return;
+      glider.style.width = btn.offsetWidth + 'px';
+      glider.style.transform = 'translateX(' + btn.offsetLeft + 'px)';
+    };
     document.querySelectorAll('.tab-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
         btn.classList.add('active');
         document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+        moveGlider(btn);
         if (btn.dataset.tab === 'records') {
           loadRecords();
         }
       });
     });
+    // 初始定位 + 视口变化跟随(首帧布局未就绪,等一帧再量)
+    const syncGlider = () => moveGlider(document.querySelector('.tab-btn.active'));
+    requestAnimationFrame(syncGlider);
+    window.addEventListener('resize', syncGlider);
     // 支持 #tab 深链（如 index.html#settings 直达设置页）
     const hash = (location.hash || '').replace('#', '');
     if (hash && document.getElementById('tab-' + hash)) {
@@ -1456,7 +1588,7 @@
     const container = document.getElementById('profile-cards');
     if (!container) return;
     if (!list || list.length === 0) {
-      container.innerHTML = '<div style="color:#737373;text-align:center;padding:20px 0;grid-column:1/-1">暂无曲线，点击「新建曲线」创建</div>';
+      container.innerHTML = '<div class="list-placeholder">暂无曲线，点击「新建曲线」创建</div>';
       return;
     }
 
@@ -1572,7 +1704,7 @@
       return `${x.toFixed(1)},${y.toFixed(1)}`;
     }).join(' ');
     return `<svg class="sparkline" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">
-      <polyline points="${points}" fill="none" stroke="#00e676" stroke-width="1.5" stroke-linejoin="round"/>
+      <polyline points="${points}" fill="none" stroke-width="1.5" stroke-linejoin="round"/>
     </svg>`;
   }
 
@@ -1985,12 +2117,12 @@
   // ========== 烘焙记录查看 ==========
   async function loadRecords() {
     const container = document.getElementById('records-list');
-    container.innerHTML = '<div style="color:#737373;text-align:center;padding:20px 0">加载中...</div>';
+    container.innerHTML = '<div class="list-placeholder">加载中...</div>';
     try {
       const res = await fetch('/api/v1/records');
       const list = await res.json();
       if (!list.length) {
-        container.innerHTML = '<div style="color:#737373;text-align:center;padding:20px 0">暂无记录</div>';
+        container.innerHTML = '<div class="list-placeholder">暂无记录</div>';
         document.getElementById('btn-compare').style.display = 'none';
         return;
       }
@@ -2038,7 +2170,7 @@
 
       document.getElementById('btn-compare').style.display = selectedRecords.size >= 2 ? '' : 'none';
     } catch (e) {
-      container.innerHTML = '<div style="color:#ef4444;text-align:center;padding:20px 0">加载失败</div>';
+      container.innerHTML = '<div class="list-placeholder error">加载失败</div>';
     }
   }
 
@@ -2130,18 +2262,9 @@
       }
       document.getElementById('detail-stats').innerHTML = statsHtml;
 
-      // 事件列表（带颜色）
-      const eventColors = {
-        charge: '#22c55e',
-        yellowing: '#f59e0b',
-        first_crack: '#ef4444',
-        first_crack_end: '#ef4444',
-        second_crack: '#a855f7',
-        second_crack_end: '#a855f7',
-        drop: '#3b82f6'
-      };
+      // 事件列表（带颜色,未知事件类型回退刻度灰,PITFALLS #15 兜底语义保留）
       document.getElementById('detail-events').innerHTML = events.map(e => {
-        const color = eventColors[e.type] || '#a3a3a3';
+        const color = chartPalette.eventColors[e.type] || chartPalette.tick;
         const tempStr = e.temperature != null ? ` @ ${e.temperature.toFixed(1)}°C` : '';
         return `<div class="detail-event-item">
           <span class="detail-event-dot" style="background:${color}"></span>
@@ -2181,19 +2304,12 @@
       bgData = splineInterpolate(snap.nodes, 5);
     }
 
-    // 构建事件标注
+    // 构建事件标注(颜色取自主题色板,annType 供主题切换后无损重映射)
     const eventAnnos = events.map(e => ({
       time: e.time,
       label: eventLabel(e.type),
-      color: {
-        charge: '#22c55e',
-        yellowing: '#f59e0b',
-        first_crack: '#ef4444',
-        first_crack_end: '#ef4444',
-        second_crack: '#a855f7',
-        second_crack_end: '#a855f7',
-        drop: '#3b82f6'
-      }[e.type] || '#f59e0b'
+      color: eventColor(e.type),
+      annType: e.type
     }));
 
     if (recordChart) {
@@ -2204,8 +2320,8 @@
       {
         label: '温度',
         data: pvData,
-        borderColor: '#00e676',
-        backgroundColor: '#00e676',
+        borderColor: chartPalette.temp,
+        backgroundColor: chartPalette.temp,
         tension: 0.3,
         pointRadius: 0,
         borderWidth: 2,
@@ -2214,8 +2330,8 @@
       {
         label: '设定温度',
         data: svData,
-        borderColor: '#ff5252',
-        backgroundColor: '#ff5252',
+        borderColor: chartPalette.setpoint,
+        backgroundColor: chartPalette.setpoint,
         borderDash: [6, 4],
         tension: 0.3,
         pointRadius: 0,
@@ -2225,8 +2341,8 @@
       {
         label: 'ROR',
         data: rorData,
-        borderColor: '#448aff',
-        backgroundColor: 'rgba(68,138,255,0.08)',
+        borderColor: chartPalette.ror,
+        backgroundColor: chartPalette.rorFill,
         tension: 0.3,
         pointRadius: 0,
         borderWidth: 1.5,
@@ -2239,7 +2355,7 @@
       datasets.push({
         label: '背景曲线',
         data: bgData,
-        borderColor: '#a3a3a3',
+        borderColor: chartPalette.target,
         backgroundColor: 'transparent',
         borderDash: [4, 4],
         tension: 0.3,
@@ -2260,7 +2376,7 @@
         plugins: {
           legend: {
             labels: {
-              color: '#e5e5e5',
+              color: chartPalette.legend,
               font: { size: 13, weight: '500' },
               usePointStyle: true,
               pointStyle: 'rectRounded',
@@ -2273,6 +2389,11 @@
             enabled: true,
             mode: 'index',
             intersect: false,
+            backgroundColor: chartPalette.tooltipBg,
+            titleColor: chartPalette.tooltipText,
+            bodyColor: chartPalette.tooltipText,
+            borderColor: chartPalette.tooltipBorder,
+            borderWidth: 1,
             filter: function(context) {
               // 记录图表：背景曲线(dataset[3])始终显示；其他只在有数据范围内显示
               if (context.datasetIndex === 3) return true;
@@ -2306,10 +2427,10 @@
         scales: {
           x: {
             type: 'linear',
-            title: { display: true, text: '时间 (min)', color: '#a3a3a3', font: { size: 11 } },
-            grid: { color: '#1f1f1f' },
+            title: { display: true, text: '时间 (min)', color: chartPalette.tick, font: { size: 11 } },
+            grid: { color: chartPalette.grid },
             ticks: {
-              color: '#a3a3a3',
+              color: chartPalette.tick,
               callback: function(value) {
                 const m = Math.floor(value / 60);
                 const s = Math.floor(value % 60);
@@ -2323,17 +2444,17 @@
             position: 'left',
             min: 0,
             max: 300,
-            title: { display: true, text: '温度 (°C)', color: '#a3a3a3', font: { size: 11 } },
-            grid: { color: '#1f1f1f' },
-            ticks: { color: '#a3a3a3' }
+            title: { display: true, text: '温度 (°C)', color: chartPalette.tick, font: { size: 11 } },
+            grid: { color: chartPalette.grid },
+            ticks: { color: chartPalette.tick }
           },
           y1: {
             type: 'linear',
             display: true,
             position: 'right',
-            title: { display: true, text: 'ROR (°C/min)', color: '#a3a3a3', font: { size: 11 } },
+            title: { display: true, text: 'ROR (°C/min)', color: chartPalette.tick, font: { size: 11 } },
             grid: { drawOnChartArea: false },
-            ticks: { color: '#60a5fa' },
+            ticks: { color: chartPalette.y1Tick },
             suggestedMin: -5,
             suggestedMax: 25
           }
@@ -2379,14 +2500,14 @@
       // 记录A温度曲线（橙色）
       safeUpdateDataset(roastChart, 0, (r1.data || []).map(d => ({ x: d[0], y: d[1] })));
       roastChart.data.datasets[0].label = '记录A';
-      roastChart.data.datasets[0].borderColor = '#ff9800';
-      roastChart.data.datasets[0].backgroundColor = '#ff9800';
+      roastChart.data.datasets[0].borderColor = chartPalette.compareA;
+      roastChart.data.datasets[0].backgroundColor = chartPalette.compareA;
 
       // 记录B温度曲线（紫色）
       safeUpdateDataset(roastChart, 1, (r2.data || []).map(d => ({ x: d[0], y: d[1] })));
       roastChart.data.datasets[1].label = '记录B';
-      roastChart.data.datasets[1].borderColor = '#e040fb';
-      roastChart.data.datasets[1].backgroundColor = '#e040fb';
+      roastChart.data.datasets[1].borderColor = chartPalette.compareB;
+      roastChart.data.datasets[1].backgroundColor = chartPalette.compareB;
       roastChart.data.datasets[1].borderDash = [];
 
       // 隐藏背景曲线、ROR、ROR 预览与预测线
@@ -2414,13 +2535,13 @@
     // 恢复实时显示模式
     roastChart.data.datasets[0].data.length = 0;
     roastChart.data.datasets[0].label = '温度';
-    roastChart.data.datasets[0].borderColor = '#00e676';
-    roastChart.data.datasets[0].backgroundColor = '#00e676';
+    roastChart.data.datasets[0].borderColor = chartPalette.temp;
+    roastChart.data.datasets[0].backgroundColor = chartPalette.temp;
 
     roastChart.data.datasets[1].data.length = 0;
     roastChart.data.datasets[1].label = '设定温度';
-    roastChart.data.datasets[1].borderColor = '#ff5252';
-    roastChart.data.datasets[1].backgroundColor = '#ff5252';
+    roastChart.data.datasets[1].borderColor = chartPalette.setpoint;
+    roastChart.data.datasets[1].backgroundColor = chartPalette.setpoint;
     roastChart.data.datasets[1].borderDash = [6, 4];
 
     // 恢复背景曲线
@@ -2531,19 +2652,19 @@
     const list = document.getElementById('alarms-list');
     if (!list) return;
     if (!alarms.length) {
-      list.innerHTML = '<div style="color:#737373;font-size:12px;padding:6px 0">暂无报警，点「+ 添加」创建</div>';
+      list.innerHTML = '<div class="list-placeholder">暂无报警，点「+ 添加」创建</div>';
       return;
     }
+    // 布局与配色全部由 .alarm-row CSS 承载,模板不再写内联样式(主题兼容)
     list.innerHTML = alarms.map((a, i) => `
-      <div class="alarm-row" data-idx="${i}" style="display:flex;gap:6px;align-items:center;margin:6px 0;">
+      <div class="alarm-row" data-idx="${i}">
         <input type="checkbox" data-k="enabled" ${a.enabled ? 'checked' : ''} title="启用">
-        <select data-k="type" style="background:#2c2c2e;color:#e5e5e5;border:1px solid #3a3a3c;border-radius:6px;padding:4px 2px;font-size:12px;">
+        <select data-k="type">
           <option value="temp" ${a.type === 'temp' ? 'selected' : ''}>温度≥</option>
           <option value="time" ${a.type === 'time' ? 'selected' : ''}>时间≥</option>
         </select>
-        <input type="number" data-k="value" value="${a.value}" min="0" step="1" class="phase-number" style="width:64px;">
-        <input type="text" data-k="note" value="${escapeAttr(a.note || '')}" placeholder="备注（如：检查脱水）"
-               style="flex:1;min-width:60px;background:#2c2c2e;color:#e5e5e5;border:1px solid #3a3a3c;border-radius:6px;padding:5px 6px;font-size:12px;">
+        <input type="number" data-k="value" value="${a.value}" min="0" step="1" class="phase-number">
+        <input type="text" data-k="note" value="${escapeAttr(a.note || '')}" placeholder="备注（如：检查脱水）">
         <button class="ctrl-btn small danger" data-k="del">删除</button>
       </div>`).join('');
 
@@ -2589,6 +2710,8 @@
     loadSettings();
     applyUiScale();
     initSettingsUI();
+    // 主题切换 → 图表原地换色(theme.js 在 <head> 已把首帧主题写到 <html>)
+    window.addEventListener('roaster-themechange', applyChartTheme);
     initAutomationUI();
     connectWS();
     await loadProfiles();

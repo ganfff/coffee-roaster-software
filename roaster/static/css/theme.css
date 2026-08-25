@@ -1,0 +1,306 @@
+/* ============================================================
+ * theme.css — 设计令牌与双主题基础设施(深色 / 浅色)
+ *
+ * 契约(修改前必读):
+ * 1. 所有页面颜色一律引用本文件的语义变量,禁止在 style.css /
+ *    editor.css 中硬编码色值;canvas/Chart.js 颜色由 JS 经
+ *    cssVar()(utils.js)读取 --chart-* / --event-* 变量,与 CSS 同源。
+ * 2. 缓动只用 --ease-apple / --ease-apple-fast(PITFALLS #39)。
+ * 3. 主题切换的过渡动画只经 html.theme-animating 类临时启用,
+ *    由 js/theme.js 在 ~420ms 后移除;常驻 transition 会干扰
+ *    高频 DOM 更新与滑块拖动(PITFALLS #43)。
+ * 4. 树莓派 4B 性能红线:任何主题都禁止 backdrop-filter /
+ *    filter: blur(>2px)(PITFALLS #36/#37)。
+ * 5. <html data-theme> 由 js/theme.js 在 <head> 同步写入,
+ *    页面首帧即是目标主题;缺失时 :root 默认深色。
+ * ============================================================ */
+
+/* ---------- 深色主题(默认,Apple Dark) ---------- */
+:root {
+  color-scheme: dark;
+
+  /* 背景与面层级 */
+  --bg: #09090b;                       /* 应用底(近黑,微蓝) */
+  --bg-elevated: #131315;              /* 顶栏 / 底栏 */
+  --surface: #17171a;                  /* 图表面板 */
+  --surface-2: #1d1d21;                /* 卡片 / 控制区块 */
+  --surface-3: #2a2a2e;                /* 内嵌控件填充 */
+  --fill: rgba(120, 120, 128, 0.16);   /* Apple tertiaryFill:分段控件轨 */
+  --fill-strong: rgba(120, 120, 128, 0.26);
+  --border: rgba(255, 255, 255, 0.09); /* 发丝边框 */
+  --separator: rgba(255, 255, 255, 0.06);
+
+  /* 文字 */
+  --text: #f5f5f7;
+  --text-secondary: #9a9aa2;
+  --text-tertiary: #63636b;
+
+  /* 品牌与语义色(Apple system colors · Dark) */
+  --accent: #ff9f0a;                   /* 品牌橙(烘焙) */
+  --accent-hover: #ffb340;
+  --accent-soft: rgba(255, 159, 10, 0.14);
+  --on-accent: rgba(0, 0, 0, 0.85);
+  --primary: #30d158;                  /* 开始 / 正常 */
+  --primary-hover: #3ae065;
+  --primary-soft: rgba(48, 209, 88, 0.14);
+  --on-primary: rgba(0, 0, 0, 0.85);
+  --info: #0a84ff;
+  --info-hover: #409cff;
+  --info-soft: rgba(10, 132, 255, 0.16);
+  --danger: #ff453a;
+  --danger-hover: #ff6961;
+  --danger-soft: rgba(255, 69, 58, 0.13);
+  --gray-soft: rgba(120, 120, 128, 0.2);
+  --seg-thumb: #55555a;                /* 分段控件选中拇指 */
+
+  /* 烘焙阶段色 */
+  --phase-drying: #3b82f6;
+  --phase-maillard: #f59e0b;
+  --phase-development: #ff453a;
+  --phase-cooling: #8e8e93;
+
+  /* 图表 / canvas 颜色(JS 经 cssVar 消费,与 CSS 同源) */
+  --chart-grid: rgba(255, 255, 255, 0.06);
+  --chart-tick: #a3a3a3;
+  --chart-legend: #e5e5e5;
+  --chart-temp: #00e676;
+  --chart-setpoint: #ff5252;
+  --chart-target: #9e9e9e;
+  --chart-target-fill: rgba(158, 158, 158, 0.06);
+  --chart-ror: #448aff;
+  --chart-ror-fill: rgba(68, 138, 255, 0.12);
+  --chart-ror-preview: #82b1ff;
+  --chart-projection: rgba(0, 230, 118, 0.45);
+  --chart-y1-tick: #60a5fa;
+  --chart-compare-a: #ff9800;
+  --chart-compare-b: #e040fb;
+  --chart-event-label-bg: rgba(10, 10, 10, 0.82);
+  --chart-tooltip-bg: rgba(24, 24, 27, 0.96);
+  --chart-tooltip-border: rgba(255, 255, 255, 0.1);
+  --chart-tooltip-text: #f5f5f7;
+
+  /* 烘焙事件色(图表标注 / 详情事件点同源) */
+  --event-charge: #22c55e;
+  --event-yellowing: #f59e0b;
+  --event-first-crack: #ef4444;
+  --event-second-crack: #a855f7;
+  --event-drop: #3b82f6;
+  --event-tp: #26a69a;
+
+  /* 目标偏差读数色 */
+  --delta-good: #22c55e;
+  --delta-warn: #f97316;
+  --delta-info: #3b82f6;
+
+  /* 曲线编辑器 */
+  --editor-curve: #9ca3af;
+  --editor-node: #f59e0b;
+  --editor-node-hover: #ffffff;
+
+  /* 读数发光(浅色主题下关闭) */
+  --glow-pv: 0 0 14px rgba(0, 230, 118, 0.3);
+  --glow-sv: 0 0 14px rgba(255, 82, 82, 0.3);
+  --glow-ror: 0 0 14px rgba(68, 138, 255, 0.3);
+
+  /* 阴影 */
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.4), 0 6px 20px rgba(0, 0, 0, 0.3);
+  --shadow-pop: 0 12px 40px rgba(0, 0, 0, 0.55);
+  --shadow-inset-top: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  --shadow-thumb: 0 1px 3px rgba(0, 0, 0, 0.5), 0 0 0 0.5px rgba(0, 0, 0, 0.2);
+
+  /* 字体 */
+  --font-ui: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text",
+    "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC", "Source Han Sans SC",
+    "Microsoft YaHei UI", "Microsoft YaHei", "Segoe UI", Roboto, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas,
+    "Cascadia Mono", "Liberation Mono", "DejaVu Sans Mono", monospace;
+
+  /* 圆角 */
+  --radius-sm: 8px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 18px;
+  --radius-pill: 999px;
+
+  /* 动效(缓动变量化,禁止字面量) */
+  --ease-apple: cubic-bezier(0.32, 0.72, 0, 1);
+  --ease-apple-fast: cubic-bezier(0.4, 0, 0.2, 1);
+  --duration-fast: 140ms;
+  --duration-med: 240ms;
+}
+
+/* ---------- 浅色主题(Apple Light) ---------- */
+:root[data-theme="light"] {
+  color-scheme: light;
+
+  --bg: #f2f2f7;                       /* Apple systemGroupedBackground */
+  --bg-elevated: #f8f8fa;
+  --surface: #ffffff;
+  --surface-2: #ffffff;
+  --surface-3: #f5f5f8;
+  --fill: rgba(120, 120, 128, 0.12);
+  --fill-strong: rgba(120, 120, 128, 0.2);
+  --border: rgba(0, 0, 0, 0.08);
+  --separator: rgba(0, 0, 0, 0.06);
+
+  --text: #1d1d1f;
+  --text-secondary: #6e6e73;
+  --text-tertiary: #aeaeb2;
+
+  --accent: #f07d00;                   /* 白底加深,保对比度 */
+  --accent-hover: #d96e00;
+  --accent-soft: rgba(240, 125, 0, 0.12);
+  --on-accent: #ffffff;
+  --primary: #28a745;
+  --primary-hover: #1e8e3e;
+  --primary-soft: rgba(40, 167, 69, 0.12);
+  --on-primary: #ffffff;
+  --info: #007aff;
+  --info-hover: #0066d6;
+  --info-soft: rgba(0, 122, 255, 0.12);
+  --danger: #ff3b30;
+  --danger-hover: #d70015;
+  --danger-soft: rgba(255, 59, 48, 0.1);
+  --gray-soft: rgba(120, 120, 128, 0.14);
+  --seg-thumb: #ffffff;
+
+  --phase-drying: #007aff;
+  --phase-maillard: #b45309;           /* 白底加深一档,保小字对比度 */
+  --phase-development: #ff3b30;
+  --phase-cooling: #8e8e93;
+
+  --chart-grid: rgba(0, 0, 0, 0.06);
+  --chart-tick: #6e6e73;
+  --chart-legend: #3a3a3c;
+  --chart-temp: #1e9e50;
+  --chart-setpoint: #e5484d;
+  --chart-target: #8e8e93;
+  --chart-target-fill: rgba(120, 120, 128, 0.1);
+  --chart-ror: #2f7df6;
+  --chart-ror-fill: rgba(47, 125, 246, 0.1);
+  --chart-ror-preview: #7aa8f8;
+  --chart-projection: rgba(30, 158, 80, 0.5);
+  --chart-y1-tick: #2f7df6;
+  --chart-compare-a: #ef6c00;
+  --chart-compare-b: #c026d3;
+  --chart-event-label-bg: rgba(255, 255, 255, 0.92);
+  --chart-tooltip-bg: rgba(255, 255, 255, 0.97);
+  --chart-tooltip-border: rgba(0, 0, 0, 0.1);
+  --chart-tooltip-text: #1d1d1f;
+
+  --event-charge: #16a34a;
+  --event-yellowing: #d97706;
+  --event-first-crack: #dc2626;
+  --event-second-crack: #9333ea;
+  --event-drop: #2563eb;
+  --event-tp: #0d9488;
+
+  --delta-good: #16a34a;
+  --delta-warn: #ea580c;
+  --delta-info: #2563eb;
+
+  --editor-curve: #6b7280;
+  --editor-node: #d97706;
+  --editor-node-hover: #1d1d1f;
+
+  /* 浅色下读数不发光,保持纸面干净 */
+  --glow-pv: none;
+  --glow-sv: none;
+  --glow-ror: none;
+
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.05), 0 6px 20px rgba(0, 0, 0, 0.06);
+  --shadow-pop: 0 12px 40px rgba(0, 0, 0, 0.16);
+  --shadow-inset-top: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+  --shadow-thumb: 0 1px 3px rgba(0, 0, 0, 0.18), 0 0 0 0.5px rgba(0, 0, 0, 0.04);
+}
+
+/* ---------- 主题切换过渡 ----------
+ * 仅在 theme.js 切换瞬间给 <html> 加 .theme-animating,
+ * 动画结束后移除,避免常驻 transition 干扰高频 DOM 更新与拖动。 */
+html.theme-animating,
+html.theme-animating *,
+html.theme-animating *::before,
+html.theme-animating *::after {
+  transition:
+    background-color 340ms var(--ease-apple-fast),
+    border-color 340ms var(--ease-apple-fast),
+    color 340ms var(--ease-apple-fast),
+    box-shadow 340ms var(--ease-apple-fast),
+    outline-color 340ms var(--ease-apple-fast),
+    fill 340ms var(--ease-apple-fast),
+    stroke 340ms var(--ease-apple-fast) !important;
+}
+
+/* ---------- 基础排版与全局原件(两页共用) ---------- */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-ui);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow: hidden;
+}
+
+/* 数字展示统一等宽数字,跳动时不抖动布局 */
+.readout-val, .elapsed, .clock, .seg-val, .event-temp-val,
+.ev-readout, .lookahead-actual, .ev-tick-label,
+.roast-progress-bar, .profile-card .meta, .record-meta,
+.record-events, .detail-event-time, .record-info-stats span,
+.record-info-title span, .event-badge, .phase-number,
+input[type="number"], .ror-list, .node-item {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
+/* 列表空态 / 加载占位(JS 注入,禁止再写内联色) */
+.list-placeholder {
+  color: var(--text-tertiary);
+  text-align: center;
+  padding: 20px 0;
+  font-size: 13px;
+}
+.list-placeholder.error {
+  color: var(--danger);
+}
+
+/* 滚动条:细、圆角、透明轨道 */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--fill-strong);
+  border-radius: var(--radius-pill);
+}
+@media (hover: hover) and (pointer: fine) {
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--text-tertiary);
+  }
+}
+
+/* 键盘焦点环:统一苹果蓝光晕 */
+:focus-visible {
+  outline: 2px solid var(--info);
+  outline-offset: 2px;
+}
+
+/* 尊重系统减少动态效果设置(PITFALLS #19) */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

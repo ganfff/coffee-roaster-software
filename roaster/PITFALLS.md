@@ -484,6 +484,50 @@ v3.17 删除前端 `handleStateUpdate` 对 `phase_lookahead_config` / `lookahead
 - **解决方案**：Pointer Events 作为主路径，使用 `setPointerCapture` 和 `activePointerId` 锁定当前拖拽；鼠标 fallback 只在无 Pointer Events 时启用；拖拽区域保留 `touch-action: none`。
 - **相关文件**：`static/js/editor.js`、`static/css/editor.css`
 
+## v3.20 新增坑点 (2026-08-16)
+
+### 54. 颜色唯一来源是 `theme.css` 令牌,JS 图表色经 `cssVar()` 读取
+
+- **问题**：双主题后，任何在 style.css / editor.css / JS 模板里硬编码的色值都只在一个主题下正确；canvas / Chart.js 不读 CSS，必须经 `utils.js:cssVar(name, fallback)` 取 `--chart-*` / `--event-*` 令牌。
+- **影响**：前端全部。
+- **解决方案**：新颜色先入 theme.css 双主题令牌区再消费；JS 侧走 `chartPalette` / `editorPalette`，主题切换经 `roaster-themechange` 事件重读。fallback 字面量只许出现在 `refreshChartPalette` 一处（与深色主题一致）。
+- **相关文件**：`static/css/theme.css`、`static/js/utils.js:cssVar`、`static/js/app.js:refreshChartPalette`、`static/js/editor.js:refreshEditorPalette`
+
+### 55. `theme.js` 必须在 `<head>` 同步外链，且先于样式表
+
+- **问题**：Tauri CSP `script-src 'self'` 禁止内联脚本，防 FOUC 的「预读 localStorage 写 data-theme」不能写成 HTML 内联 `<script>`；若推迟到 DOMContentLoaded 才应用主题，首帧会先按默认深色闪一下。
+- **影响**：前端（Tauri 桌面版 CSP 约束、两页首帧观感）。
+- **解决方案**：`<script src="js/theme.js">` 放在两个 HTML 的 `<head>` 内、样式表 `<link>` 之前；theme.js 顶层同步执行 `applySilent(readMode())`，控件接线才等 DOMContentLoaded。
+- **相关文件**：`static/index.html`、`static/editor.html`、`static/js/theme.js`、`desktop/src-tauri/tauri.conf.json:CSP`
+
+### 56. 事件标注对象必须带 `annType`，否则主题切换后颜色无法重映射
+
+- **问题**：事件标注 `{time, label, color}` 在创建时取色；切换主题后 label 无法反推事件类型，颜色残留旧主题。
+- **影响**：前端（图表事件标注）。
+- **解决方案**：标注对象携带 `annType: e.type`，applyChartTheme 用 `eventColor(a.annType)` 无损重染后 `update('none')`；新增标注来源（如未来的新事件类型）必须同样带 annType，并注意 `lastEventsSig` 签名不含颜色（主题切换不走该缓存）。
+- **相关文件**：`static/js/app.js:updateEventAnnotations`、`renderRecordChart`、`applyChartTheme`
+
+### 57. 急停层级契约迁移到 `#footer`（1010 < 1020 < 9999）
+
+- **问题**：急停并入底栏后，原 `.estop-box { z-index: 1020 }` 消失；记录详情「图表全屏」容器是 `position:fixed; inset:20px; z-index:1000`，会连同底栏一起盖住，急停不可见不可点。
+- **影响**：前端（安全控件可见性）。
+- **解决方案**：`#footer { position: relative; z-index: 1020 }` 恢复层级契约；任何新增 fixed 浮层 z-index 必须避开 1020 这个档位，并复查是否盖住底栏。
+- **相关文件**：`static/css/style.css:#footer`、`.record-chart-container.record-chart-fullscreen`、`#error-overlay`
+
+### 58. `style.color` 与 hex 字面量比较恒为假——内联色短路要用字符串缓存
+
+- **问题**：浏览器把 `el.style.color` 读回时已序列化为 `rgb(r, g, b)`，与 JS 里的 `'#22c55e'` 比较永远不等，「值未变跳过」形同虚设，每帧都在做同值赋值。
+- **影响**：前端（PITFALLS #43 高频 DOM 写纪律）。
+- **解决方案**：模块级 `lastDeltaColor` 字符串缓存比对（v3.20 已修 `#delta-val`）；今后任何「JS 写内联色 + 跳过短路」都用同模式，不要直接比对 `style.color`。
+- **相关文件**：`static/js/app.js:handleStateUpdate`
+
+### 59. 浅色主题橙系小字对比度偏弱，新增橙色文字用途需过一遍对比度
+
+- **问题**：`#f59e0b`/`#ff9f0a` 一族在白底上仅 ~2.3:1;v3.20 浅色已把品牌橙加深为 `#f07d00`、`--phase-maillard` 加深为 `#b45309`。
+- **影响**：前端（浅色主题可读性）。
+- **解决方案**：浅色主题下新增「橙色文字/细线」用途时，优先复用已加深的令牌；实心橙底上的文字用 `--on-accent`（深底黑字 / 浅底白字）而非固定色。编辑器等小字场景实测后再微调。
+- **相关文件**：`static/css/theme.css:[data-theme="light"]`
+
 ---
 
-*最后更新：v3.19 (2026-06-04)*
+*最后更新：v3.20 (2026-08-16)*

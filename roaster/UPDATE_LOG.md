@@ -1,5 +1,88 @@
 # 更新记录
 
+## v3.20 (2026-08-16) — 苹果式设计语言重构 / 深色·浅色双主题 / 全链路动画
+
+### 上一版本功能摘要(v3.19 之后的未记录提交)
+- Tauri 2 桌面壳(`desktop/`)复用网页前端,Chart.js 本地化、CORS 放开、根路径静态兜底挂载
+- Artisan 灵感特性移植网页端:回温点自动检测、结束提醒、自动标记转黄/一爆、自定义报警、ETA、对比模式
+- 后端连接设置并入原生设置 tab;急停按钮集成进底部状态栏
+
+### 核心改进
+
+1. **设计令牌系统(新增 `css/theme.css`)**
+   - 全部颜色收敛为语义 CSS 变量:`:root` 为深色(Apple Dark),`:root[data-theme="light"]` 为浅色(Apple Light,`#f2f2f7` 组背景 + 白卡)
+   - 令牌分层:背景/面层级、文字三级、品牌与语义色、阶段色、图表色(`--chart-*`)、事件色(`--event-*`)、偏差色(`--delta-*`)、阴影/圆角/缓动
+   - `style.css` / `editor.css` 零硬编码色值(仅 `#fff` 白钮/白字等主题无关常量);cubic-bezier 字面量全仓只剩 theme.css 两处变量定义(PITFALLS #39)
+   - 原因:单点改色双主题同步生效,杜绝风格漂移
+
+2. **主题切换基础设施(新增 `js/theme.js`)**
+   - localStorage `roaster.theme` ∈ dark / light / auto(跟随系统),默认 dark 保持树莓派 kiosk 既有观感
+   - 在 `<head>` 以同步外链脚本把 `data-theme` 写到 `<html>`,首帧即目标主题,零 FOUC(Tauri CSP `script-src 'self'` 禁止内联脚本,故必须外部文件)
+   - 切换时 `<html>` 临时挂 `.theme-animating`(420ms)启用纯颜色系过渡,结束后移除,不干扰高频 DOM 更新;`prefers-reduced-motion` 自动跳过
+   - 主题变化派发 `roaster-themechange` 事件,app.js / editor.js 监听后给 Chart.js 原地换色并 `update('none')`
+   - 入口:顶栏日/月图标快捷切换 + 设置页「外观 → 主题」iOS 分段选择器(跟随系统/深色/浅色)
+   - 原因:主题不是一张新皮肤,而是贯穿 CSS / Chart.js / canvas 插件 / Tauri 弹窗的全链路契约
+
+3. **苹果美学重构(`style.css` 全文重写)**
+   - 字体:弃用 Times/宋体衬线栈与 Google Fonts 外链,改系统 SF/PingFang/雅黑无衬线栈;数字统一 `tabular-nums` 等宽,跳动不抖布局
+   - 布局:三条信息条改为浮动圆角卡片(iOS 分组列表感),控制面板改为透明容器 + 独立卡片区块
+   - 组件:Tabs 改 iOS 分段控件(`.tab-glider` 滑动拇指,transform 驱动);设置页复选框改 iOS 开关;按钮/输入框/滑块全面发丝边框 + 柔和分层阴影;状态徽章改着色胶囊 + 圆点
+   - 动画:全部 transition/animation 只动 transform/opacity/颜色;ERROR 浮层加 scale-in;toast 改胶囊浮起
+   - 清理死代码:`.control-group` / `.form-row` / `.slider-group` / `.control-meta` / `.action-btn` / `.profile-meta` / `.import-hidden` / `.ctrl-btn.warning`、HTML 里 `rpb-seg-*` 死类名
+   - 原因:美学一致性 + 简约操作(触控目标 ≥44px 保留,hover 全部 `(hover:hover)` 包裹防触摸残留)
+
+4. **Chart.js 颜色主题化(`app.js` / `editor.js`)**
+   - 新增 `chartPalette` / `editorPalette`:经 `utils.js` 的 `cssVar()` 读取 `--chart-*` / `--event-*` 令牌,构建时用、主题切换时重读
+   - 事件标注对象新增 `annType` 字段,主题切换后颜色可无损重映射;三处重复的事件色表收敛为 `eventColor()`
+   - 事件竖线插件:标签底色 `'rgba(10,10,10,0.8)'` 与 `'11px Fira Sans'` 字体改读色板(浅色主题下不再是黑块)
+   - tooltip 显式配色(两张实时图 + 编辑器图),浅色下不再沿用 Chart.js 深色默认
+   - `#delta-val` 内联色改读色板,并修复「style.color 与 hex 比较恒为假」导致的每帧无效赋值(模块级 `lastDeltaColor` 缓存短路)
+   - applyChartTheme 无条件重染全部数据集后再覆盖 compare 色,杜绝 compare 中切主题残留旧色
+   - 原因:图表是视觉主体,必须与 CSS 同源换色,且不能破坏 PITFALLS #33/#43 的更新纪律
+
+5. **注入模板去内联色(`app.js` / `tauri-adapter.js` / `editor.js`)**
+   - 列表空态/加载占位统一 `.list-placeholder`(`.error` 变体),报警行布局收敛到 `.alarm-row` CSS
+   - Tauri 浮动设置钮与后端弹窗 12 处内联深色全部改 `var(--*)`(内联样式中的 var 同样跟随主题)
+   - sparkline 描边色从 SVG 属性移到 CSS(表现属性被 CSS 覆盖,双主题生效)
+   - 原因:内联硬编码色是主题系统的旁路,必须清零
+
+6. **安全契约修复**
+   - `#footer` 加 `position: relative; z-index: 1020`,恢复 PITFALLS #21 的 1010 < 急停 < 9999 层级(原 `.estop-box` 层级在急停并入底栏后丢失,记录图表全屏会盖住急停)
+   - 浅色主题 `--phase-maillard` 加深为 `#b45309`(小字对比度)
+   - 原因:安全控件可见性 > 视觉整洁
+
+### 协议与边界变更
+
+#### REST / WebSocket / config.yaml
+- 无变更。本次改动全部位于 `roaster/static/` 前端。
+
+#### 前端新增契约
+- localStorage 新键 `roaster.theme`(与既有 `roaster.settings` 并存,独立读写)
+- window 事件 `roaster-themechange`,detail = `{ theme: 'dark'|'light', mode: 'dark'|'light'|'auto' }`
+- 全局 API `window.RoasterTheme.{getMode,getTheme,setMode}`;工具函数 `cssVar(name, fallback)`(utils.js)
+
+### 修改文件清单
+- `roaster/static/css/theme.css` —— 新增:双主题设计令牌 + 主题过渡 + 全局基件(滚动条/焦点环/reduced-motion)
+- `roaster/static/js/theme.js` —— 新增:主题解析/持久化/切换/事件派发/控件接线
+- `roaster/static/css/style.css` —— 全文重写:苹果设计语言 + 全令牌化
+- `roaster/static/css/editor.css` —— 全文重写:同上,保留 `touch-action: none` 与 44px 触控规则
+- `roaster/static/index.html` —— head 主题引导(theme.js 在样式表前)、`color-scheme` meta、顶栏主题钮、tab-glider、设置页外观区块、占位符 class、seg-color 变量化、`?v=3.20`
+- `roaster/static/editor.html` —— head 主题引导与 `?v=3.20`(编辑器继承主页面主题,无页内开关)
+- `roaster/static/js/app.js` —— 图表色板 + applyChartTheme + annType + delta 缓存短路 + tab glider + 模板去内联色
+- `roaster/static/js/editor.js` —— editorPalette + applyEditorChartTheme + 主题监听 + 占位符 class
+- `roaster/static/js/tauri-adapter.js` —— 浮动 UI / 弹窗内联色全部 var 化
+- `roaster/static/js/utils.js` —— 新增 `cssVar()`
+
+### 审查与验证
+- 两个未参与实现的独立审查 agent 全量 diff 复核:DOM 契约零缺失、JS 行为零越权变更、PITFALLS 前端条款逐条过检;发现的急停层级回归、compare 残色、死令牌已修复
+- Windows 静态验证:全部 JS `node --check` 通过;三个 CSS 大括号平衡;零 backdrop-filter/blur;cubic-bezier 字面量仅 2 处变量定义
+- **需要在树莓派上测试**:触摸屏实机过目双主题(尤其浅色)观感、主题切换动画流畅度、长烘焙下无掉帧
+
+### 未触及的范围
+- `roaster/src/`(后端 / 硬件通信 / 控制算法)零改动
+- `desktop/src-tauri`(原生壳配置;WebView2 启动白底闪帧可后续给窗口配 `backgroundColor` 优化)
+- `flutter_app/`(独立分支的全量重写,不共享本前端)
+
 ## v3.19 (2026-06-04) — 第一批低风险硬化 / 活跃曲线可信源 / 编辑器触摸拖拽
 
 ### 上一版本功能摘要（v3.18）

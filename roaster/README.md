@@ -31,13 +31,20 @@ roaster/
     ├── index.html               # 主控页面
     ├── editor.html              # 曲线编辑器页面
     ├── css/
+    │   ├── theme.css            # 设计令牌与深色/浅色双主题(v3.20+)
     │   ├── style.css            # 主页面样式
     │   └── editor.css           # 编辑器样式
     └── js/
-        ├── utils.js             # 公共工具函数
+        ├── theme.js             # 主题切换(<head> 同步加载,防 FOUC)
+        ├── utils.js             # 公共工具函数(含 cssVar 主题色读取)
+        ├── tauri-adapter.js     # Tauri 桌面版后端连接适配(浏览器环境自动跳过)
         ├── app.js               # 主页面逻辑
-        └── editor.js            # 编辑器逻辑
+        ├── editor.js            # 编辑器逻辑
+        └── vendor/
+            └── chart.umd.min.js # Chart.js 4.4.1 本地化
 ```
+
+界面支持深色 / 浅色 / 跟随系统三种模式：顶栏日/月图标快捷切换，或在「设置 → 外观 → 主题」选择；选择持久化于浏览器 localStorage（`roaster.theme`），主控页与曲线编辑器共用。
 
 ## 硬件与环境要求
 

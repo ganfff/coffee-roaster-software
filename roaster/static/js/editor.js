@@ -34,9 +34,31 @@
 
   // ========== Chart.js 初始化 ==========
 
+  // 主题色板(与 theme.css 令牌同源;主题切换时重读)
+  let editorPalette = {};
+
+  function refreshEditorPalette() {
+    editorPalette = {
+      fontUi: cssVar('--font-ui', 'sans-serif'),
+      tick: cssVar('--chart-tick', '#a3a3a3'),
+      grid: cssVar('--chart-grid', '#1f1f1f'),
+      legend: cssVar('--chart-legend', '#e5e5e5'),
+      curve: cssVar('--editor-curve', '#9ca3af'),
+      ror: cssVar('--phase-drying', '#3b82f6'),
+      node: cssVar('--editor-node', '#f59e0b'),
+      nodeHover: cssVar('--editor-node-hover', '#ffffff'),
+      y1Tick: cssVar('--chart-y1-tick', '#60a5fa'),
+      tooltipBg: cssVar('--chart-tooltip-bg', 'rgba(24,24,27,0.96)'),
+      tooltipBorder: cssVar('--chart-tooltip-border', 'rgba(255,255,255,0.1)'),
+      tooltipText: cssVar('--chart-tooltip-text', '#f5f5f7')
+    };
+  }
+
   function initChart() {
-    Chart.defaults.color = '#a3a3a3';
-    Chart.defaults.borderColor = '#262626';
+    refreshEditorPalette();
+    Chart.defaults.color = editorPalette.tick;
+    Chart.defaults.borderColor = editorPalette.grid;
+    Chart.defaults.font.family = editorPalette.fontUi;
 
     const ctx = document.getElementById('editor-chart').getContext('2d');
     chart = new Chart(ctx, {
@@ -46,8 +68,8 @@
           {
             label: '温度曲线',
             data: [],
-            borderColor: '#9ca3af',
-            backgroundColor: '#9ca3af',
+            borderColor: editorPalette.curve,
+            backgroundColor: editorPalette.curve,
             tension: 0.4,
             pointRadius: 0,
             pointHoverRadius: 0,
@@ -57,7 +79,7 @@
           {
             label: '预测 ROR',
             data: [],
-            borderColor: '#3b82f6',
+            borderColor: editorPalette.ror,
             backgroundColor: 'transparent',
             borderDash: [5, 4],
             tension: 0.3,
@@ -68,12 +90,12 @@
           {
             label: '控制点',
             data: [],
-            borderColor: '#f59e0b',
-            backgroundColor: '#f59e0b',
+            borderColor: editorPalette.node,
+            backgroundColor: editorPalette.node,
             pointRadius: 6,
             pointHoverRadius: 10,
             pointHoverBorderWidth: 2,
-            pointHoverBorderColor: '#fff',
+            pointHoverBorderColor: editorPalette.nodeHover,
             showLine: false,
             yAxisID: 'y',
           }
@@ -85,8 +107,13 @@
         animation: false,  // 禁用动画，避免渲染阻塞
         interaction: { mode: 'point', intersect: false },
         plugins: {
-          legend: { labels: { color: '#e5e5e5', font: { size: 12 }, usePointStyle: true, boxWidth: 8 } },
+          legend: { labels: { color: editorPalette.legend, font: { size: 12 }, usePointStyle: true, boxWidth: 8 } },
           tooltip: {
+            backgroundColor: editorPalette.tooltipBg,
+            titleColor: editorPalette.tooltipText,
+            bodyColor: editorPalette.tooltipText,
+            borderColor: editorPalette.tooltipBorder,
+            borderWidth: 1,
             filter: (item) => item.datasetIndex !== 2,
             callbacks: {
               title: (items) => {
@@ -101,10 +128,10 @@
         scales: {
           x: {
             type: 'linear',
-            title: { display: true, text: '时间 (min)', color: '#a3a3a3' },
-            grid: { color: '#1f1f1f' },
+            title: { display: true, text: '时间 (min)', color: editorPalette.tick },
+            grid: { color: editorPalette.grid },
             ticks: {
-              color: '#a3a3a3',
+              color: editorPalette.tick,
               callback: function(value) {
                 return formatTimeShort(value);
               }
@@ -116,16 +143,16 @@
             position: 'left',
             min: 0,
             max: 300,
-            title: { display: true, text: '温度 (°C)', color: '#a3a3a3' },
-            grid: { color: '#1f1f1f' },
-            ticks: { color: '#a3a3a3' }
+            title: { display: true, text: '温度 (°C)', color: editorPalette.tick },
+            grid: { color: editorPalette.grid },
+            ticks: { color: editorPalette.tick }
           },
           y1: {
             display: true,
             position: 'right',
-            title: { display: true, text: '升温率 (°C/min)', color: '#a3a3a3' },
+            title: { display: true, text: '升温率 (°C/min)', color: editorPalette.tick },
             grid: { drawOnChartArea: false },
-            ticks: { color: '#60a5fa' },
+            ticks: { color: editorPalette.y1Tick },
             suggestedMin: -5,
             suggestedMax: 25
           }
@@ -138,6 +165,38 @@
 
     const canvas = chart.canvas;
     installCanvasDragHandlers(canvas);
+
+    // 主题切换 → 图表原地换色(theme.js 在 <head> 已把首帧主题写到 <html>)
+    window.addEventListener('roaster-themechange', applyEditorChartTheme);
+  }
+
+  /**
+   * 主题切换后原地换色:只改颜色配置并 update('none')(PITFALLS #33),
+   * 不触碰节点数据与拖拽交互配置。
+   */
+  function applyEditorChartTheme() {
+    if (!chart) return;
+    refreshEditorPalette();
+    const p = editorPalette;
+    Chart.defaults.color = p.tick;
+    Chart.defaults.borderColor = p.grid;
+    const ds = chart.data.datasets;
+    ds[0].borderColor = p.curve; ds[0].backgroundColor = p.curve;
+    ds[1].borderColor = p.ror;
+    ds[2].borderColor = p.node;  ds[2].backgroundColor = p.node;
+    ds[2].pointHoverBorderColor = p.nodeHover;
+    chart.options.plugins.legend.labels.color = p.legend;
+    const tip = chart.options.plugins.tooltip;
+    tip.backgroundColor = p.tooltipBg;
+    tip.titleColor = p.tooltipText;
+    tip.bodyColor = p.tooltipText;
+    tip.borderColor = p.tooltipBorder;
+    tip.borderWidth = 1;
+    const s = chart.options.scales;
+    s.x.title.color = p.tick;  s.x.grid.color = p.grid;  s.x.ticks.color = p.tick;
+    s.y.title.color = p.tick;  s.y.grid.color = p.grid;  s.y.ticks.color = p.tick;
+    s.y1.title.color = p.tick; s.y1.ticks.color = p.y1Tick;
+    chart.update('none');
   }
 
   // ========== 坐标转换 ==========
@@ -690,7 +749,7 @@
     const container = document.getElementById('ror-list');
     const nodes = tempNodes;
     if (nodes.length < 2) {
-      container.innerHTML = '<div style="color:#737373;text-align:center;padding:20px 0">至少两个节点才能计算 ROR</div>';
+      container.innerHTML = '<div class="list-placeholder">至少两个节点才能计算 ROR</div>';
       return;
     }
 

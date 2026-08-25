@@ -165,3 +165,23 @@ function buildRORDataset(nodeList) {
   }
   return data;
 }
+
+// ========== CSS 变量读取(图表颜色与主题令牌同源的唯一入口) ==========
+
+/**
+ * 读取 :root / [data-theme] 上定义的 CSS 自定义属性。
+ * Chart.js 与 canvas 插件的颜色全部经此取自 theme.css 令牌,
+ * 主题切换后由 'roaster-themechange' 事件触发重读。
+ * @param {string} name - 如 '--chart-temp'
+ * @param {string} fallback - 读取失败时的兜底值(与深色主题一致)
+ * @returns {string}
+ */
+function cssVar(name, fallback) {
+  try {
+    const v = getComputedStyle(document.documentElement).getPropertyValue(name);
+    const t = v ? v.trim() : '';
+    return t || fallback;
+  } catch (e) {
+    return fallback;
+  }
+}
