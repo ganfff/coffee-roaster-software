@@ -6,10 +6,16 @@
   "scripts": {
     "tauri": "tauri",
     "dev": "tauri dev",
+    "dev:sim": "node tools/dev-sim.mjs",
+    "simulator": "node tools/roaster-simulator.mjs",
+    "icons:sync": "node tools/sync-icons.mjs",
+    "check:frontend": "node tools/check-frontend.mjs",
     "build": "tauri build",
     "build:debug": "tauri build --debug"
   },
   "devDependencies": {
-    "@tauri-apps/cli": "^2"
+    "@phosphor-icons/web": "2.1.2",
+    "@tauri-apps/cli": "^2",
+    "ws": "^8.18.3"
   }
 }

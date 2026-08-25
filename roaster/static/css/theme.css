@@ -12,7 +12,7 @@
  * 4. 树莓派 4B 性能红线:任何主题都禁止 backdrop-filter /
  *    filter: blur(>2px)(PITFALLS #36/#37)。
  * 5. <html data-theme> 由 js/theme.js 在 <head> 同步写入,
- *    页面首帧即是目标主题;缺失时 :root 默认深色。
+ *    页面首帧即是目标主题;首次使用由 theme.js 跟随系统。
  * ============================================================ */
 
 /* ---------- 深色主题(默认,Apple Dark) ---------- */
@@ -20,29 +20,32 @@
   color-scheme: dark;
 
   /* 背景与面层级 */
-  --bg: #09090b;                       /* 应用底(近黑,微蓝) */
-  --bg-elevated: #131315;              /* 顶栏 / 底栏 */
-  --surface: #17171a;                  /* 图表面板 */
-  --surface-2: #1d1d21;                /* 卡片 / 控制区块 */
-  --surface-3: #2a2a2e;                /* 内嵌控件填充 */
+  --bg: #11110f;
+  --bg-elevated: #171714;
+  --surface: #1b1b18;
+  --surface-2: #22221e;
+  --surface-3: #2b2a26;
+  --canvas: #191916;
+  --rail: #151513;
+  --control-bg: #24231f;
   --fill: rgba(120, 120, 128, 0.16);   /* Apple tertiaryFill:分段控件轨 */
   --fill-strong: rgba(120, 120, 128, 0.26);
   --border: rgba(255, 255, 255, 0.09); /* 发丝边框 */
   --separator: rgba(255, 255, 255, 0.06);
 
   /* 文字 */
-  --text: #f5f5f7;
-  --text-secondary: #9a9aa2;
-  --text-tertiary: #63636b;
+  --text: #f7f6f2;
+  --text-secondary: #aaa79f;
+  --text-tertiary: #9a968d;
 
   /* 品牌与语义色(Apple system colors · Dark) */
-  --accent: #ff9f0a;                   /* 品牌橙(烘焙) */
-  --accent-hover: #ffb340;
-  --accent-soft: rgba(255, 159, 10, 0.14);
+  --accent: #ff8a1f;
+  --accent-hover: #ff9f45;
+  --accent-soft: rgba(255, 138, 31, 0.15);
   --on-accent: rgba(0, 0, 0, 0.85);
-  --primary: #30d158;                  /* 开始 / 正常 */
-  --primary-hover: #3ae065;
-  --primary-soft: rgba(48, 209, 88, 0.14);
+  --primary: #36b66a;
+  --primary-hover: #48c87b;
+  --primary-soft: rgba(54, 182, 106, 0.14);
   --on-primary: rgba(0, 0, 0, 0.85);
   --info: #0a84ff;
   --info-hover: #409cff;
@@ -50,8 +53,11 @@
   --danger: #ff453a;
   --danger-hover: #ff6961;
   --danger-soft: rgba(255, 69, 58, 0.13);
+  --on-danger: #ffffff;
   --gray-soft: rgba(120, 120, 128, 0.2);
   --seg-thumb: #55555a;                /* 分段控件选中拇指 */
+  --status-online: #55c469;
+  --warning: #ff9f0a;
 
   /* 烘焙阶段色 */
   --phase-drying: #3b82f6;
@@ -63,15 +69,15 @@
   --chart-grid: rgba(255, 255, 255, 0.06);
   --chart-tick: #a3a3a3;
   --chart-legend: #e5e5e5;
-  --chart-temp: #00e676;
-  --chart-setpoint: #ff5252;
+  --chart-temp: #ff8a1f;
+  --chart-setpoint: #4d9cff;
   --chart-target: #9e9e9e;
   --chart-target-fill: rgba(158, 158, 158, 0.06);
-  --chart-ror: #448aff;
-  --chart-ror-fill: rgba(68, 138, 255, 0.12);
-  --chart-ror-preview: #82b1ff;
-  --chart-projection: rgba(0, 230, 118, 0.45);
-  --chart-y1-tick: #60a5fa;
+  --chart-ror: #45b97c;
+  --chart-ror-fill: rgba(69, 185, 124, 0.1);
+  --chart-ror-preview: #7ad8a5;
+  --chart-projection: rgba(255, 138, 31, 0.48);
+  --chart-y1-tick: #62c98f;
   --chart-compare-a: #ff9800;
   --chart-compare-b: #e040fb;
   --chart-event-label-bg: rgba(10, 10, 10, 0.82);
@@ -98,13 +104,13 @@
   --editor-node-hover: #ffffff;
 
   /* 读数发光(浅色主题下关闭) */
-  --glow-pv: 0 0 14px rgba(0, 230, 118, 0.3);
-  --glow-sv: 0 0 14px rgba(255, 82, 82, 0.3);
-  --glow-ror: 0 0 14px rgba(68, 138, 255, 0.3);
+  --glow-pv: none;
+  --glow-sv: none;
+  --glow-ror: none;
 
   /* 阴影 */
-  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.4), 0 6px 20px rgba(0, 0, 0, 0.3);
-  --shadow-pop: 0 12px 40px rgba(0, 0, 0, 0.55);
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.22), 0 12px 30px rgba(0, 0, 0, 0.2);
+  --shadow-pop: 0 24px 70px rgba(0, 0, 0, 0.48);
   --shadow-inset-top: inset 0 1px 0 rgba(255, 255, 255, 0.05);
   --shadow-thumb: 0 1px 3px rgba(0, 0, 0, 0.5), 0 0 0 0.5px rgba(0, 0, 0, 0.2);
 
@@ -112,20 +118,20 @@
   --font-ui: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text",
     "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC", "Source Han Sans SC",
     "Microsoft YaHei UI", "Microsoft YaHei", "Segoe UI", Roboto, sans-serif;
-  --font-mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas,
-    "Cascadia Mono", "Liberation Mono", "DejaVu Sans Mono", monospace;
+  --font-mono: -apple-system, BlinkMacSystemFont, "SF Pro Display", "PingFang SC",
+    "Segoe UI", "Microsoft YaHei", sans-serif;
 
   /* 圆角 */
-  --radius-sm: 8px;
-  --radius-md: 10px;
-  --radius-lg: 14px;
-  --radius-xl: 18px;
+  --radius-sm: 10px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 22px;
   --radius-pill: 999px;
 
   /* 动效(缓动变量化,禁止字面量) */
   --ease-apple: cubic-bezier(0.32, 0.72, 0, 1);
   --ease-apple-fast: cubic-bezier(0.4, 0, 0.2, 1);
-  --duration-fast: 140ms;
+  --duration-fast: 160ms;
   --duration-med: 240ms;
 }
 
@@ -133,23 +139,26 @@
 :root[data-theme="light"] {
   color-scheme: light;
 
-  --bg: #f2f2f7;                       /* Apple systemGroupedBackground */
-  --bg-elevated: #f8f8fa;
-  --surface: #ffffff;
+  --bg: #f5f3ef;
+  --bg-elevated: #fbfaf8;
+  --surface: #fffdfb;
   --surface-2: #ffffff;
-  --surface-3: #f5f5f8;
+  --surface-3: #f2f0eb;
+  --canvas: #fffdfb;
+  --rail: #fbfaf7;
+  --control-bg: #f6f4ef;
   --fill: rgba(120, 120, 128, 0.12);
   --fill-strong: rgba(120, 120, 128, 0.2);
   --border: rgba(0, 0, 0, 0.08);
   --separator: rgba(0, 0, 0, 0.06);
 
-  --text: #1d1d1f;
-  --text-secondary: #6e6e73;
-  --text-tertiary: #aeaeb2;
+  --text: #24221f;
+  --text-secondary: #706c65;
+  --text-tertiary: #746f68;
 
-  --accent: #f07d00;                   /* 白底加深,保对比度 */
-  --accent-hover: #d96e00;
-  --accent-soft: rgba(240, 125, 0, 0.12);
+  --accent: #f47616;
+  --accent-hover: #d9620b;
+  --accent-soft: rgba(244, 118, 22, 0.11);
   --on-accent: #ffffff;
   --primary: #28a745;
   --primary-hover: #1e8e3e;
@@ -161,8 +170,11 @@
   --danger: #ff3b30;
   --danger-hover: #d70015;
   --danger-soft: rgba(255, 59, 48, 0.1);
+  --on-danger: #ffffff;
   --gray-soft: rgba(120, 120, 128, 0.14);
   --seg-thumb: #ffffff;
+  --status-online: #45ad5b;
+  --warning: #e88808;
 
   --phase-drying: #007aff;
   --phase-maillard: #b45309;           /* 白底加深一档,保小字对比度 */
@@ -172,15 +184,15 @@
   --chart-grid: rgba(0, 0, 0, 0.06);
   --chart-tick: #6e6e73;
   --chart-legend: #3a3a3c;
-  --chart-temp: #1e9e50;
-  --chart-setpoint: #e5484d;
+  --chart-temp: #f47616;
+  --chart-setpoint: #1473e6;
   --chart-target: #8e8e93;
   --chart-target-fill: rgba(120, 120, 128, 0.1);
-  --chart-ror: #2f7df6;
-  --chart-ror-fill: rgba(47, 125, 246, 0.1);
-  --chart-ror-preview: #7aa8f8;
-  --chart-projection: rgba(30, 158, 80, 0.5);
-  --chart-y1-tick: #2f7df6;
+  --chart-ror: #2f9d62;
+  --chart-ror-fill: rgba(47, 157, 98, 0.09);
+  --chart-ror-preview: #69b98e;
+  --chart-projection: rgba(244, 118, 22, 0.48);
+  --chart-y1-tick: #2f9d62;
   --chart-compare-a: #ef6c00;
   --chart-compare-b: #c026d3;
   --chart-event-label-bg: rgba(255, 255, 255, 0.92);
@@ -208,8 +220,8 @@
   --glow-sv: none;
   --glow-ror: none;
 
-  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.05), 0 6px 20px rgba(0, 0, 0, 0.06);
-  --shadow-pop: 0 12px 40px rgba(0, 0, 0, 0.16);
+  --shadow-card: 0 1px 2px rgba(52, 45, 36, 0.04), 0 10px 30px rgba(52, 45, 36, 0.06);
+  --shadow-pop: 0 24px 70px rgba(52, 45, 36, 0.18);
   --shadow-inset-top: inset 0 1px 0 rgba(255, 255, 255, 0.7);
   --shadow-thumb: 0 1px 3px rgba(0, 0, 0, 0.18), 0 0 0 0.5px rgba(0, 0, 0, 0.04);
 }
@@ -222,13 +234,13 @@ html.theme-animating *,
 html.theme-animating *::before,
 html.theme-animating *::after {
   transition:
-    background-color 340ms var(--ease-apple-fast),
-    border-color 340ms var(--ease-apple-fast),
-    color 340ms var(--ease-apple-fast),
-    box-shadow 340ms var(--ease-apple-fast),
-    outline-color 340ms var(--ease-apple-fast),
-    fill 340ms var(--ease-apple-fast),
-    stroke 340ms var(--ease-apple-fast) !important;
+    background-color 240ms var(--ease-apple-fast),
+    border-color 240ms var(--ease-apple-fast),
+    color 240ms var(--ease-apple-fast),
+    box-shadow 240ms var(--ease-apple-fast),
+    outline-color 240ms var(--ease-apple-fast),
+    fill 240ms var(--ease-apple-fast),
+    stroke 240ms var(--ease-apple-fast) !important;
 }
 
 /* ---------- 基础排版与全局原件(两页共用) ---------- */
@@ -295,6 +307,37 @@ input[type="number"], .ror-list, .node-item {
   outline: 2px solid var(--info);
   outline-offset: 2px;
 }
+
+/* Tauri 编辑器页共享的后端连接浮层 */
+.tauri-settings-btn {
+  position: fixed;
+  right: 14px;
+  bottom: 16px;
+  z-index: 1030;
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: var(--surface-2);
+  box-shadow: var(--shadow-card);
+  color: var(--text-secondary);
+  font-size: 19px;
+  cursor: pointer;
+  transition: transform var(--duration-fast) var(--ease-apple-fast), color var(--duration-fast) var(--ease-apple-fast);
+}
+.tauri-settings-btn:hover { color: var(--text); transform: translateY(-1px); }
+.tauri-settings-overlay { position: fixed; inset: 0; z-index: 1031; display: none; place-items: center; padding: 20px; background: color-mix(in srgb, var(--bg) 82%, transparent); }
+.tauri-settings-overlay.open { display: grid; }
+.tauri-settings-dialog { width: min(380px, 100%); padding: 22px; border: 1px solid var(--border); border-radius: var(--radius-xl); background: var(--surface-2); box-shadow: var(--shadow-pop); color: var(--text); }
+.tauri-settings-title { display: flex; align-items: center; gap: 9px; font-size: 15px; font-weight: 680; }
+.tauri-settings-title .ph { color: var(--accent); font-size: 20px; }
+.tauri-settings-dialog p { margin: 7px 0 14px; color: var(--text-tertiary); font-size: 10px; }
+.tauri-settings-dialog input { width: 100%; height: 42px; padding: 0 11px; border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--surface-3); color: var(--text); font-size: 11px; outline: none; }
+.tauri-settings-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 14px; }
+.tauri-dialog-button { min-height: 40px; padding: 0 13px; border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--surface-2); color: var(--text-secondary); font-size: 11px; font-weight: 620; cursor: pointer; }
+.tauri-dialog-button.primary { border-color: transparent; background: var(--info); color: var(--on-danger); }
 
 /* 尊重系统减少动态效果设置(PITFALLS #19) */
 @media (prefers-reduced-motion: reduce) {

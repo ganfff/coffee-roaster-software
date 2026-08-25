@@ -5,13 +5,13 @@
  * 把 data-theme 写到 <html>,避免主题闪烁(FOUC)。
  *
  * 契约:
- * - localStorage 键 'roaster.theme' ∈ 'dark' | 'light' | 'auto'(默认 'dark',
- *   保持树莓派 kiosk 既有观感;'auto' 跟随系统 prefers-color-scheme)
+ * - localStorage 键 'roaster.theme' ∈ 'dark' | 'light' | 'auto'(默认 'auto',
+ *   首次使用跟随系统 prefers-color-scheme)
  * - 解析后的实际主题写在 <html data-theme="dark|light">,CSS 依此分支
  * - 主题变化时派发 window 事件 'roaster-themechange',
  *   detail = { theme: 'dark'|'light', mode: 'dark'|'light'|'auto' }
  *   app.js / editor.js 用它给 Chart.js 重新上色并 update('none')
- * - 切换瞬间给 <html> 加 .theme-animating(约 420ms),启用颜色过渡动画,
+ * - 切换瞬间给 <html> 加 .theme-animating(约 280ms),启用颜色过渡动画,
  *   结束后移除;prefers-reduced-motion 时跳过
  */
 (function () {
@@ -27,7 +27,7 @@
       var v = localStorage.getItem(STORAGE_KEY);
       if (v === 'dark' || v === 'light' || v === 'auto') return v;
     } catch (e) { /* 隐私模式等场景读不到存储,按默认处理 */ }
-    return 'dark';
+    return 'auto';
   }
 
   function resolve(mode) {
@@ -75,7 +75,7 @@
       animTimer = setTimeout(function () {
         root.classList.remove('theme-animating');
         animTimer = null;
-      }, 420);
+      }, 280);
     }
 
     applySilent(mode);

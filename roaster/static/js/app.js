@@ -25,6 +25,14 @@
   let lastDeltaColor = '';
   let selectedRecords = new Set();
   let selectedProfileId = null;
+  const NEXT_EVENT_SEQUENCE = [
+    { type: 'yellowing', label: '记录转黄' },
+    { type: 'first_crack', label: '记录一爆' },
+    { type: 'first_crack_end', label: '记录一爆结束' },
+    { type: 'second_crack', label: '记录二爆' },
+    { type: 'second_crack_end', label: '记录二爆结束' },
+    { type: 'drop', label: '记录出豆' },
+  ];
 
   // 急停按钮双击确认状态
   let eStopConfirmTimer = null;
@@ -259,6 +267,7 @@
         interaction: { mode: 'index', intersect: false },
         plugins: {
           legend: {
+            display: false,
             labels: {
               color: chartPalette.legend,
               font: { size: 13, weight: '500' },
@@ -396,7 +405,9 @@
         ds[0].borderColor = p.compareA; ds[0].backgroundColor = p.compareA;
         ds[1].borderColor = p.compareB; ds[1].backgroundColor = p.compareB;
       }
-      roastChart.options.plugins.legend.labels.color = p.legend;
+      if (roastChart.options.plugins.legend?.labels) {
+        roastChart.options.plugins.legend.labels.color = p.legend;
+      }
       applyTooltipTheme(roastChart.options.plugins.tooltip);
       const sx = roastChart.options.scales.x;
       const sy = roastChart.options.scales.y;
@@ -427,6 +438,7 @@
       if (Array.isArray(ann)) ann.forEach(a => { a.color = eventColor(a.annType); });
       recordChart.update('none');
     }
+    drawProfileSparklines();
   }
 
   /**
@@ -971,6 +983,7 @@
     }
     // 根据 state.events 同步事件按钮 active 高亮 + 时间温度 badge
     syncEventActionsBar(msg.events || []);
+    updateNextEventControl(msg);
 
     if (msg.event_stats) {
       updateSegmentBar(msg.event_stats);
@@ -1122,12 +1135,22 @@
     if (!dot) return;
     dot.classList.toggle('online', online);
     dot.classList.toggle('offline', !online);
+    updateConnectionCopy();
   }
   function updateTc4sStatus(connected) {
     const dot = document.getElementById('conn-status-tc4s');
     if (!dot) return;
     dot.classList.toggle('online', connected);
     dot.classList.toggle('offline', !connected);
+    updateConnectionCopy();
+  }
+
+  function updateConnectionCopy() {
+    const copy = document.querySelector('.connection-copy');
+    if (!copy) return;
+    const wsOnline = document.getElementById('conn-status-ws')?.classList.contains('online');
+    const tc4sOnline = document.getElementById('conn-status-tc4s')?.classList.contains('online');
+    setTextIfChanged(copy, wsOnline && tc4sOnline ? '控制系统已连接' : (wsOnline ? '后端已连接，等待 TC4S' : '等待连接'));
   }
 
   /**
@@ -1359,6 +1382,8 @@
       card.classList.toggle('locked', !enabled);
       card.setAttribute('aria-disabled', enabled ? 'false' : 'true');
     });
+    const quickSelect = document.getElementById('quick-profile-select');
+    if (quickSelect) quickSelect.disabled = !enabled || quickSelect.options.length === 0;
   }
 
   // ========== 阶段颜色条 ==========
@@ -1462,6 +1487,38 @@
   }
 
   /**
+   * Calm Canvas 情境主按钮：只展示下一项尚未记录的事件。
+   * 这里仅更新按钮文案和 data-event，真正写入仍必须由用户点击触发。
+   */
+  function updateNextEventControl(msg) {
+    const btn = document.getElementById('btn-next-event');
+    if (!btn) return;
+    document.querySelectorAll('#event-actions-bar .event-action-btn').forEach(el => el.classList.remove('next'));
+    if (!msg || msg.state !== 'ROASTING') {
+      btn.hidden = true;
+      delete btn.dataset.event;
+      return;
+    }
+
+    const recorded = new Set((Array.isArray(msg.events) ? msg.events : []).map(event => event.type));
+    const next = NEXT_EVENT_SEQUENCE.find(event => !recorded.has(event.type));
+    if (!next) {
+      btn.hidden = true;
+      delete btn.dataset.event;
+      return;
+    }
+
+    btn.hidden = false;
+    btn.dataset.event = next.type;
+    const label = btn.querySelector('.next-event-copy strong');
+    const hint = document.getElementById('next-event-eta');
+    setTextIfChanged(label, next.label);
+    setTextIfChanged(hint, `${stateLabel(msg.state)} · 点击后写入`);
+    const timelineBtn = document.querySelector(`#event-actions-bar [data-event="${next.type}"]`);
+    if (timelineBtn) timelineBtn.classList.add('next');
+  }
+
+  /**
    * 同步事件按钮 active 高亮 + 时间温度 badge。
    * - 命中 state.events 的按钮加 .active class，badge 显示 "m:ss · 温度°"
    * - 未命中（含 IDLE 时事件数组为空）则清空 badge 和 active class
@@ -1499,37 +1556,45 @@
     });
   }
 
-  // ========== Tabs ==========
-  function initTabs() {
-    // iOS 分段控件滑动拇指:按实测 offsetLeft/offsetWidth 定位,对等宽 flex 分段天然适配
+  // ========== Tabs / 完整工作区 ==========
+  function moveTabGlider(btn) {
     const glider = document.querySelector('.tabs .tab-glider');
-    const moveGlider = (btn) => {
-      if (!glider || !btn) return;
-      glider.style.width = btn.offsetWidth + 'px';
-      glider.style.transform = 'translateX(' + btn.offsetLeft + 'px)';
-    };
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-        btn.classList.add('active');
-        document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
-        moveGlider(btn);
-        if (btn.dataset.tab === 'records') {
-          loadRecords();
-        }
-      });
+    if (!glider || !btn) return;
+    glider.style.width = btn.offsetWidth + 'px';
+    glider.style.transform = 'translateX(' + btn.offsetLeft + 'px)';
+  }
+
+  function activateWorkspace(name, options = {}) {
+    const btn = document.querySelector('.tab-btn[data-tab="' + name + '"]');
+    const content = document.getElementById('tab-' + name);
+    if (!btn || !content) return;
+    document.querySelectorAll('.tab-btn').forEach(item => {
+      const active = item === btn;
+      item.classList.toggle('active', active);
+      item.setAttribute('aria-selected', active ? 'true' : 'false');
     });
-    // 初始定位 + 视口变化跟随(首帧布局未就绪,等一帧再量)
-    const syncGlider = () => moveGlider(document.querySelector('.tab-btn.active'));
+    document.querySelectorAll('.tab-content').forEach(item => item.classList.toggle('active', item === content));
+    document.body.dataset.view = name;
+    moveTabGlider(btn);
+    if (!options.keepHash) history.replaceState(null, '', '#' + name);
+    if (name === 'records' && !options.skipLoad) loadRecords();
+    if (name === 'profile') drawProfileSparklines();
+    requestAnimationFrame(() => {
+      if (name === 'roast' && roastChart) roastChart.resize();
+      if (name === 'records' && recordChart) recordChart.resize();
+    });
+  }
+
+  function initTabs() {
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => activateWorkspace(btn.dataset.tab));
+    });
+    const syncGlider = () => moveTabGlider(document.querySelector('.tab-btn.active'));
     requestAnimationFrame(syncGlider);
     window.addEventListener('resize', syncGlider);
-    // 支持 #tab 深链（如 index.html#settings 直达设置页）
     const hash = (location.hash || '').replace('#', '');
-    if (hash && document.getElementById('tab-' + hash)) {
-      const target = document.querySelector('.tab-btn[data-tab="' + hash + '"]');
-      if (target) target.click();
-    }
+    if (hash && document.getElementById('tab-' + hash)) activateWorkspace(hash, { keepHash: true });
+    else activateWorkspace('roast', { keepHash: true, skipLoad: true });
   }
 
   // ========== 全屏 ==========
@@ -1554,6 +1619,20 @@
   }
 
   // ========== 曲线管理 ==========
+  function syncQuickProfileSelect(list) {
+    const select = document.getElementById('quick-profile-select');
+    if (!select) return;
+    const profiles = Array.isArray(list)
+      ? list
+      : Object.values(profileMap).filter(profile => profile && profile.id);
+    const currentId = isRoastActiveState(latestState) ? activeRoastProfileId : selectedProfileId;
+    select.innerHTML = profiles.length
+      ? profiles.map(profile => `<option value="${escapeAttr(profile.id || '')}">${escapeHtml(profile.name || '未命名曲线')}</option>`).join('')
+      : '<option value="">暂无曲线</option>';
+    if (currentId != null) select.value = String(currentId);
+    select.disabled = isRoastActiveState(latestState) || profiles.length === 0;
+  }
+
   async function loadProfiles() {
     try {
       const res = await fetch('/api/v1/profiles');
@@ -1578,6 +1657,7 @@
       } else {
         clearSelectedProfileState();
       }
+      syncQuickProfileSelect(list);
       await renderProfileCards(list);
     } catch (e) {
       showToast('加载曲线失败');
@@ -1616,17 +1696,16 @@
       const total = nodes.length ? nodes[nodes.length - 1].time : 0;
       const m = Math.floor(total / 60);
       const sec = Math.floor(total % 60);
-      const sparkline = buildSparklineSVG(nodes);
       const isActive = p.id === activeId ? 'active' : '';
       return `
         <div class="profile-card ${isActive}" data-id="${safeId}">
           <div class="name">${escapeHtml(p.name || '未命名')}</div>
           <div class="meta">${nodes.length} 节点 · ${m}:${String(sec).padStart(2,'0')}</div>
-          ${sparkline}
+          <canvas class="sparkline" aria-label="${escapeAttr(p.name || '未命名')} 曲线预览"></canvas>
           <div class="actions">
-            <button class="ctrl-btn small primary" data-action="apply" data-id="${safeId}">应用</button>
-            <button class="ctrl-btn small" data-action="export" data-id="${safeId}">导出</button>
-            <button class="ctrl-btn small danger" data-action="delete" data-id="${safeId}">删除</button>
+            <button class="ctrl-btn small primary" data-action="apply" data-id="${safeId}"><i class="ph ph-check-circle"></i><span>应用</span></button>
+            <button class="ctrl-btn small" data-action="export" data-id="${safeId}" aria-label="导出曲线"><i class="ph ph-download-simple"></i></button>
+            <button class="ctrl-btn small danger" data-action="delete" data-id="${safeId}" aria-label="删除曲线"><i class="ph ph-trash"></i></button>
           </div>
         </div>
       `;
@@ -1681,31 +1760,46 @@
       });
     });
     setProfileMutationEnabled(!isRoastActiveState(latestState));
+    drawProfileSparklines();
   }
 
   /**
-   * 构建 SVG sparkline：把节点时间/温度归一化到 200x50 视区
+   * 使用真实曲线数据在 canvas 上绘制预览，避免把数据图伪装成装饰性 SVG 资产。
    */
-  function buildSparklineSVG(nodes) {
-    if (!nodes || nodes.length < 2) {
-      return '<svg class="sparkline" viewBox="0 0 200 50" preserveAspectRatio="none"></svg>';
-    }
-    const W = 200, H = 50, pad = 2;
-    const tMin = nodes[0].time;
-    const tMax = nodes[nodes.length - 1].time;
-    const tempVals = nodes.map(n => n.temperature);
-    const yMin = Math.min(...tempVals);
-    const yMax = Math.max(...tempVals);
-    const tSpan = tMax - tMin || 1;
-    const ySpan = yMax - yMin || 1;
-    const points = nodes.map(n => {
-      const x = pad + (n.time - tMin) / tSpan * (W - 2 * pad);
-      const y = (H - pad) - (n.temperature - yMin) / ySpan * (H - 2 * pad);
-      return `${x.toFixed(1)},${y.toFixed(1)}`;
-    }).join(' ');
-    return `<svg class="sparkline" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">
-      <polyline points="${points}" fill="none" stroke-width="1.5" stroke-linejoin="round"/>
-    </svg>`;
+  function drawProfileSparklines() {
+    document.querySelectorAll('#profile-cards .profile-card').forEach(card => {
+      const canvas = card.querySelector('canvas.sparkline');
+      const profile = profileMap[card.dataset.id];
+      const nodes = profile && Array.isArray(profile.nodes) ? profile.nodes : [];
+      if (!canvas || nodes.length < 2 || canvas.clientWidth === 0) return;
+      const ratio = Math.min(window.devicePixelRatio || 1, 2);
+      const width = Math.max(1, Math.round(canvas.clientWidth * ratio));
+      const height = Math.max(1, Math.round(canvas.clientHeight * ratio));
+      if (canvas.width !== width) canvas.width = width;
+      if (canvas.height !== height) canvas.height = height;
+      const ctx = canvas.getContext('2d');
+      const pad = 6 * ratio;
+      const tMin = nodes[0].time;
+      const tMax = nodes[nodes.length - 1].time;
+      const temperatures = nodes.map(node => node.temperature);
+      const yMin = Math.min(...temperatures);
+      const yMax = Math.max(...temperatures);
+      const tSpan = tMax - tMin || 1;
+      const ySpan = yMax - yMin || 1;
+      ctx.clearRect(0, 0, width, height);
+      ctx.beginPath();
+      nodes.forEach((node, index) => {
+        const x = pad + (node.time - tMin) / tSpan * (width - pad * 2);
+        const y = height - pad - (node.temperature - yMin) / ySpan * (height - pad * 2);
+        if (index === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      });
+      ctx.strokeStyle = cssVar('--chart-temp', '#f47616');
+      ctx.lineWidth = 2 * ratio;
+      ctx.lineJoin = 'round';
+      ctx.lineCap = 'round';
+      ctx.stroke();
+    });
   }
 
   function updateProfileCardsActive() {
@@ -1713,6 +1807,7 @@
     document.querySelectorAll('.profile-card').forEach(card => {
       card.classList.toggle('active', card.dataset.id === activeId);
     });
+    syncQuickProfileSelect();
   }
 
   /**
@@ -1748,12 +1843,36 @@
     if (goProfileLink) {
       goProfileLink.addEventListener('click', function(e) {
         e.preventDefault();
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-        const profileBtn = document.querySelector('.tab-btn[data-tab="profile"]');
-        if (profileBtn) profileBtn.classList.add('active');
-        document.getElementById('tab-profile').classList.add('active');
-        loadProfiles();
+        activateWorkspace('profile');
+      });
+    }
+
+    const quickSelect = document.getElementById('quick-profile-select');
+    if (quickSelect) {
+      quickSelect.addEventListener('change', async () => {
+        if (isRoastActiveState(latestState)) {
+          syncQuickProfileSelect();
+          showToast('烘焙中不能切换曲线');
+          return;
+        }
+        selectedProfileId = quickSelect.value || null;
+        if (!selectedProfileId) return;
+        const applied = await applySelectedProfile();
+        if (applied) {
+          updateProfileCardsActive();
+          showToast('已应用曲线');
+        }
+      });
+    }
+
+    const search = document.getElementById('profile-search');
+    if (search) {
+      search.addEventListener('input', () => {
+        const query = search.value.trim().toLocaleLowerCase('zh-CN');
+        document.querySelectorAll('#profile-cards .profile-card').forEach(card => {
+          const name = (card.querySelector('.name')?.textContent || '').toLocaleLowerCase('zh-CN');
+          card.hidden = Boolean(query && !name.includes(query));
+        });
       });
     }
 
@@ -2028,8 +2147,20 @@
       sendCmd('start', { profile_id: profileId });
     });
 
-    // 急停按钮：双击确认机制，按钮位于右下角小方框中
+    const nextEventBtn = document.getElementById('btn-next-event');
+    if (nextEventBtn) {
+      bindTouchClick(nextEventBtn, () => {
+        if (lastState !== 'ROASTING' || !nextEventBtn.dataset.event) return;
+        sendCmd('event', { type: nextEventBtn.dataset.event });
+      });
+    }
+
+    // 急停按钮：双击确认机制，按钮位于底部状态栏
     const eStopBtn = document.getElementById('btn-e-stop');
+    const setEStopLabel = (text) => {
+      const label = eStopBtn && eStopBtn.querySelector('.estop-label');
+      if (label) label.textContent = text;
+    };
     bindTouchClick(eStopBtn, () => {
       // IDLE 时禁用急停
       if (eStopBtn.classList.contains('disabled')) return;
@@ -2038,17 +2169,17 @@
         clearTimeout(eStopConfirmTimer);
         eStopConfirming = false;
         eStopBtn.classList.remove('confirming');
-        eStopBtn.textContent = 'E-STOP';
+        setEStopLabel('E-STOP');
         sendCmd('emergency_stop');
       } else {
         // 第一次点击：进入确认状态
         eStopConfirming = true;
         eStopBtn.classList.add('confirming');
-        eStopBtn.textContent = '再次确认';
+        setEStopLabel('再次确认');
         eStopConfirmTimer = setTimeout(() => {
           eStopConfirming = false;
           eStopBtn.classList.remove('confirming');
-          eStopBtn.textContent = 'E-STOP';
+          setEStopLabel('E-STOP');
         }, 2000);
       }
     });
@@ -2083,7 +2214,8 @@
         const container = document.getElementById('record-chart-container');
         if (!container) return;
         const isFs = container.classList.toggle('record-chart-fullscreen');
-        chartFsBtn.textContent = isFs ? '退出全屏' : '图表全屏';
+        const chartFsLabel = chartFsBtn.querySelector('.btn-label');
+        if (chartFsLabel) chartFsLabel.textContent = isFs ? '退出全屏' : '图表全屏';
         const exitBtn = document.getElementById('btn-chart-exit-fullscreen');
         if (exitBtn) exitBtn.hidden = !isFs;
         if (recordChart) {
@@ -2132,8 +2264,8 @@
         const profileName = r.profile_name || '未命名';
         const startedStr = r.started_at ? new Date(r.started_at).toLocaleString('zh-CN') : '--';
         return `
-        <div class="record-item" data-session="${r.session_id}">
-          <input type="checkbox" class="record-checkbox" data-session="${r.session_id}" ${selectedRecords.has(r.session_id) ? 'checked' : ''} />
+        <div class="record-item" data-session="${r.session_id}" role="button" tabindex="0" aria-label="查看记录 ${escapeHtml(displayName)}">
+          <input type="checkbox" class="record-checkbox" data-session="${r.session_id}" aria-label="选择 ${escapeHtml(displayName)} 进行对比" ${selectedRecords.has(r.session_id) ? 'checked' : ''} />
           <div class="record-info">
             <div class="record-name">${escapeHtml(displayName)}</div>
             <div class="record-meta">${startedStr} · ${formatTime(r.duration_sec)} · ${escapeHtml(profileName)}</div>
@@ -2165,6 +2297,13 @@
         el.addEventListener('click', (e) => {
           if (e.target.classList.contains('record-checkbox')) return;
           showRecordDetail(el.dataset.session);
+        });
+        el.addEventListener('keydown', (e) => {
+          if (e.target.classList.contains('record-checkbox')) return;
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            showRecordDetail(el.dataset.session);
+          }
         });
       });
 
@@ -2471,7 +2610,10 @@
     if (container) {
       container.classList.remove('record-chart-fullscreen');
       const fsBtn = document.getElementById('btn-chart-fullscreen');
-      if (fsBtn) fsBtn.textContent = '图表全屏';
+      if (fsBtn) {
+        const label = fsBtn.querySelector('.btn-label');
+        if (label) label.textContent = '图表全屏';
+      }
       const exitBtn = document.getElementById('btn-chart-exit-fullscreen');
       if (exitBtn) exitBtn.hidden = true;
     }
@@ -2523,6 +2665,8 @@
       compareMode = true;
       document.getElementById('btn-compare').style.display = 'none';
       document.getElementById('btn-exit-compare').style.display = '';
+      activateWorkspace('roast', { skipLoad: true });
+      showToast('已在主曲线中显示两锅对比');
     } catch (e) {
       showToast('加载对比记录失败');
     }

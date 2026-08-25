@@ -4,425 +4,122 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="color-scheme" content="dark light" />
-  <title>Ganf's咖啡烘焙机</title>
-  <!-- theme.js 必须在样式表之前同步执行:把 data-theme 写到 <html>,首帧即是目标主题(防 FOUC) -->
-  <script src="js/theme.js?v=3.20"></script>
-  <link rel="stylesheet" href="css/theme.css?v=3.20" />
-  <link rel="stylesheet" href="css/style.css?v=3.20" />
+  <title>Ganf's 咖啡烘焙机</title>
+  <script src="js/theme.js?v=3.21"></script>
+  <link rel="stylesheet" href="css/theme.css?v=3.21" />
+  <link rel="stylesheet" href="assets/icons/phosphor/phosphor.css?v=2.1.2" />
+  <link rel="stylesheet" href="css/style.css?v=3.21" />
   <script src="js/vendor/chart.umd.min.js"></script>
 </head>
 <body>
   <div id="app">
-    <!-- 顶部标题栏 -->
     <header id="top-bar">
-      <div class="header-left">
-        <h1>Ganf's咖啡烘焙机</h1>
-        <div class="state-badge" id="state-badge">待机</div>
+      <div class="brand-lockup">
+        <span class="brand-icon" aria-hidden="true"><i class="ph ph-coffee-bean"></i></span>
+        <div><h1>Ganf's 咖啡烘焙机</h1><span class="brand-subtitle">ROASTING CONSOLE</span></div>
       </div>
-      <div class="header-center">
-        <div class="readout">
-          <div class="readout-item pv">
-            <span class="readout-val" id="pv-val">--</span>
-            <span class="readout-label">温度 (°C)</span>
-          </div>
-          <div class="readout-item sv">
-            <span class="readout-val" id="sv-val">--</span>
-            <span class="readout-label">设定温度 (°C)</span>
-          </div>
-          <div class="readout-item ror">
-            <span class="readout-val" id="ror-val">--</span>
-            <span class="readout-label">升温率 (°C/min)</span>
-          </div>
-          <div class="readout-item">
-            <span class="readout-val" id="delta-val">--</span>
-            <span class="readout-label">目标偏差</span>
-          </div>
-        </div>
-      </div>
+      <nav class="tabs" aria-label="主工作区">
+        <div class="tab-glider" aria-hidden="true"></div>
+        <button class="tab-btn active" data-tab="roast" aria-selected="true"><i class="ph ph-waveform"></i><span>烘焙控制</span></button>
+        <button class="tab-btn" data-tab="profile" aria-selected="false"><i class="ph ph-chart-line-up"></i><span>曲线管理</span></button>
+        <button class="tab-btn" data-tab="records" aria-selected="false"><i class="ph ph-clock-counter-clockwise"></i><span>烘焙记录</span></button>
+        <button class="tab-btn" data-tab="settings" aria-selected="false"><i class="ph ph-sliders-horizontal"></i><span>设置</span></button>
+      </nav>
       <div class="header-right">
-        <div class="time-block">
-          <div class="elapsed" id="elapsed">00:00</div>
-          <div class="clock" id="clock">--:--:--</div>
-        </div>
-        <button class="icon-btn" id="btn-theme" title="切换深色 / 浅色主题" aria-label="切换主题">
-          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>
-          </svg>
-          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-            <circle cx="12" cy="12" r="4"/>
-            <path d="M12 2v2m0 16v2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4M2 12h2m16 0h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>
-          </svg>
-        </button>
-        <button class="icon-btn" id="btn-fullscreen" title="全屏" aria-label="全屏">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
-          </svg>
-        </button>
+        <div class="time-block" aria-label="烘焙计时"><div class="elapsed" id="elapsed">00:00</div><div class="clock" id="clock">--:--:--</div></div>
+        <button class="icon-btn" id="btn-theme" title="切换深色或浅色主题" aria-label="切换主题"><i class="ph ph-moon icon-moon" aria-hidden="true"></i><i class="ph ph-sun icon-sun" aria-hidden="true"></i></button>
+        <button class="icon-btn" id="btn-fullscreen" title="切换全屏" aria-label="切换全屏"><i class="ph ph-corners-out" aria-hidden="true"></i></button>
       </div>
     </header>
 
-    <!-- 关键事件温度显示条 + 快捷事件按钮 -->
-    <div id="event-temps-bar">
-      <div class="event-temp-item tp">
-        <span class="event-temp-label">回温点</span>
-        <span class="event-temp-val" id="tp-info">--</span>
-      </div>
-      <div class="event-temp-item yellowing">
-        <span class="event-temp-label">转黄</span>
-        <span class="event-temp-val" id="yellowing-info">--</span>
-      </div>
-      <div class="event-temp-item first-crack">
-        <span class="event-temp-label">一爆</span>
-        <span class="event-temp-val" id="first-crack-info">--</span>
-      </div>
-      <div class="event-temp-item development">
-        <span class="event-temp-label">发展期</span>
-        <span class="event-temp-val" id="development-info">--</span>
-      </div>
-    </div>
-
-    <!-- 快捷事件操作栏（始终可见） -->
-    <div id="event-actions-bar">
-      <button class="event-action-btn" data-event="yellowing" title="转黄">转黄<span class="event-badge"></span></button>
-      <button class="event-action-btn" data-event="first_crack" title="一爆开始">一爆<span class="event-badge"></span></button>
-      <button class="event-action-btn" data-event="first_crack_end" title="一爆结束">一爆结束<span class="event-badge"></span></button>
-      <button class="event-action-btn" data-event="second_crack" title="二爆开始">二爆<span class="event-badge"></span></button>
-      <button class="event-action-btn" data-event="second_crack_end" title="二爆结束">二爆结束<span class="event-badge"></span></button>
-      <button class="event-action-btn drop-prominent" data-event="drop" title="出豆">出豆<span class="event-badge"></span></button>
-    </div>
-
-    <!-- 阶段颜色条 -->
-    <div id="segment-bar">
-      <div class="segment" id="seg-drying" style="--seg-color:var(--phase-drying)">
-        <span class="seg-name">脱水期</span>
-        <span class="seg-val" id="seg-drying-val">--</span>
-      </div>
-      <div class="segment" id="seg-maillard" style="--seg-color:var(--phase-maillard)">
-        <span class="seg-name">梅纳期</span>
-        <span class="seg-val" id="seg-maillard-val">--</span>
-      </div>
-      <div class="segment" id="seg-development" style="--seg-color:var(--phase-development)">
-        <span class="seg-name">发展期</span>
-        <span class="seg-val" id="seg-development-val">--</span>
-      </div>
-    </div>
-
-    <!-- 主内容区 -->
-    <main>
-      <section id="charts-panel">
-        <div class="chart-header">
-          <span class="chart-title">实时温度曲线</span>
-          <!-- 进度条：三段拼接（脱水蓝/梅纳橙/发展期红/冷却灰） -->
-          <div id="roast-progress-inline" class="roast-progress-bar" data-phase="idle">
-            <div class="rpb-meta">
-              <span class="rpb-phase-label" id="rpb-phase-label">待机</span>
-              <span class="rpb-time" id="rpb-time">--:--</span>
+    <main id="workspace">
+      <section class="tab-content workspace-view active" id="tab-roast" aria-label="烘焙控制">
+        <div class="roast-workspace">
+          <aside class="telemetry-rail" aria-label="实时遥测">
+            <div class="telemetry-heading"><span class="eyebrow">LIVE TELEMETRY</span><div class="state-badge" id="state-badge">待机</div></div>
+            <div class="readout-item pv"><span class="readout-label"><i class="ph ph-thermometer-hot"></i> 温度 PV</span><span class="readout-value-row"><strong class="readout-val" id="pv-val">--</strong><span class="readout-unit">°C</span></span><span class="readout-trend">实时豆温</span></div>
+            <div class="readout-item sv"><span class="readout-label"><i class="ph ph-crosshair"></i> 温度 SV</span><span class="readout-value-row"><strong class="readout-val" id="sv-val">--</strong><span class="readout-unit">°C</span></span><span class="readout-trend">曲线目标</span></div>
+            <div class="readout-item ror"><span class="readout-label"><i class="ph ph-trend-up"></i> ROR</span><span class="readout-value-row"><strong class="readout-val" id="ror-val">--</strong><span class="readout-unit">°C/min</span></span><span class="readout-trend">升温速率</span></div>
+            <div class="readout-item delta"><span class="readout-label"><i class="ph ph-target"></i> 目标偏差</span><span class="readout-value-row"><strong class="readout-val" id="delta-val">--</strong><span class="readout-unit">°C</span></span><span class="readout-trend">PV − SV</span></div>
+            <div id="event-temps-bar" aria-label="关键事件摘要">
+              <div class="event-temp-item tp"><span class="event-temp-label">回温点</span><span class="event-temp-val" id="tp-info">--</span></div>
+              <div class="event-temp-item yellowing"><span class="event-temp-label">转黄</span><span class="event-temp-val" id="yellowing-info">--</span></div>
+              <div class="event-temp-item first-crack"><span class="event-temp-label">一爆</span><span class="event-temp-val" id="first-crack-info">--</span></div>
+              <div class="event-temp-item development"><span class="event-temp-label">发展期</span><span class="event-temp-val" id="development-info">--</span></div>
             </div>
-            <div class="rpb-track" aria-hidden="true">
-              <div class="rpb-seg" data-phase="drying"></div>
-              <div class="rpb-seg" data-phase="maillard"></div>
-              <div class="rpb-seg" data-phase="development"></div>
-              <div class="rpb-indicator" id="rpb-indicator"></div>
+          </aside>
+
+          <section id="charts-panel" aria-labelledby="chart-title">
+            <div class="chart-header">
+              <div><span class="eyebrow">ROAST CURVE</span><h2 class="chart-title" id="chart-title">实时温度曲线</h2></div>
+              <div class="chart-header-tools"><div class="chart-legend" aria-label="图例"><span class="legend-item temp"><i></i>温度 PV</span><span class="legend-item target"><i></i>目标 SV</span><span class="legend-item ror"><i></i>ROR</span><span class="legend-item projection"><i></i>预测</span></div><button id="btn-exit-compare" class="ctrl-btn" style="display:none"><i class="ph ph-x"></i><span>退出对比</span></button></div>
             </div>
-          </div>
-        </div>
-        <div class="chart-wrapper">
-          <canvas id="roast-chart"></canvas>
+            <div class="chart-wrapper"><canvas id="roast-chart" role="img" aria-label="实时温度、目标温度和升温率曲线"></canvas></div>
+            <div id="event-actions-bar" aria-label="烘焙事件时间线">
+              <button class="event-action-btn" data-event="yellowing" title="记录转黄"><span class="event-step"><i class="ph ph-check"></i></span><span class="event-name">转黄</span><span class="event-badge"></span></button>
+              <button class="event-action-btn" data-event="first_crack" title="记录一爆开始"><span class="event-step"><i class="ph ph-record"></i></span><span class="event-name">一爆</span><span class="event-badge"></span></button>
+              <button class="event-action-btn" data-event="first_crack_end" title="记录一爆结束"><span class="event-step"><i class="ph ph-record"></i></span><span class="event-name">一爆结束</span><span class="event-badge"></span></button>
+              <button class="event-action-btn" data-event="second_crack" title="记录二爆开始"><span class="event-step"><i class="ph ph-record"></i></span><span class="event-name">二爆</span><span class="event-badge"></span></button>
+              <button class="event-action-btn" data-event="second_crack_end" title="记录二爆结束"><span class="event-step"><i class="ph ph-record"></i></span><span class="event-name">二爆结束</span><span class="event-badge"></span></button>
+              <button class="event-action-btn drop-prominent" data-event="drop" title="记录出豆"><span class="event-step"><i class="ph ph-export"></i></span><span class="event-name">出豆</span><span class="event-badge"></span></button>
+            </div>
+          </section>
+
+          <aside id="controls-panel" aria-label="情境操作">
+            <div class="command-scroll">
+              <section class="command-section profile-command">
+                <span class="section-kicker">当前曲线</span>
+                <label class="select-shell" for="quick-profile-select"><select id="quick-profile-select" aria-label="当前烘焙曲线"><option value="">正在加载曲线…</option></select><i class="ph ph-caret-down" aria-hidden="true"></i></label>
+                <div class="profile-readonly"><span class="profile-name" id="current-profile-display">--</span><a href="#profile" id="btn-go-profile-tab">管理曲线 <i class="ph ph-caret-right"></i></a></div>
+              </section>
+              <section class="command-section primary-command">
+                <div class="btn-grid" id="roast-btn-grid"><button id="btn-start" class="ctrl-btn primary large"><i class="ph ph-play"></i><span>开始烘焙</span></button></div>
+                <button id="btn-next-event" class="ctrl-btn accent large" hidden><i class="ph ph-record"></i><span class="next-event-copy"><strong>记录下一事件</strong><small id="next-event-eta">点击后写入</small></span></button>
+                <div class="btn-grid" id="cooling-btn-grid" style="display:none"><div class="cooling-notice"><i class="ph ph-circle-notch spin"></i><span>烘焙已结束，等待保存确认</span></div></div>
+                <div id="eta-row" style="display:none"><div class="section-hint" id="eta-info"></div></div>
+              </section>
+              <section class="command-section phase-command">
+                <div id="roast-progress-inline" class="roast-progress-bar" data-phase="idle"><div class="rpb-meta"><span><small>当前阶段</small><strong class="rpb-phase-label" id="rpb-phase-label">待机</strong></span><span class="rpb-time" id="rpb-time">--:--</span></div><div class="rpb-track" aria-hidden="true"><div class="rpb-seg" data-phase="drying"></div><div class="rpb-seg" data-phase="maillard"></div><div class="rpb-seg" data-phase="development"></div><div class="rpb-indicator" id="rpb-indicator"></div></div></div>
+                <div id="segment-bar" aria-label="阶段占比"><div class="segment" id="seg-drying" style="--seg-color:var(--phase-drying)"><span class="seg-name">脱水期</span><span class="seg-val" id="seg-drying-val">--</span></div><div class="segment" id="seg-maillard" style="--seg-color:var(--phase-maillard)"><span class="seg-name">梅纳期</span><span class="seg-val" id="seg-maillard-val">--</span></div><div class="segment" id="seg-development" style="--seg-color:var(--phase-development)"><span class="seg-name">发展期</span><span class="seg-val" id="seg-development-val">--</span></div></div>
+              </section>
+              <details class="command-disclosure"><summary><span><i class="ph ph-timer"></i>阶段参考</span><i class="ph ph-caret-down"></i></summary><div class="disclosure-body"><p class="section-hint">按阶段读取未来目标温度，补偿控制与加热系统的热滞后。</p><div class="phase-input-row" data-phase="drying"><label>脱水期</label><input type="range" id="phase-drying-slider" class="phase-slider" min="0" max="30" step="0.1" value="1.0"><input type="number" id="phase-drying" class="phase-number" min="0" max="30" step="0.1" value="1.0"><span class="unit">秒</span></div><div class="phase-input-row" data-phase="maillard"><label>梅纳期</label><input type="range" id="phase-maillard-slider" class="phase-slider" min="0" max="30" step="0.1" value="0.5"><input type="number" id="phase-maillard" class="phase-number" min="0" max="30" step="0.1" value="0.5"><span class="unit">秒</span></div><div class="phase-input-row" data-phase="development"><label>发展期</label><input type="range" id="phase-development-slider" class="phase-slider" min="0" max="30" step="0.1" value="1.0"><input type="number" id="phase-development" class="phase-number" min="0" max="30" step="0.1" value="1.0"><span class="unit">秒</span></div></div></details>
+              <details class="command-disclosure"><summary><span><i class="ph ph-sliders-horizontal"></i>偏移微调</span><i class="ph ph-caret-down"></i></summary><div class="disclosure-body"><div class="ev-compensation"><div class="ev-readout"><span class="ev-prefix" id="ev-prefix">±</span><span class="ev-value" id="lookahead-offset-value">0.0</span><span class="ev-unit">秒</span></div><div class="ev-scale" id="ev-scale"><div class="ev-scale-track"><div class="ev-tick ev-tick-major" style="left:0%"><span class="ev-tick-label">-3</span></div><div class="ev-tick ev-tick-major" style="left:16.666%"><span class="ev-tick-label">-2</span></div><div class="ev-tick ev-tick-major" style="left:33.333%"><span class="ev-tick-label">-1</span></div><div class="ev-tick ev-tick-major ev-tick-zero" style="left:50%"><span class="ev-tick-label">0</span></div><div class="ev-tick ev-tick-major" style="left:66.666%"><span class="ev-tick-label">+1</span></div><div class="ev-tick ev-tick-major" style="left:83.333%"><span class="ev-tick-label">+2</span></div><div class="ev-tick ev-tick-major" style="left:100%"><span class="ev-tick-label">+3</span></div><div class="ev-pointer" id="ev-pointer"></div></div><input type="range" id="lookahead-offset-slider" class="ev-input" min="-3" max="3" step="0.1" value="0" aria-label="偏移微调"></div></div><div class="lookahead-actual">实际使用 <span id="lookahead-used">--</span> 秒</div></div></details>
+            </div>
+          </aside>
         </div>
       </section>
 
-      <aside id="controls-panel">
-        <!-- Tab 按钮(iOS 分段控件,.tab-glider 为滑动拇指) -->
-        <div class="tabs">
-          <div class="tab-glider" aria-hidden="true"></div>
-          <button class="tab-btn active" data-tab="roast">烘焙控制</button>
-          <button class="tab-btn" data-tab="profile">曲线管理</button>
-          <button class="tab-btn" data-tab="records">烘焙记录</button>
-          <button class="tab-btn" data-tab="settings">设置</button>
+      <section class="tab-content workspace-view management-view" id="tab-profile" aria-label="曲线管理">
+        <div class="workspace-heading"><div><span class="eyebrow">PROFILE LIBRARY</span><h2>曲线管理</h2><p>选择、预览并维护你的烘焙目标曲线。</p></div><div class="profile-actions"><label class="search-field"><i class="ph ph-magnifying-glass"></i><input id="profile-search" type="search" placeholder="搜索曲线" aria-label="搜索曲线"></label><button id="btn-import-trigger" class="ctrl-btn"><i class="ph ph-upload-simple"></i><span>导入</span></button><button id="btn-refresh-profiles" class="ctrl-btn"><i class="ph ph-arrows-clockwise"></i><span>刷新</span></button><button id="btn-new-profile" class="ctrl-btn primary"><i class="ph ph-plus"></i><span>新建曲线</span></button><input type="file" id="btn-import-file" accept=".json" hidden /></div></div>
+        <div class="profile-library-shell"><div class="profile-library-meta"><span>曲线库</span><small>烘焙进行中仅可查看和导出</small></div><div class="profile-cards" id="profile-cards"><div class="list-placeholder"><i class="ph ph-circle-notch spin"></i><span>正在加载曲线</span></div></div></div>
+      </section>
+
+      <section class="tab-content workspace-view management-view" id="tab-records" aria-label="烘焙记录">
+        <div class="workspace-heading"><div><span class="eyebrow">ROAST ARCHIVE</span><h2>烘焙记录</h2><p>回顾每一锅的阶段、事件和真实曲线。</p></div><div class="compare-actions" id="compare-actions"><button id="btn-compare" class="ctrl-btn primary" style="display:none"><i class="ph ph-selection"></i><span>对比选中</span></button></div></div>
+        <div class="records-shell"><div class="records-list" id="records-list"><div class="list-placeholder"><i class="ph ph-circle-notch spin"></i><span>正在加载记录</span></div></div><div id="record-detail" style="display:none"><div class="record-detail-header"><button id="btn-back-to-list" class="ctrl-btn"><i class="ph ph-arrow-left"></i><span>返回列表</span></button><button id="btn-chart-fullscreen" class="ctrl-btn"><i class="ph ph-corners-out"></i><span class="btn-label">图表全屏</span></button></div><div class="record-info-card"><div class="record-info-title"><div><span class="section-kicker">烘焙曲线</span><strong id="detail-profile-name">--</strong></div><span id="detail-date">--</span></div><div class="record-info-stats" id="detail-stats"></div></div><div class="record-chart-container" id="record-chart-container"><button id="btn-chart-exit-fullscreen" class="modal-close" hidden aria-label="退出全屏"><i class="ph ph-x"></i></button><div class="record-chart-wrapper"><canvas id="record-chart" role="img" aria-label="烘焙记录曲线"></canvas></div></div><div class="record-events" id="detail-events"></div><div class="record-actions"><button id="btn-detail-csv" class="ctrl-btn"><i class="ph ph-download-simple"></i><span>导出 CSV</span></button><button id="btn-detail-json" class="ctrl-btn"><i class="ph ph-download-simple"></i><span>导出 JSON</span></button></div></div></div>
+      </section>
+
+      <section class="tab-content workspace-view management-view" id="tab-settings" aria-label="设置">
+        <div class="workspace-heading"><div><span class="eyebrow">PREFERENCES</span><h2>设置</h2><p>调整界面、连接、预测和烘焙提醒。</p></div></div>
+        <div class="settings-grid">
+          <section class="settings-card"><div class="settings-card-heading"><i class="ph ph-palette"></i><div><h3>外观</h3><p>首次启动默认跟随系统</p></div></div><div class="setting-row"><label>主题</label><div class="seg-control" id="theme-seg"><button type="button" data-theme-mode="auto">跟随系统</button><button type="button" data-theme-mode="dark">深色</button><button type="button" data-theme-mode="light">浅色</button></div></div></section>
+          <section class="settings-card" id="backend-section" style="display:none"><div class="settings-card-heading"><i class="ph ph-plugs-connected"></i><div><h3>后端连接</h3><p>当前 <span id="backend-current">--</span></p></div></div><div class="preset-actions"><button id="backend-preset-sim" class="ctrl-btn"><i class="ph ph-desktop"></i><span>模拟器</span></button><button id="backend-preset-real" class="ctrl-btn"><i class="ph ph-broadcast"></i><span>实机</span></button></div><div class="setting-field"><label for="backend-real-preset">实机地址</label><div class="inline-field"><input type="text" id="backend-real-preset" placeholder="http://192.168.1.50:8000"><button id="backend-save-preset" class="ctrl-btn">存预设</button></div></div><div id="backend-history" class="backend-history"></div><div class="setting-field"><label for="backend-custom">手动指定</label><div class="inline-field"><input type="text" id="backend-custom" placeholder="http://...:8000"><button id="backend-apply" class="ctrl-btn primary">切换</button></div></div></section>
+          <section class="settings-card"><div class="settings-card-heading"><i class="ph ph-desktop"></i><div><h3>界面</h3><p>显示密度与实时曲线</p></div></div><div class="phase-input-row"><label>界面缩放</label><select id="ui-scale" class="phase-number"><option value="100">100%（默认）</option><option value="115">115%</option><option value="130">130%</option></select></div><div class="phase-input-row"><label>ROR 平滑</label><input type="range" id="ui-ror-alpha" class="phase-slider" min="0.05" max="0.6" step="0.05" value="0.3"><input type="number" id="ui-ror-alpha-num" class="phase-number" min="0.05" max="0.6" step="0.05" value="0.3"><span class="unit">α</span></div><div class="phase-input-row"><label>预测线</label><select id="ui-projection" class="phase-number"><option value="30">30 秒</option><option value="60">60 秒（默认）</option><option value="90">90 秒</option><option value="0">关闭</option></select></div></section>
+          <section class="settings-card"><div class="settings-card-heading"><i class="ph ph-bell-ringing"></i><div><h3>提醒</h3><p>烘焙节点与结束通知</p></div></div><div class="phase-input-row"><label>提示音</label><input type="checkbox" id="ui-sound" checked><button id="ui-sound-test" class="ctrl-btn">测试</button></div><div class="phase-input-row"><label>结束提醒</label><span class="unit">提前</span><select id="ui-alert-offset" class="phase-number"><option value="5">5 °C</option><option value="10">10 °C（默认）</option><option value="15">15 °C</option></select></div></section>
+          <section class="settings-card"><div class="settings-card-heading"><i class="ph ph-crosshair"></i><div><h3>自动标记</h3><p>按温度阈值记录转黄与一爆</p></div></div><div class="phase-input-row"><label>转黄 ≥</label><input type="checkbox" id="auto-dry-enabled" title="启用自动标记转黄"><input type="number" id="auto-dry-temp" class="phase-number" min="0" max="300" step="1" value="150"><span class="unit">°C</span></div><div class="phase-input-row"><label>一爆 ≥</label><input type="checkbox" id="auto-fcs-enabled" title="启用自动标记一爆"><input type="number" id="auto-fcs-temp" class="phase-number" min="0" max="300" step="1" value="200"><span class="unit">°C</span></div></section>
+          <section class="settings-card"><div class="settings-card-heading split"><span><i class="ph ph-warning-circle"></i><span><h3>报警</h3><p>每锅每条仅触发一次</p></span></span><button id="btn-add-alarm" class="ctrl-btn"><i class="ph ph-plus"></i><span>添加</span></button></div><div id="alarms-list"></div></section>
+          <section class="settings-card about-card"><div class="settings-card-heading"><i class="ph ph-coffee"></i><div><h3>关于</h3><p>Ganf's 咖啡烘焙机控制台</p></div></div><div class="about-meta"><span>Web / Tauri</span><span>Calm Canvas v3.21</span></div></section>
         </div>
-
-        <!-- 烘焙控制 -->
-        <div class="tab-content active" id="tab-roast">
-          <!-- 当前曲线只读 -->
-          <div class="roast-section">
-            <div class="profile-readonly">
-              <span class="profile-name" id="current-profile-display">--</span>
-              <a href="#" id="btn-go-profile-tab">去曲线管理选择 →</a>
-            </div>
-          </div>
-
-          <!-- 开始按钮 -->
-          <div class="roast-section btn-grid" id="roast-btn-grid">
-            <button id="btn-start" class="ctrl-btn primary">开始烘焙</button>
-          </div>
-
-          <div class="roast-section btn-grid" id="cooling-btn-grid" style="display:none">
-            <div class="cooling-notice">烘焙已结束，正在等待保存确认...</div>
-          </div>
-
-          <!-- 预计到达结束温度 -->
-          <div class="roast-section" id="eta-row" style="display:none">
-            <div class="section-hint" id="eta-info"></div>
-          </div>
-
-          <!-- 超前预测阶段设置 -->
-          <div class="roast-section">
-            <div class="section-title">超前预测阶段设置</div>
-            <div class="section-hint">
-              PID控制器和加热系统存在热滞后,读取未来N秒的目标温度作为当前SV。<br>
-              实际使用时间与设定不同是因为开启了自适应误差修正(当PV落后超过阈值时自动增加额外超前量)。
-            </div>
-            <div class="phase-input-row" data-phase="drying">
-              <label>脱水期</label>
-              <input type="range"  id="phase-drying-slider" class="phase-slider"
-                     min="0" max="30" step="0.1" value="1.0">
-              <input type="number" id="phase-drying"        class="phase-number"
-                     min="0" max="30" step="0.1" value="1.0">
-              <span class="unit">秒</span>
-            </div>
-            <div class="phase-input-row" data-phase="maillard">
-              <label>梅纳期</label>
-              <input type="range"  id="phase-maillard-slider" class="phase-slider"
-                     min="0" max="30" step="0.1" value="0.5">
-              <input type="number" id="phase-maillard"        class="phase-number"
-                     min="0" max="30" step="0.1" value="0.5">
-              <span class="unit">秒</span>
-            </div>
-            <div class="phase-input-row" data-phase="development">
-              <label>发展期</label>
-              <input type="range"  id="phase-development-slider" class="phase-slider"
-                     min="0" max="30" step="0.1" value="1.0">
-              <input type="number" id="phase-development"        class="phase-number"
-                     min="0" max="30" step="0.1" value="1.0">
-              <span class="unit">秒</span>
-            </div>
-          </div>
-
-          <!-- 偏移微调（相机 EV 曝光补偿风格刻度尺） -->
-          <div class="roast-section">
-            <div class="section-title">偏移微调</div>
-            <div class="ev-compensation">
-              <div class="ev-readout">
-                <span class="ev-prefix" id="ev-prefix">±</span><span class="ev-value" id="lookahead-offset-value">0.0</span><span class="ev-unit">秒</span>
-              </div>
-              <div class="ev-scale" id="ev-scale">
-                <!-- 主刻度 -3..+3 + 副刻度（0.5 间隔），由 ::before/::after 渐变绘制 -->
-                <div class="ev-scale-track">
-                  <div class="ev-tick ev-tick-major" style="left:0%"  ><span class="ev-tick-label">-3</span></div>
-                  <div class="ev-tick ev-tick-minor" style="left:8.333%"></div>
-                  <div class="ev-tick ev-tick-major" style="left:16.666%"><span class="ev-tick-label">-2</span></div>
-                  <div class="ev-tick ev-tick-minor" style="left:25%"></div>
-                  <div class="ev-tick ev-tick-major" style="left:33.333%"><span class="ev-tick-label">-1</span></div>
-                  <div class="ev-tick ev-tick-minor" style="left:41.666%"></div>
-                  <div class="ev-tick ev-tick-major ev-tick-zero" style="left:50%"><span class="ev-tick-label">0</span></div>
-                  <div class="ev-tick ev-tick-minor" style="left:58.333%"></div>
-                  <div class="ev-tick ev-tick-major" style="left:66.666%"><span class="ev-tick-label">+1</span></div>
-                  <div class="ev-tick ev-tick-minor" style="left:75%"></div>
-                  <div class="ev-tick ev-tick-major" style="left:83.333%"><span class="ev-tick-label">+2</span></div>
-                  <div class="ev-tick ev-tick-minor" style="left:91.666%"></div>
-                  <div class="ev-tick ev-tick-major" style="left:100%"><span class="ev-tick-label">+3</span></div>
-                  <div class="ev-pointer" id="ev-pointer"></div>
-                </div>
-                <input type="range" id="lookahead-offset-slider" class="ev-input"
-                       min="-3" max="3" step="0.1" value="0" aria-label="偏移微调">
-              </div>
-            </div>
-            <div class="lookahead-actual">
-              实际使用: <span id="lookahead-used">--</span> 秒(含自适应)
-            </div>
-          </div>
-        </div>
-
-        <!-- 曲线管理 -->
-        <div class="tab-content" id="tab-profile">
-          <div class="profile-actions">
-            <button id="btn-new-profile" class="ctrl-btn small primary">新建曲线</button>
-            <button id="btn-import-trigger" class="ctrl-btn small">导入曲线</button>
-            <button id="btn-refresh-profiles" class="ctrl-btn small">刷新</button>
-            <input type="file" id="btn-import-file" accept=".json" hidden />
-          </div>
-          <div class="profile-cards" id="profile-cards"></div>
-        </div>
-
-        <!-- 烘焙记录 -->
-        <div class="tab-content" id="tab-records">
-          <div class="compare-actions" id="compare-actions">
-            <button id="btn-compare" class="ctrl-btn small" style="display:none">对比选中</button>
-            <button id="btn-exit-compare" class="ctrl-btn small" style="display:none">退出对比</button>
-          </div>
-          <div class="records-list" id="records-list">
-            <div class="list-placeholder">加载中...</div>
-          </div>
-          <div id="record-detail" style="display:none">
-            <div class="record-detail-header">
-              <button id="btn-back-to-list" class="ctrl-btn small">← 返回列表</button>
-              <button id="btn-chart-fullscreen" class="ctrl-btn small">图表全屏</button>
-            </div>
-            <div class="record-info-card">
-              <div class="record-info-title">
-                <strong id="detail-profile-name">--</strong>
-                <span id="detail-date">--</span>
-              </div>
-              <div class="record-info-stats" id="detail-stats"></div>
-            </div>
-            <div class="record-chart-container" id="record-chart-container">
-              <button id="btn-chart-exit-fullscreen" class="modal-close" hidden aria-label="退出全屏">×</button>
-              <div class="record-chart-wrapper">
-                <canvas id="record-chart"></canvas>
-              </div>
-            </div>
-            <div class="record-events" id="detail-events"></div>
-            <div class="record-actions">
-              <button id="btn-detail-csv" class="ctrl-btn small">导出 CSV</button>
-              <button id="btn-detail-json" class="ctrl-btn small">导出 JSON</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- 设置 -->
-        <div class="tab-content" id="tab-settings">
-            <!-- 外观:主题三段选择器,由 theme.js 自接管(持久化 'roaster.theme') -->
-            <div class="roast-section">
-              <div class="section-title">外观</div>
-              <div class="setting-row">
-                <label>主题</label>
-                <div class="seg-control" id="theme-seg">
-                  <button type="button" data-theme-mode="auto">跟随系统</button>
-                  <button type="button" data-theme-mode="dark">深色</button>
-                  <button type="button" data-theme-mode="light">浅色</button>
-                </div>
-              </div>
-            </div>
-
-            <!-- 后端连接：仅 Tauri 桌面版显示（由 tauri-adapter.js 接管），浏览器版始终隐藏 -->
-            <div class="roast-section" id="backend-section" style="display:none">
-              <div class="section-title">后端连接</div>
-              <div class="section-hint">当前：<span id="backend-current">--</span></div>
-              <div style="display:flex;gap:8px;margin:8px 0;">
-                <button id="backend-preset-sim" class="ctrl-btn small" style="flex:1">模拟器</button>
-                <button id="backend-preset-real" class="ctrl-btn small" style="flex:1">实机</button>
-              </div>
-              <div class="phase-input-row">
-                <label>实机地址</label>
-                <input type="text" id="backend-real-preset" class="phase-number" style="width:auto;flex:1;" placeholder="http://192.168.1.50:8000">
-                <button id="backend-save-preset" class="ctrl-btn small">存预设</button>
-              </div>
-              <div id="backend-history" style="margin:6px 0;"></div>
-              <div class="phase-input-row">
-                <label>手动指定</label>
-                <input type="text" id="backend-custom" class="phase-number" style="width:auto;flex:1;" placeholder="http://...:8000">
-                <button id="backend-apply" class="ctrl-btn small primary">切换</button>
-              </div>
-            </div>
-
-            <div class="roast-section">
-              <div class="section-title">界面</div>
-              <div class="phase-input-row">
-                <label>界面缩放</label>
-                <select id="ui-scale" class="phase-number" style="width:auto;flex:1;">
-                  <option value="100">100%（默认）</option>
-                  <option value="115">115%</option>
-                  <option value="130">130%</option>
-                </select>
-              </div>
-              <div class="phase-input-row">
-                <label>ROR 平滑</label>
-                <input type="range" id="ui-ror-alpha" class="phase-slider" min="0.05" max="0.6" step="0.05" value="0.3">
-                <input type="number" id="ui-ror-alpha-num" class="phase-number" min="0.05" max="0.6" step="0.05" value="0.3">
-                <span class="unit">α</span>
-              </div>
-              <div class="phase-input-row">
-                <label>预测线</label>
-                <select id="ui-projection" class="phase-number" style="width:auto;flex:1;">
-                  <option value="30">30 秒</option>
-                  <option value="60">60 秒（默认）</option>
-                  <option value="90">90 秒</option>
-                  <option value="0">关闭</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="roast-section">
-              <div class="section-title">提醒</div>
-              <div class="phase-input-row">
-                <label>提示音</label>
-                <input type="checkbox" id="ui-sound" checked>
-                <button id="ui-sound-test" class="ctrl-btn small">测试</button>
-              </div>
-              <div class="phase-input-row">
-                <label>结束提醒</label>
-                <span class="unit">提前</span>
-                <select id="ui-alert-offset" class="phase-number" style="width:auto;flex:1;min-width:104px;">
-                  <option value="5">5 °C</option>
-                  <option value="10">10 °C（默认）</option>
-                  <option value="15">15 °C</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="roast-section">
-              <div class="section-title">自动标记</div>
-              <div class="section-hint">温度到达阈值时自动记录事件（对齐 Artisan autoDRY / autoFCs）</div>
-              <div class="phase-input-row">
-                <label>转黄 ≥</label>
-                <input type="checkbox" id="auto-dry-enabled" title="启用自动标记转黄">
-                <input type="number" id="auto-dry-temp" class="phase-number" min="0" max="300" step="1" value="150">
-                <span class="unit">°C</span>
-              </div>
-              <div class="phase-input-row">
-                <label>一爆 ≥</label>
-                <input type="checkbox" id="auto-fcs-enabled" title="启用自动标记一爆">
-                <input type="number" id="auto-fcs-temp" class="phase-number" min="0" max="300" step="1" value="200">
-                <span class="unit">°C</span>
-              </div>
-            </div>
-            <div class="roast-section">
-              <div class="section-title" style="display:flex;align-items:center;justify-content:space-between;">
-                <span>报警</span>
-                <button id="btn-add-alarm" class="ctrl-btn small">+ 添加</button>
-              </div>
-              <div class="section-hint">烘焙中触发：提示音 + 弹窗，每锅每条一次</div>
-              <div id="alarms-list"></div>
-            </div>
-
-            <div class="roast-section">
-              <div class="section-title">关于</div>
-              <div class="section-hint">Ganf's 咖啡烘焙机控制台 · 网页/Tauri 版</div>
-            </div>
-          </div>
-      </aside>
+      </section>
     </main>
 
-    <!-- 底部状态栏（右侧集成急停按钮） -->
-    <footer id="footer">
-      <div class="footer-left">
-        <div class="conn-status-group">
-          <span class="status-dot offline" id="conn-status-ws" title="WebSocket"></span>
-          <span class="conn-label">WS</span>
-        </div>
-        <div class="conn-status-group">
-          <span class="status-dot offline" id="conn-status-tc4s" title="TC4S"></span>
-          <span class="conn-label">TC4S</span>
-        </div>
-      </div>
-      <div class="footer-right">
-        <button id="btn-e-stop" class="estop-btn" aria-label="紧急停止">E-STOP</button>
-      </div>
-    </footer>
+    <footer id="footer"><div class="footer-left"><div class="conn-status-group"><span class="status-dot offline" id="conn-status-ws" title="WebSocket"></span><span class="conn-label">WS</span></div><div class="footer-separator"></div><div class="conn-status-group"><span class="status-dot offline" id="conn-status-tc4s" title="TC4S"></span><span class="conn-label">TC4S</span></div><span class="connection-copy">等待连接</span></div><div class="footer-right"><button id="btn-e-stop" class="estop-btn disabled" aria-label="紧急停止"><i class="ph ph-shield-warning"></i><span class="estop-label">E-STOP</span></button></div></footer>
   </div>
 
-  <!-- ERROR 状态全屏阻断横幅 -->
-  <div id="error-overlay" class="hidden">
-    <div class="error-box">
-      <div class="error-icon">&#x26A0;</div>
-      <h2>系统错误</h2>
-      <p id="error-reason">--</p>
-      <button id="btn-error-reset" class="error-reset-btn">复位系统</button>
-    </div>
-  </div>
-
-  <script src="js/tauri-adapter.js?v=3.20"></script>
-  <script src="js/utils.js?v=3.20"></script>
-  <script src="js/app.js?v=3.20"></script>
+  <div id="error-overlay" class="hidden" role="alertdialog" aria-modal="true" aria-labelledby="error-title"><div class="error-box"><div class="error-icon"><i class="ph ph-warning-octagon"></i></div><span class="eyebrow">SYSTEM HALTED</span><h2 id="error-title">系统错误</h2><p id="error-reason">--</p><button id="btn-error-reset" class="error-reset-btn"><i class="ph ph-arrows-counter-clockwise"></i><span>复位系统</span></button></div></div>
+  <div id="app-toast" class="app-toast" role="status" aria-live="polite"></div>
+  <script src="js/tauri-adapter.js?v=3.21"></script>
+  <script src="js/utils.js?v=3.21"></script>
+  <script src="js/app.js?v=3.21"></script>
 </body>
 </html>
