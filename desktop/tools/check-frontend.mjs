@@ -6,9 +6,9 @@ import { fileURLToPath } from 'node:url';
 const here = dirname(fileURLToPath(import.meta.url));
 const root = resolve(here, '..', '..');
 const staticRoot = resolve(root, 'roaster', 'static');
-const jsFiles = ['theme.js', 'utils.js', 'tauri-adapter.js', 'app.js', 'editor.js']
+const jsFiles = ['theme.js', 'utils.js', 'tauri-adapter.js', 'app.js', 'editor.js', 'ai.js', 'ai-bridge.js']
   .map(name => resolve(staticRoot, 'js', name));
-const cssFiles = ['theme.css', 'style.css', 'editor.css']
+const cssFiles = ['theme.css', 'style.css', 'editor.css', 'ai.css']
   .map(name => resolve(staticRoot, 'css', name));
 const htmlFiles = [resolve(staticRoot, 'index.html'), resolve(staticRoot, 'editor.html')];
 const failures = [];
@@ -60,7 +60,7 @@ const [indexHtml, editorHtml, themeJs, appJs, editorJs, tauriAdapter, styleCss, 
 
 for (const [name, html] of [['index.html', indexHtml], ['editor.html', editorHtml]]) {
   check(!html.includes('?v=3.20'), `${name}: stale v3.20 cache key`);
-  check(html.indexOf('js/theme.js?v=3.21') < html.indexOf('css/theme.css?v=3.21'), `${name}: theme.js must load before theme.css`);
+  check(html.indexOf('js/theme.js?v=3.22') < html.indexOf('css/theme.css?v=3.22'), `${name}: theme.js must load before theme.css`);
 }
 
 const authoredSources = [indexHtml, editorHtml, appJs, editorJs, tauriAdapter].join('\n');

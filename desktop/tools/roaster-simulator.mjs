@@ -1,5 +1,7 @@
 import http from 'node:http';
 import { WebSocketServer } from 'ws';
+import {target,validateCandidate} from '../ai/analysis.mjs';
+import {randomUUID} from 'node:crypto';
 
 const port = Number(process.env.ROASTER_SIM_PORT || 8000);
 const scenario = process.argv.find(arg => arg.startsWith('--scenario='))?.split('=')[1] || 'roasting';
@@ -30,16 +32,7 @@ const profiles = [
 ];
 
 function interpolate(nodes, time) {
-  if (time <= nodes[0].time) return nodes[0].temperature;
-  for (let index = 1; index < nodes.length; index += 1) {
-    const current = nodes[index];
-    const previous = nodes[index - 1];
-    if (time <= current.time) {
-      const ratio = (time - previous.time) / Math.max(1, current.time - previous.time);
-      return previous.temperature + ratio * (current.temperature - previous.temperature);
-    }
-  }
-  return nodes.at(-1).temperature;
+  return target({nodes},time);
 }
 
 function makeRecord(index, profile, offsetDays) {
@@ -132,7 +125,7 @@ function json(response, status, payload, headers = {}) {
     'Content-Type': 'application/json; charset=utf-8',
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Headers': 'Content-Type',
-    'Access-Control-Allow-Methods': 'GET,POST,DELETE,OPTIONS',
+    'Access-Control-Allow-Methods': 'GET,POST,PATCH,DELETE,OPTIONS',
     ...headers,
   });
   response.end(JSON.stringify(payload));
@@ -154,6 +147,23 @@ const server = http.createServer(async (request, response) => {
   const url = new URL(request.url, `http://${request.headers.host || `localhost:${port}`}`);
   if (request.method === 'OPTIONS') return json(response, 204, {});
   if (url.pathname === '/api/v1/status') return json(response, 200, makeState());
+  if (url.pathname === '/api/v1/analysis/context') {
+    const samples=[];
+    if(stateName!=='IDLE') for(let t=0;t<=elapsed;t+=.5) {const s=makeState(t);samples.push([t,s.pv,s.sv,s.ror]);}
+    return json(response,200,{captured_at:new Date().toISOString(),status:makeState(),active_profile:stateName==='IDLE'?null:structuredClone(currentProfile),samples,limits:{max_safe_temperature_c:250,profile_interpolation:'catmull-rom-boundary-linear-v1'}});
+  }
+  if(['/api/v1/analysis/profiles/validate','/api/v1/analysis/profiles'].includes(url.pathname)&&request.method==='POST') {
+    try {
+      const payload=JSON.parse(await readBody(request));const result=validateCandidate(payload.profile,250,payload.source,payload.locked_until);
+      if(url.pathname.endsWith('/validate')) return json(response,200,result);
+      if(stateName!=='IDLE') return json(response,409,{detail:'请在待机时保存 AI 曲线'});
+      if(!result.valid) return json(response,422,{detail:result});
+      const profile={...payload.profile,id:randomUUID()};profiles.push(profile);return json(response,200,{success:true,id:profile.id});
+    } catch {return json(response,400,{detail:'数据格式错误'});}
+  }
+  const contextMatch=url.pathname.match(/^\/api\/v1\/records\/([^/]+)\/context$/);
+  if(contextMatch&&request.method==='PATCH') {const record=records.find(r=>r.session_id===decodeURIComponent(contextMatch[1]));if(!record)return json(response,404,{detail:'记录不存在'});try {const payload=JSON.parse(await readBody(request));record.roast_context=payload.roast_context;record.cup_feedback=payload.cup_feedback;return json(response,200,{success:true});}catch{return json(response,400,{detail:'数据格式错误'});}}
+  if(url.pathname==='/api/v1/profiles'&&request.method==='POST') {try{const payload=JSON.parse(await readBody(request));const profile={...payload,id:payload.id||randomUUID()};profiles.push(profile);return json(response,200,{success:true,id:profile.id});}catch{return json(response,400,{detail:'数据格式错误'});}}
   if (url.pathname === '/api/v1/profiles' && request.method === 'GET') {
     return json(response, 200, profiles.map(({ nodes, ...summary }) => ({ ...summary, node_count: nodes.length })));
   }

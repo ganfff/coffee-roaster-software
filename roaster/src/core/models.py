@@ -11,6 +11,20 @@ class ProfileNode(BaseModel):
     temperature: float = Field(..., ge=0, le=300, description="目标温度 °C")
 
 
+class RoastContext(BaseModel):
+    bean_name: str = Field("", max_length=200)
+    origin: str = Field("", max_length=200)
+    process: str = Field("", max_length=200)
+    charge_weight_g: Optional[float] = Field(None, gt=0, le=100000, allow_inf_nan=False)
+    target_roast: str = Field("", max_length=200)
+    target_flavor: str = Field("", max_length=1000)
+    temperature_source: str = "bean"
+
+
+class CupFeedback(BaseModel):
+    notes: str = Field("", max_length=4000)
+
+
 class RoastProfile(BaseModel):
     """烘焙曲线：一组节点定义的温度-时间目标"""
 
@@ -19,6 +33,8 @@ class RoastProfile(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid4()))
     name: str
     description: str = ""
+    roast_context: Optional[RoastContext] = None
+    ai_origin: Optional[dict] = None
     nodes: List[ProfileNode] = Field(default_factory=list, description="温度曲线（向后兼容字段名）")
     end_temp: float = Field(0, ge=0, le=300, description="结束温度 °C，到达后自动结束烘焙")
     created_at: datetime = Field(default_factory=datetime.now)
@@ -116,6 +132,8 @@ class RoastRecord(BaseModel):
     seq_no: Optional[int] = None
     display_name: Optional[str] = None
     profile_snapshot: Optional[RoastProfile] = None
+    roast_context: Optional[RoastContext] = None
+    cup_feedback: Optional[CupFeedback] = None
 
 
 class RecordSummary(BaseModel):

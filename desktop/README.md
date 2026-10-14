@@ -139,3 +139,42 @@ desktop/
 - **iOS 不支持**：Tauri 移动端目前不成熟；苹果手机用户继续用浏览器/PWA。
 - **树莓派本机不需要这个壳**：本机触摸屏场景继续用 Chromium Kiosk 模式即可，
   桌面壳是给「Windows/Mac 电脑远程操作烘焙机」的场景用的。
+
+## AI 烘焙助手（桌面 v0.2.0 / Web 资源 v3.22）
+
+Windows 桌面版增加记录复盘、曲线设计/优化和实时只读辅导。普通网页与树莓派 kiosk 保持共享页面，第一版不提供 AI 入口。模型不会启动/结束烘焙、修改 SV、预测参数或当前执行曲线。
+
+1. 打开「设置 → AI 服务」，选择供应商并保存 API Key，点击「加载模型目录」选择模型，再点击「测试连接」。测试会产生少量模型调用。DeepSeek、Moonshot 中国、OpenAI、Anthropic、Gemini、OpenRouter 使用各自目录；自定义模式填写 OpenAI Chat Completions 兼容 API 根地址与模型 ID（例如 `http://127.0.0.1:1234/v1`），本地无密钥服务可留空 Key。
+2. 「烘焙记录」打开一锅记录，展开「AI 烘焙复盘」。可保存豆子、处理法、重量、目标及杯测笔记；没有杯测时只评价过程，没有完整事件时不编造 DTR。「按建议设计下一锅」在待机时进入原始快照的编辑器副本。
+3. 「曲线管理」点击「AI 设计曲线」或卡片上的「AI 优化」。编辑器支持锁定前段秒数和选择历史参考；候选以紫色虚线叠加，采用前展示节点与自动结束阈值变化。采用后可以撤销/重做，再「保存曲线」生成新 UUID，返回曲线库手动应用。
+4. 烘焙中展开「AI 实时辅导」，点击「开启本锅持续辅导」。按阶段变化和约每分钟生成建议，也可单次提问；暂停、出豆、断线、ERROR、切换设备或离开页面均终止相关请求。下一锅需重新开启。
+
+密钥通过 Windows 凭据管理器保存；AI 配置与对话保存在系统应用数据目录的 `com.ganf.roaster/ai` 下，按设备和对象区分。前端只读取是否配置密钥；不写入 localStorage、不随 Git 上传。自定义地址不支持 URL 内嵌密码或查询参数中的密钥，密钥使用独立输入框。「删除密钥」移除当前供应商/地址凭据；「新对话」清除当前对象对话。
+
+### 运行环境与打包变化
+
+`npm run prepare:ai` 下载并核验锁定的 Node 24 LTS（版本与 SHA256 在 `ai/runtime-manifest.json`），生成拆分的 ESM `.mjs` 与 Tauri IPC 前端桥。`dev`、`dev:sim` 与 `build` 自动准备资源；无需额外安装 Python AI SDK。
+
+正式 NSIS 安装包包含 Node 和 AI 资源，客户无需安装系统 Node。绿色版现在必须整体分发 `roaster-desktop.exe`、`ai-node.exe`、`ai/` 与 `node-manifest.json`；不再是单个 EXE。旧的单文件/5–10MB 说明仅适用于 v0.1.0。Node 与生成物位于被忽略的 `desktop/runtime/`，源码、锁文件与下载校验清单进入 Git。
+
+后端需同步本次代码并重新启动，以提供 `/api/v1/analysis/context`、候选校验及副本保存接口。旧后端可继续复盘已有记录；实时辅导和安全保存 AI 曲线会提示更新后端。
+
+### 验证命令
+
+```powershell
+npm run prepare:ai
+npm run test:ai
+npm run test:ai:ui
+npm run check:frontend
+cargo test --manifest-path src-tauri/Cargo.toml
+npm run build
+```
+
+`test:ai:ui` 使用本机安全模拟器和模拟原生 IPC，浏览器需已安装 Microsoft Edge，使用端口 8031；它不启动 Python 硬件后端或请求云端模型。后端 ASGI 测试注入 fake controller、不运行硬件 lifespan：
+
+```powershell
+Set-Location ../roaster
+uv run --python 3.12 --with-requirements requirements.txt --with httpx python -m unittest discover -s tests -v
+```
+
+设计、接口和验证边界见 [`docs/qa/ai-v3.22.md`](../docs/qa/ai-v3.22.md)。

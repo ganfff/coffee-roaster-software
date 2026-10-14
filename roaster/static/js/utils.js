@@ -24,7 +24,7 @@ function catmullRom(p0, p1, p2, p3, t) {
 
 /**
  * 计算任意时刻的样条温度值
- * 控制点不足4个时退化为线性插值；边界段使用虚拟点保持样条连续性
+ * 与后端一致：不足4个点或边界段使用线性插值。
  * @param {Array} nodeList - 控制点列表 [{time, temperature}, ...]
  * @param {number} elapsed - 目标时刻（秒）
  * @returns {number} 该时刻的温度值
@@ -37,7 +37,7 @@ function getSplineTemp(nodeList, elapsed) {
     const prev = nodeList[i];
     const curr = nodeList[i + 1];
     if (prev.time <= elapsed && elapsed <= curr.time) {
-      if (n < 4) {
+      if (n < 4 || i === 0 || i === n - 2) {
         const ratio = (elapsed - prev.time) / (curr.time - prev.time);
         return prev.temperature + ratio * (curr.temperature - prev.temperature);
       }

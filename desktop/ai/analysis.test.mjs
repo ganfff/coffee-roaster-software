@@ -1,0 +1,13 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {target,validateCandidate,metrics,modelContext} from './analysis.mjs';
+import {readFile} from 'node:fs/promises';
+import vm from 'node:vm';
+const profile=values=>({name:'test',description:'',nodes:values.map((temperature,i)=>({time:i*60,temperature})),end_temp:0});
+test('analytic extrema catch overshoot between valid nodes',()=>{const p=profile([0,250,250,0]);assert.equal(target(p,90),281.25);assert.equal(validateCandidate(p,250).valid,false);});
+test('legal targets and boundary segments match browser renderer',async()=>{const p=profile([30,100,180,200,210]);const context={window:{},document:{},getComputedStyle:()=>({getPropertyValue:()=>''})};vm.createContext(context);vm.runInContext(await readFile(new URL('../../roaster/static/js/utils.js',import.meta.url),'utf8'),context);for(let t=0;t<300;t+=.37)assert.ok(Math.abs(target(p,t)-context.getSplineTemp(p.nodes,t))<1e-8);assert.equal(validateCandidate(p,250).valid,true);});
+test('finite values, times, end temperature, device limits',()=>{assert.equal(validateCandidate(profile([20,100]),NaN).valid,false);for(const mutate of [p=>p.nodes[1].time=0,p=>p.nodes[0].time=1,p=>p.nodes[1].time=Infinity,p=>p.end_temp=Infinity,p=>p.end_temp=240,p=>p.nodes[1].temperature=251]){const p=profile([20,100]);mutate(p);assert.equal(validateCandidate(p,250).valid,false);}});
+test('lock checks interpolated shape, not just matching old nodes',()=>{const source=profile([30,100,180,200,210]);const candidate=structuredClone(source);candidate.nodes[3].temperature=230;assert.equal(validateCandidate(candidate,250,source,120).valid,false);assert.equal(validateCandidate(source,250,source,120).valid,true);});
+test('missing historical snapshots/events do not fabricate metrics',()=>{const m=metrics({record:{data:[[0,30,40,0],[10,40,50,6]],events:[]}});assert.equal(m.target_mae_c,null);assert.deepEqual(m.phases,{});assert.equal(m.warnings.length,2);});
+test('phase metrics use recorded events and raw target snapshot',()=>{const p=profile([30,60,90]);const events=[['charge',0],['yellowing',30],['first_crack',60],['drop',120]].map(([type,time])=>({type,time}));const m=metrics({record:{profile_snapshot:p,events,data:[[0,30,30,0],[60,60,60,30],[120,90,90,30]]}});assert.equal(m.phases.dtr_percent,50);assert.equal(m.target_mae_c,0);});
+test('bucketing preserves ROR and temperature extremes without raw bulk upload',()=>{const ctx={record:{data:[[0,30,30,0],[1,50,30,100],[4,35,30,-20]]}};const copy=modelContext(ctx);assert.equal(copy.record.data,undefined);assert.equal(copy.sample_buckets[0].ror_max,100);assert.equal(copy.sample_buckets[0].ror_min,-20);assert.equal(ctx.record.data.length,3);});

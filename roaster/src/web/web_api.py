@@ -13,7 +13,8 @@ from src.services.data_manager import (
     RECORD_LIST_LIMIT_MAX,
     RECORD_LIST_LIMIT_MIN,
 )
-from src.core.models import RoastProfile
+from src.core.models import RoastProfile, RoastContext, CupFeedback
+from src.core.analysis import validate_candidate
 
 
 class ConnectionManager:
@@ -314,6 +315,47 @@ async def api_export_json(session_id: str):
     if json_data is None:
         raise HTTPException(status_code=404, detail="记录不存在")
     return JSONResponse(content=json.loads(json_data))
+
+
+@app.get("/api/v1/analysis/context")
+async def api_analysis_context():
+    return await app.state.controller.get_analysis_context()
+
+
+@app.post("/api/v1/analysis/profiles/validate")
+async def api_validate_candidate(payload: dict):
+    maximum = app.state.controller.config.get("max_safe_temperature", 250.0)
+    return validate_candidate(payload.get("profile", {}), maximum, payload.get("source"), payload.get("locked_until"))
+
+
+@app.post("/api/v1/analysis/profiles")
+async def api_save_candidate(payload: dict):
+    # The model never calls this route; explicit editor Save invokes it.
+    controller = app.state.controller
+    if controller.state.value != "IDLE":
+        raise HTTPException(409, "请在待机时保存 AI 曲线")
+    result = await api_validate_candidate(payload)
+    if not result["valid"]:
+        raise HTTPException(422, detail=result)
+    candidate = dict(payload["profile"])
+    candidate.pop("id", None)
+    candidate.pop("created_at", None)
+    candidate.pop("updated_at", None)
+    profile = RoastProfile.model_validate(candidate)
+    await app.state.dm.save_profile(profile)
+    return {"success": True, "id": profile.id}
+
+
+@app.patch("/api/v1/records/{session_id}/context")
+async def api_record_context(session_id: str, payload: dict):
+    try:
+        context = RoastContext.model_validate(payload.get("roast_context") or {})
+        feedback = CupFeedback.model_validate(payload.get("cup_feedback") or {})
+    except ValueError as exc:
+        raise HTTPException(422, str(exc))
+    if not await app.state.dm.update_record_context(session_id, context, feedback):
+        raise HTTPException(404, "记录不存在")
+    return {"success": True}
 
 
 # 根路径静态托管（兜底，必须最后注册）：让页面能用相对路径引用 css/js，

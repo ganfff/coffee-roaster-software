@@ -5,16 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="color-scheme" content="dark light" />
   <title>曲线编辑器 - Ganf's 咖啡烘焙机</title>
-  <script src="js/theme.js?v=3.21"></script>
-  <link rel="stylesheet" href="css/theme.css?v=3.21" />
+  <script src="js/theme.js?v=3.22"></script>
+  <link rel="stylesheet" href="css/theme.css?v=3.22" />
+  <link rel="stylesheet" href="css/ai.css?v=3.22" />
   <link rel="stylesheet" href="assets/icons/phosphor/phosphor.css?v=2.1.2" />
-  <link rel="stylesheet" href="css/editor.css?v=3.21" />
+  <link rel="stylesheet" href="css/editor.css?v=3.22" />
   <script src="js/vendor/chart.umd.min.js"></script>
 </head>
 <body>
   <div id="app" class="editor-app">
     <header class="editor-header">
-      <a href="/" class="back-link"><i class="ph ph-arrow-left"></i><span>曲线管理</span></a>
+      <a href="/?workspace=profile" class="back-link"><i class="ph ph-arrow-left"></i><span>曲线管理</span></a>
       <div class="editor-title"><span class="eyebrow">PROFILE EDITOR</span><strong>曲线编辑器</strong></div>
       <div class="header-actions">
         <button id="btn-undo" class="ctrl-btn icon-control" aria-label="撤销" title="撤销 (Ctrl+Z)" disabled><i class="ph ph-arrow-counter-clockwise"></i></button>
@@ -56,8 +57,10 @@
     </main>
   </div>
   <div id="editor-toast" class="editor-toast" role="status" aria-live="polite"></div>
-  <script src="js/tauri-adapter.js?v=3.21"></script>
-  <script src="js/utils.js?v=3.21"></script>
-  <script src="js/editor.js?v=3.21"></script>
+  <script src="js/tauri-adapter.js?v=3.22"></script>
+  <script src="js/utils.js?v=3.22"></script>
+  <script src="js/editor.js?v=3.22"></script>
+  <script src="js/ai-bridge.js?v=3.22"></script>
+  <script src="js/ai.js?v=3.22"></script>
 </body>
 </html>

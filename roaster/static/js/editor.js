@@ -28,6 +28,39 @@
   let redoStack = [];
   let isUndoing = false;
   let dragFinalize = null;
+  let sourceProfile = null, roastContext = null, contextEditor = null, aiOrigin = null, aiPanel = null, aiConstraint = null;
+  let readyResolve;
+  const editorReady = new Promise(resolve => {readyResolve = resolve;});
+
+  function getDraft() {
+    return {name: document.getElementById('profile-name').value.trim(), description: document.getElementById('profile-desc').value.trim(), nodes: deepClone(tempNodes), end_temp: Number(document.getElementById('profile-end-temp').value) || 0, roast_context: contextEditor ? contextEditor.read(false) : roastContext, ai_origin: aiOrigin, ai_constraint: aiConstraint};
+  }
+  function restoreDraft(value) {
+    tempNodes = deepClone(value.nodes);
+    document.getElementById('profile-name').value = value.name || '';
+    document.getElementById('profile-desc').value = value.description || '';
+    document.getElementById('profile-end-temp').value = value.end_temp;
+    roastContext = value.roast_context || null; aiOrigin = value.ai_origin || null;
+    aiConstraint = value.ai_constraint || null;
+    if (contextEditor) { for (const input of contextEditor.node.querySelectorAll('input[name]')) input.value = roastContext?.[input.name] ?? ''; }
+  }
+  function cleanDraft() {
+    const {name, description, nodes, end_temp, roast_context} = getDraft();
+    return {name,description,nodes,end_temp,roast_context,...(sourceProfile?.id ? {id:sourceProfile.id} : {})};
+  }
+  function previewCandidate(profile) {
+    if (!chart) return;
+    chart.data.datasets = chart.data.datasets.filter(d => !d.aiCandidate);
+    if (profile) chart.data.datasets.push({label: 'AI 候选（待采用）', aiCandidate: true, data: splineInterpolate(profile.nodes, 5), borderColor: cssVar('--chart-compare-b'), borderDash: [7,4], pointRadius: 0, borderWidth: 2, yAxisID: 'y'});
+    chart.update('none');
+  }
+  window.RoasterEditor = {
+    ready: editorReady, error: null,
+    validate: () => contextEditor?.read(),
+    getDraft, getSource: cleanDraft, getIdentity: () => sourceProfile, isNew: () => !sourceProfile && !aiOrigin, preview: previewCandidate,
+    setAI(panel) { aiPanel = panel; },
+    accept(profile, constraint) {const finalize = pushHistory('ai', '采用 AI 草案');restoreDraft({...profile, roast_context: getDraft().roast_context, ai_constraint: constraint});previewCandidate(null);refresh();finalize();}
+  };
 
   // 吸附改为 opt-in。默认拖动 1s/0.1℃ 最小量化,Shift 可吸附到 SNAP 网格
   const SNAP = { time: 5, temp: 0.5 };
@@ -185,6 +218,7 @@
     ds[1].borderColor = p.ror;
     ds[2].borderColor = p.node;  ds[2].backgroundColor = p.node;
     ds[2].pointHoverBorderColor = p.nodeHover;
+    ds.filter(item => item.aiCandidate).forEach(item => {item.borderColor=cssVar('--chart-compare-b');});
     chart.options.plugins.legend.labels.color = p.legend;
     const tip = chart.options.plugins.tooltip;
     tip.backgroundColor = p.tooltipBg;
@@ -457,10 +491,10 @@
 
   function pushHistory(type, description) {
     if (isUndoing) return null;
-    const prevState = deepClone(tempNodes);
+    const prevState = getDraft();
 
     return function finalize() {
-      const nextState = deepClone(tempNodes);
+      const nextState = getDraft();
       if (JSON.stringify(prevState) === JSON.stringify(nextState)) return;
       undoStack.push(new EditCommand(type, prevState, nextState, description));
       if (undoStack.length > MAX_HISTORY) undoStack.shift();
@@ -473,7 +507,8 @@
     if (undoStack.length === 0) return;
     isUndoing = true;
     const cmd = undoStack.pop();
-    tempNodes = deepClone(cmd.prevState);
+    restoreDraft(cmd.prevState);
+    previewCandidate(null);
     selectedIndex = -1;
     refresh();
     selectNode(-1);
@@ -487,7 +522,8 @@
     if (redoStack.length === 0) return;
     isUndoing = true;
     const cmd = redoStack.pop();
-    tempNodes = deepClone(cmd.nextState);
+    restoreDraft(cmd.nextState);
+    previewCandidate(null);
     selectedIndex = -1;
     refresh();
     selectNode(-1);
@@ -780,18 +816,24 @@
       end_temp: isNaN(endTemp) ? 0 : endTemp
     };
     try {
-      const res = await fetch('/api/v1/profiles', {
+      payload.roast_context = contextEditor ? contextEditor.read() : roastContext;
+      payload.ai_origin = aiOrigin;
+      const statusResponse = await fetch('/api/v1/status');
+      if (!statusResponse.ok || (await statusResponse.json()).state !== 'IDLE') {showToast('请在待机时保存曲线');return;}
+      const res = await fetch(aiOrigin ? '/api/v1/analysis/profiles' : '/api/v1/profiles', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(aiOrigin ? {profile: payload, ...(aiConstraint || {})} : payload)
       });
       const data = await res.json();
       if (data.success) {
         showToast('保存成功');
-        setTimeout(() => { window.location.href = '/'; }, 800);
+        setTimeout(() => { window.location.href = '/?workspace=profile'; }, 800);
+      } else {
+        showToast(typeof data.detail === 'string' ? data.detail : data.detail?.errors?.join('；') || '保存失败');
       }
     } catch (e) {
-      showToast('保存失败');
+      showToast(e.message || '保存失败');
     }
   }
 
@@ -914,10 +956,37 @@
 
   // ========== 启动 ==========
 
-  document.addEventListener('DOMContentLoaded', () => {
+  document.addEventListener('DOMContentLoaded', async () => {
     initChart();
     refresh();
     initEvents();
     updateUndoRedoUI();
+    const params = new URLSearchParams(location.search);
+    try {
+      if (params.has('profile_id') || params.has('record_id')) {
+        const path = params.has('profile_id') ? '/api/v1/profiles/' + encodeURIComponent(params.get('profile_id')) : '/api/v1/records/' + encodeURIComponent(params.get('record_id'));
+        const response = await fetch(path);
+        if (!response.ok) throw Error('来源曲线读取失败');
+        const value = await response.json();
+        sourceProfile = params.has('record_id') ? value.profile_snapshot : value;
+        if (!sourceProfile) throw Error('此旧记录缺少目标快照，请从曲线库选择参考');
+        restoreDraft({...sourceProfile, name: sourceProfile.name + ' · 副本', roast_context: value.roast_context || sourceProfile.roast_context, ai_origin: null});
+        refresh();
+      }
+      if (window.RoasterAI?.enabled) {
+        const host = document.createElement('div');document.querySelector('.props-panel').append(host);
+        contextEditor = window.RoasterAI.contextForm(host, roastContext);
+      }
+      const checkState = async () => {
+        try {const r = await fetch('/api/v1/status');if(!r.ok)throw Error('后端离线');if((await r.json()).state !== 'IDLE') {sessionStorage.setItem('roaster.editor.recovery',JSON.stringify({backend: localStorage.getItem('roaster.backendUrl'), draft:getDraft()}));window.location.replace('/');}else{document.getElementById('btn-save').disabled=false;}}catch(e){document.getElementById('btn-save').disabled = true;}
+      };
+      await checkState();setInterval(checkState,2000);
+      const recovery = JSON.parse(sessionStorage.getItem('roaster.editor.recovery') || 'null');
+      if (recovery && recovery.backend === localStorage.getItem('roaster.backendUrl') && !params.has('profile_id') && !params.has('record_id')) {restoreDraft(recovery.draft);refresh();sessionStorage.removeItem('roaster.editor.recovery');showToast('已恢复上次草稿');}
+      let previous;
+      document.querySelector('.profile-meta-bar').addEventListener('focusin', () => {previous = getDraft();});
+      document.querySelector('.profile-meta-bar').addEventListener('focusout', () => {if(previous && JSON.stringify(previous)!==JSON.stringify(getDraft())) {undoStack.push(new EditCommand('meta',previous,getDraft(),'编辑曲线信息'));redoStack=[];updateUndoRedoUI();}previous=null;});
+    } catch (e) {window.RoasterEditor.error=e.message;showToast(e.message);document.getElementById('btn-save').disabled = true;aiPanel?.invalidate();}
+    finally {readyResolve();}
   });
 })();

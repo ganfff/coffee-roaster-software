@@ -739,6 +739,7 @@
       handleStateUpdate(msg);
     };
     ws.onclose = () => {
+      window.dispatchEvent(new Event('roaster-disconnected'));
       updateWsStatus(false);
       if (reconnectTimer) clearTimeout(reconnectTimer);
       reconnectTimer = setTimeout(connectWS, 2000);
@@ -776,6 +777,7 @@
    */
   function handleStateUpdate(msg) {
     latestState = msg.state || latestState;
+    window.dispatchEvent(new CustomEvent('roaster-status', {detail: msg}));
     if (!compareMode) syncActiveRoastProfile(msg);
 
     setTextIfChanged(document.getElementById('pv-val'), msg.pv != null ? msg.pv.toFixed(1) : '--');
@@ -1703,6 +1705,8 @@
           <div class="meta">${nodes.length} 节点 · ${m}:${String(sec).padStart(2,'0')}</div>
           <canvas class="sparkline" aria-label="${escapeAttr(p.name || '未命名')} 曲线预览"></canvas>
           <div class="actions">
+            <button class="ctrl-btn small" data-action="edit" data-id="${safeId}"><span>编辑副本</span></button>
+            ${window.RoasterAI?.enabled ? `<button class="ctrl-btn small" data-action="ai" data-id="${safeId}"><span>AI 优化</span></button>` : ''}
             <button class="ctrl-btn small primary" data-action="apply" data-id="${safeId}"><i class="ph ph-check-circle"></i><span>应用</span></button>
             <button class="ctrl-btn small" data-action="export" data-id="${safeId}" aria-label="导出曲线"><i class="ph ph-download-simple"></i></button>
             <button class="ctrl-btn small danger" data-action="delete" data-id="${safeId}" aria-label="删除曲线"><i class="ph ph-trash"></i></button>
@@ -1717,6 +1721,10 @@
         e.stopPropagation();
         const action = btn.dataset.action;
         const id = btn.dataset.id;
+        if (action === 'edit' || action === 'ai') {
+          if (latestState !== 'IDLE') {showToast('请在待机时编辑曲线');return;}
+          window.location.href = '/editor.html?profile_id=' + encodeURIComponent(id) + (action === 'ai' ? '&ai=1' : '');return;
+        }
         if (isRoastActiveState(latestState) && (action === 'apply' || action === 'delete')) {
           showToast(action === 'delete' ? '烘焙中不能删除曲线' : '烘焙中不能应用曲线');
           return;
@@ -2414,6 +2422,7 @@
 
       // 绘制曲线
       renderRecordChart(record);
+      window.dispatchEvent(new CustomEvent('roaster-record', {detail: record}));
 
       // 导出按钮
       document.getElementById('btn-detail-csv').onclick = () => {
@@ -2859,6 +2868,8 @@
     initAutomationUI();
     connectWS();
     await loadProfiles();
+    const initialWorkspace = new URLSearchParams(location.search).get('workspace');
+    if (['profile','records','settings'].includes(initialWorkspace)) activateWorkspace(initialWorkspace);
     setInterval(updateClock, 1000);
     updateClock();
   });

@@ -589,8 +589,24 @@ class RoasterController:
             events=list(self.event_log),
             data=list(self._session_data),
             profile_snapshot=self.profile,
+            roast_context=self.profile.roast_context if self.profile else None,
         )
         await self.dm.save_record(record)
+
+    async def get_analysis_context(self):
+        """Copy a consistent snapshot; serialization stays outside the control lock."""
+        async with self._state_lock:
+            status = self.get_state_payload()
+            profile = self.profile.model_copy(deep=True) if self.session_id and self.profile else None
+            samples = list(self._session_data)
+            maximum = float(self.config.get("max_safe_temperature", 250.0))
+        return {
+            "captured_at": datetime.now().astimezone().isoformat(),
+            "status": status,
+            "active_profile": profile.model_dump(mode="json") if profile else None,
+            "samples": samples,
+            "limits": {"max_safe_temperature_c": maximum, "profile_interpolation": "catmull-rom-boundary-linear-v1"},
+        }
 
     def get_pid(self) -> PIDParams:
         """获取当前 PID 参数（启动加载用，运行时不可改）"""

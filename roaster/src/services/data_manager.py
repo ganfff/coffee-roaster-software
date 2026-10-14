@@ -16,6 +16,8 @@ from src.core.models import (
     RoastRecord,
     RecordSummary,
     RoastEvent,
+    RoastContext,
+    CupFeedback,
 )
 
 
@@ -73,6 +75,8 @@ class DataManager:
                 "ALTER TABLE records ADD COLUMN display_name TEXT",
                 "ALTER TABLE records ADD COLUMN profile_snapshot_json TEXT",
                 "ALTER TABLE records ADD COLUMN duration_sec REAL",
+                "ALTER TABLE records ADD COLUMN roast_context_json TEXT",
+                "ALTER TABLE records ADD COLUMN cup_feedback_json TEXT",
             ):
                 try:
                     await db.execute(col_def)
@@ -151,8 +155,8 @@ class DataManager:
                 """
                 INSERT OR REPLACE INTO records
                 (session_id, started_at, ended_at, profile_id, events_json, data_json,
-                 seq_no, display_name, profile_snapshot_json, duration_sec)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                 seq_no, display_name, profile_snapshot_json, duration_sec, roast_context_json, cup_feedback_json)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """,
                 (
                     record.session_id,
@@ -165,6 +169,8 @@ class DataManager:
                     display_name,
                     snapshot_json,
                     duration_sec,
+                    record.roast_context.model_dump_json() if record.roast_context else None,
+                    record.cup_feedback.model_dump_json() if record.cup_feedback else None,
                 ),
             )
             await db.commit()
@@ -177,7 +183,7 @@ class DataManager:
             async with db.execute(
                 """
                 SELECT session_id, started_at, ended_at, profile_id, events_json, data_json,
-                       seq_no, display_name, profile_snapshot_json
+                       seq_no, display_name, profile_snapshot_json, roast_context_json, cup_feedback_json
                 FROM records WHERE session_id = ?
                 """,
                 (session_id,),
@@ -269,6 +275,8 @@ class DataManager:
             seq_no,
             display_name,
             profile_snapshot_json,
+            roast_context_json,
+            cup_feedback_json,
         ) = row
         started_at = datetime.fromisoformat(started_at_str) if started_at_str else None
         ended_at = datetime.fromisoformat(ended_at_str) if ended_at_str else None
@@ -291,4 +299,16 @@ class DataManager:
             seq_no=seq_no,
             display_name=display_name,
             profile_snapshot=snapshot,
+            roast_context=RoastContext.model_validate_json(roast_context_json) if roast_context_json else None,
+            cup_feedback=CupFeedback.model_validate_json(cup_feedback_json) if cup_feedback_json else None,
         )
+
+    async def update_record_context(self, session_id, roast_context, cup_feedback):
+        async with aiosqlite.connect(self.db_path) as db:
+            cursor = await db.execute(
+                "UPDATE records SET roast_context_json=?, cup_feedback_json=? WHERE session_id=?",
+                (roast_context.model_dump_json() if roast_context else None,
+                 cup_feedback.model_dump_json() if cup_feedback else None, session_id),
+            )
+            await db.commit()
+            return cursor.rowcount > 0

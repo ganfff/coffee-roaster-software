@@ -1,0 +1,30 @@
+import {build} from 'esbuild';
+import {mkdir,readFile,writeFile,access,rm} from 'node:fs/promises';
+import {createHash} from 'node:crypto';
+import {dirname,resolve} from 'node:path';
+import {fileURLToPath} from 'node:url';
+const root=resolve(dirname(fileURLToPath(import.meta.url)),'..');
+const runtime=resolve(root,'runtime');
+const generated=resolve(runtime,'ai');
+if(generated!==resolve(root,'runtime/ai'))throw Error('生成物目录越界');
+await rm(generated,{recursive:true,force:true});
+await mkdir(generated,{recursive:true});
+const nodePath=resolve(runtime,'ai-node-x86_64-pc-windows-msvc.exe');
+const pinned=JSON.parse(await readFile(resolve(root,'ai/runtime-manifest.json'),'utf8'));
+try {await access(nodePath);} catch {
+  const get=async url=>{const r=await fetch(url);if(!r.ok)throw Error(`${r.status} ${url}`);return r;};
+  const base=`https://nodejs.org/dist/${pinned.version}`;
+  const sums=await(await get(`${base}/SHASUMS256.txt`)).text();
+  const expected=sums.split('\n').find(line=>line.trim().endsWith('win-x64/node.exe'))?.split(/\s+/)[0];
+  const bytes=Buffer.from(await(await get(`${base}/win-x64/node.exe`)).arrayBuffer());
+  const actual=createHash('sha256').update(bytes).digest('hex');
+  if(!expected||actual!==expected||actual!==pinned.sha256)throw Error('Node SHA256 校验失败');
+  await writeFile(nodePath,bytes);
+  await writeFile(resolve(runtime,'node-manifest.json'),JSON.stringify(pinned,null,2));
+}
+const manifest=JSON.parse(await readFile(resolve(runtime,'node-manifest.json'),'utf8'));
+const actual=createHash('sha256').update(await readFile(nodePath)).digest('hex');
+if(actual!==manifest.sha256||actual!==pinned.sha256||manifest.version!==pinned.version)throw Error('本地 AI Node 运行时完整性校验失败');
+await build({entryPoints:[resolve(root,'ai/worker.mjs')],outdir:generated,outExtension:{'.js':'.mjs'},bundle:true,platform:'node',format:'esm',splitting:true,target:'node24',banner:{js:'import {createRequire as __aiCreateRequire} from "node:module"; const require=__aiCreateRequire(import.meta.url);'},logLevel:'warning'});
+await build({entryPoints:[resolve(root,'ai/bridge.mjs')],outfile:resolve(root,'../roaster/static/js/ai-bridge.js'),bundle:true,format:'iife',target:'es2020',logLevel:'warning'});
+console.log(`AI resources ready (${manifest.version}, pi-ai 1.2.0)`);
