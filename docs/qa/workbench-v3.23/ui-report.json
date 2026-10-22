@@ -1,0 +1,28 @@
+{
+  "checks": [
+    "new dual-curve + original overlay baseline",
+    "numeric edit + exact undo/redo",
+    "Bezier control handle numeric editing",
+    "ABC exact phase calculation",
+    "invalid field blocks saving stale document",
+    "full native parameter categories",
+    "curve transform dialog and undo",
+    "area and time calculator dialogs",
+    "native save confirmed and bytes retained",
+    "save cancellation retains dirty document",
+    "pointer capture drag creates one undo entry",
+    "non-destructive comparison + setting differences",
+    "selective merge dialog and undo",
+    "PNG export is a decodable image stream",
+    "multi-page PDF export + native bytes artifact",
+    "existing console record analysis bridge",
+    "extract embedded curve from console log",
+    "real multi-channel log + non-mutating display smoothing",
+    "raw CSV UTF-8 BOM export",
+    "1024x640 dark theme + visible E-STOP",
+    "workbench dialog never intercepts E-STOP",
+    "E-STOP protocol remains reachable and preserves offline document"
+  ],
+  "errors": [],
+  "sourceEngine": false
+}

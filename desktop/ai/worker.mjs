@@ -68,7 +68,8 @@ export async function handle(req, emit, testModels = null, testTimeoutMs = null)
     while(history.length && history[0].role!=='user') history.shift();
     const historyBudget=Math.min(48000,Math.max(0,(model.contextWindow||32768)*2-12000-JSON.stringify(modelContext(snapshot)).length));
     while(history.length&&JSON.stringify(history).length>historyBudget) {const next=history.findIndex((m,i)=>i>0&&m.role==='user');history=next>=0?history.slice(next):[];}
-    const ctx={systemPrompt:system,messages:[...history,{role:'user',content:JSON.stringify({question:req.prompt,context:modelContext(snapshot),source:req.source||null,locked_until:req.locked_until??null}),timestamp:Date.now()}],tools};
+    const source=req.source?{...req.source}:null;if(source)delete source.native_source;
+    const ctx={systemPrompt:system,messages:[...history,{role:'user',content:JSON.stringify({question:req.prompt,context:modelContext(snapshot),source,locked_until:req.locked_until??null}),timestamp:Date.now()}],tools};
     let submitted=false;
     for(let round=0;round<6;round++) {
       const stream=models.streamSimple(model,ctx,options);

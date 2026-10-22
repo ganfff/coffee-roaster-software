@@ -1,0 +1,3 @@
+# Isolated engine builder, Python 3.12 x64. The product includes its runtime.
+numpy==2.5.4
+pyinstaller==6.22.3

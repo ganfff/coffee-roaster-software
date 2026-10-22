@@ -25,6 +25,6 @@ try {await access(nodePath);} catch {
 const manifest=JSON.parse(await readFile(resolve(runtime,'node-manifest.json'),'utf8'));
 const actual=createHash('sha256').update(await readFile(nodePath)).digest('hex');
 if(actual!==manifest.sha256||actual!==pinned.sha256||manifest.version!==pinned.version)throw Error('本地 AI Node 运行时完整性校验失败');
-await build({entryPoints:[resolve(root,'ai/worker.mjs')],outdir:generated,outExtension:{'.js':'.mjs'},bundle:true,platform:'node',format:'esm',splitting:true,target:'node24',banner:{js:'import {createRequire as __aiCreateRequire} from "node:module"; const require=__aiCreateRequire(import.meta.url);'},logLevel:'warning'});
+await build({entryPoints:[resolve(root,'ai/worker.mjs'),resolve(root,'ai/service.mjs')],outdir:generated,outExtension:{'.js':'.mjs'},bundle:true,platform:'node',format:'esm',splitting:true,target:'node24',banner:{js:'import {createRequire as __aiCreateRequire} from "node:module"; const require=__aiCreateRequire(import.meta.url);'},logLevel:'warning'});
 await build({entryPoints:[resolve(root,'ai/bridge.mjs')],outfile:resolve(root,'../roaster/static/js/ai-bridge.js'),bundle:true,format:'iife',target:'es2020',logLevel:'warning'});
 console.log(`AI resources ready (${manifest.version}, pi-ai 1.2.0)`);

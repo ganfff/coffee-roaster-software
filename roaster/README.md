@@ -4,6 +4,8 @@
 
 ## 项目结构
 
+v3.24 / 桌面 0.4.0 增加全局 AI 会话、五家订阅登录、API Key 和三协议自定义配置，以及原生温度/风扇候选与完整工作台说明。网页端使用独立 Node 服务，客户端配对后共用该设备的 AI 配置与历史。部署、迁移和配对命令见 [AI 宿主与配对](../docs/guides/ai-host-deployment.md)；AI 不参与硬件控制。
+
 ```
 roaster/
 ├── main.py                      # FastAPI 应用入口

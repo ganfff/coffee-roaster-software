@@ -1,0 +1,22 @@
+{
+  "checks": [
+    "bundled catalog: 144 parameters; no source paths",
+    "new dual curves and original fan-overlay baseline",
+    "native curve edit",
+    "ABC phases",
+    "save/reopen byte fidelity",
+    "controller conversion bounds and recommended end temperature",
+    "console record bridge without fabricated targets",
+    "UTF-8 BOM raw CSV",
+    "invalid requests return structured errors",
+    "no Qt runtime or physical-device modules"
+  ],
+  "passed": 10,
+  "isolated": true,
+  "executable_sha256": "ed49e505a07338d731e3a5594ac62a8669c85326470b243e1e4cae7d186d64fb",
+  "manifest": {
+    "source_sha256": "bfdcd75fb8e4cd2a5faa2e079d2023b26205a28658df7e0783249c875fd7a873",
+    "python": "3.12.2 (tags/v3.12.2:6abddd9, Feb  6 2024, 21:26:36) [MSC v.1937 64 bit (AMD64)]",
+    "executable_sha256": "ed49e505a07338d731e3a5594ac62a8669c85326470b243e1e4cae7d186d64fb"
+  }
+}

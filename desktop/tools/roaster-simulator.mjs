@@ -2,6 +2,7 @@ import http from 'node:http';
 import { WebSocketServer } from 'ws';
 import {target,validateCandidate} from '../ai/analysis.mjs';
 import {randomUUID} from 'node:crypto';
+import {workbenchRequest} from './workbench-client.mjs';
 
 const port = Number(process.env.ROASTER_SIM_PORT || 8000);
 const scenario = process.argv.find(arg => arg.startsWith('--scenario='))?.split('=')[1] || 'roasting';
@@ -146,6 +147,19 @@ function resetIdle() {
 const server = http.createServer(async (request, response) => {
   const url = new URL(request.url, `http://${request.headers.host || `localhost:${port}`}`);
   if (request.method === 'OPTIONS') return json(response, 204, {});
+  if (url.pathname === '/api/v1/workbench' && request.method==='POST') {
+    try {return json(response,200,await workbenchRequest(JSON.parse(await readBody(request))));}
+    catch(error){return json(response,422,{detail:error.message});}
+  }
+  if (url.pathname === '/api/v1/workbench/profiles' && request.method==='POST') {
+    try {
+      if(stateName!=='IDLE')return json(response,409,{detail:'请在待机时保存原生曲线'});
+      const payload=JSON.parse(await readBody(request));const result=await workbenchRequest({...payload,action:'to_app'});
+      const checked=validateCandidate(result.profile,250);if(!checked.valid)return json(response,422,{detail:checked});
+      const profile={...result.profile,id:randomUUID()};profiles.push(profile);
+      return json(response,200,{success:true,id:profile.id,conversion:profile.native_conversion});
+    } catch(error){return json(response,422,{detail:error.message});}
+  }
   if (url.pathname === '/api/v1/status') return json(response, 200, makeState());
   if (url.pathname === '/api/v1/analysis/context') {
     const samples=[];
@@ -258,7 +272,7 @@ const timer = setInterval(() => {
 
 server.listen(port, '127.0.0.1', () => {
   const mode = freeze ? 'frozen' : 'live';
-  console.log(`Roaster simulator ready at http://127.0.0.1:${port} (${scenario}, ${mode}); no hardware access.`);
+  console.log(`Roaster simulator ready at http://127.0.0.1:${server.address().port} (${scenario}, ${mode}); no hardware access.`);
 });
 
 function shutdown() {

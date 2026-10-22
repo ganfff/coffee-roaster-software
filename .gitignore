@@ -33,6 +33,7 @@ htmlcov/
 
 # Runtime records and SQLite transient files
 /roaster/data/records/
+/roaster/data/ai/
 **/*.db-wal
 **/*.db-shm
 **/*.db-journal

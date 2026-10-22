@@ -35,6 +35,8 @@ class RoastProfile(BaseModel):
     description: str = ""
     roast_context: Optional[RoastContext] = None
     ai_origin: Optional[dict] = None
+    native_source: Optional[dict] = None
+    native_conversion: Optional[dict] = None
     nodes: List[ProfileNode] = Field(default_factory=list, description="温度曲线（向后兼容字段名）")
     end_temp: float = Field(0, ge=0, le=300, description="结束温度 °C，到达后自动结束烘焙")
     created_at: datetime = Field(default_factory=datetime.now)

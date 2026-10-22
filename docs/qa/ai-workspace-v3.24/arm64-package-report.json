@@ -1,0 +1,19 @@
+{
+  "artifact": "RoasterAIHost_0.4.0_linux_arm64.tar.gz",
+  "sha256": "38d4048d4a7ae5dbed136c3dfe68b2080243ab310f75dd1dd3248792842d0982",
+  "bytes": 58903346,
+  "source_matches": {
+    "static/js/ai-chat.js": "10d3f806d47f50bc5743d2c521a3b53ca96b21c42adfe5c99c343efe062b1270",
+    "static/css/ai.css": "c500293c59f0647f8edafa2440539c33e7e92f1d4274282c9fc06ccbdb2eb801",
+    "src/ai/host.py": "cda0fa7ffce28d428d630cac71725151ab9be1470a4cdefea6ec889d6d7dde9e",
+    "src/ai/__main__.py": "357ee1f35befc5b47fa40594f44a652f1d60b44b156eee7002b5e2ebe9f845f2",
+    "src/web/web_api.py": "74599605593fbc897d0648090b1b905aa9b02e39ab0096fe2c0c13156ac8c9b0",
+    "src/workbench/analysis.py": "738916af1814e2e9b6a255c96161c499d80c5be275e75b2566c5ddaf76992278"
+  },
+  "node": {
+    "mode": "0755",
+    "format": "ELF64",
+    "machine": 183
+  },
+  "target_executed": false
+}

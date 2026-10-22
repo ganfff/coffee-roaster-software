@@ -1,7 +1,7 @@
 (function () {
   'use strict';
   const native = window.RoasterNativeAI;
-  const enabled = '__TAURI_INTERNALS__' in window && !!native;
+  const enabled = !!window.RoasterChat || ('__TAURI_INTERNALS__' in window && !!native);
   const pending = new Map();
   const backend = () => localStorage.getItem('roaster.backendUrl') || 'http://localhost:8000';
   let latestStatus = null, livePanel = null, recordPanel = null, liveEnabled = false, liveSession = null, lastLive = 0, lastPhase = null;
@@ -12,7 +12,7 @@
     return body;
   }
   const post = (url, body, method = 'POST') => api(url, {method, headers: {'Content-Type': 'application/json'}, body: JSON.stringify(body)});
-  let ready = enabled ? native.listen('roaster-ai', event => {
+  let ready = enabled && !window.RoasterChat && native ? native.listen('roaster-ai', event => {
     const item = pending.get(event.payload.id); if (!item) return;
     const {type, data} = event.payload;
     if (type === 'error') {pending.delete(event.payload.id); item.reject(Error(data));}
@@ -49,6 +49,7 @@
     return {read(validate=true) {const data = {temperature_source: 'bean'}; for (const [name] of contextFields) {const v = grid.querySelector(`[name="${name}"]`).value.trim(); if (name === 'charge_weight_g') {const n = v ? Number(v) : null;if(validate&&n!==null&&(!Number.isFinite(n)||n<=0||n>100000))throw Error('投豆量需为有效正数'); data[name] = n;} else data[name] = v;} return data;}, feedback: () => ({notes: notes?.value || ''}), node: details};
   }
   function mount(host, options) {
+    if (window.RoasterChat) return window.RoasterChat.mountContext(host, options);
     if (!enabled || !host) return null;
     host.replaceChildren();
     const panel = element('details', null, 'ai-panel'); panel.open = !!options.open;
@@ -132,6 +133,7 @@
   }
 
   async function settings(host) {
+    if (window.RoasterChat) return;
     if (!enabled) return;
     const card = element('section', null, 'settings-card ai-settings'); card.append(element('h3','AI 服务'),element('p','密钥保存在 Windows 凭据管理器，分析数据发送到你选择的服务。','ai-muted'));
     const providerLabel = element('label', null, 'ai-field'); providerLabel.append(element('span','供应商')); const provider = element('select');

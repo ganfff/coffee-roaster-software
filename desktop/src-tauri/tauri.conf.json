@@ -1,11 +1,11 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
   "productName": "RoasterDesktop",
-  "version": "0.2.0",
+  "version": "0.4.0",
   "identifier": "com.ganf.roaster",
   "build": {
-    "beforeDevCommand": "npm run prepare:ai",
-    "beforeBuildCommand": "npm run prepare:ai && npm run check:frontend",
+    "beforeDevCommand": "npm run prepare:ai && npm run prepare:workbench",
+    "beforeBuildCommand": "npm run prepare:ai && npm run prepare:workbench && npm run check:frontend",
     "frontendDist": "../../roaster/static"
   },
   "app": {
@@ -27,8 +27,14 @@
     }
   },
   "bundle": {
-    "externalBin": ["../runtime/ai-node"],
-    "resources": {"../runtime/ai/": "ai/", "../runtime/node-manifest.json": "node-manifest.json"},
+    "externalBin": [
+      "../runtime/ai-node"
+    ],
+    "resources": {
+      "../runtime/ai/": "ai/",
+      "../runtime/node-manifest.json": "node-manifest.json",
+      "../runtime/workbench/": "workbench/"
+    },
     "active": true,
     "targets": [
       "nsis"

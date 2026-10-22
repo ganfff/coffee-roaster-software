@@ -860,6 +860,7 @@
 
   function initKeyboardShortcuts() {
     document.addEventListener('keydown', (e) => {
+      if (e.target.closest('textarea, select, [contenteditable="true"], #ai-chat')) return;
       // 输入框内不拦截（除 Ctrl+S）
       if (e.target.tagName === 'INPUT' && !(e.ctrlKey && e.key === 's')) return;
 

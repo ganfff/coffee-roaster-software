@@ -1,0 +1,45 @@
+{
+  "date": "2026-10-21",
+  "desktop_version": "0.3.0",
+  "web_version": "3.23",
+  "installer": {
+    "path": "dist/RoasterDesktop_0.3.0_x64-setup.exe",
+    "bytes": 41266565,
+    "sha256": "8cec6fefb5a4da5ef003e9aeb2470b31ceb409f85e82dc754d59566efcdacafd"
+  },
+  "executable": {
+    "path": "desktop/src-tauri/target/release/roaster-desktop.exe",
+    "bytes": 8299520,
+    "sha256": "305d0922a5bdf1a94e074f342b004860486c82c44ede05f6ac3fa08cca426165"
+  },
+  "engine": {
+    "path": "desktop/runtime/workbench/RoasterWorkbenchEngine.exe",
+    "bytes": 4574868,
+    "sha256": "ed49e505a07338d731e3a5594ac62a8669c85326470b243e1e4cae7d186d64fb"
+  },
+  "engine_source_manifest": {
+    "source_sha256": "bfdcd75fb8e4cd2a5faa2e079d2023b26205a28658df7e0783249c875fd7a873",
+    "python": "3.12.2 (tags/v3.12.2:6abddd9, Feb  6 2024, 21:26:36) [MSC v.1937 64 bit (AMD64)]",
+    "executable_sha256": "ed49e505a07338d731e3a5594ac62a8669c85326470b243e1e4cae7d186d64fb"
+  },
+  "verification": {
+    "native_core_tests": 224,
+    "backend_tests": 24,
+    "ai_tests": 16,
+    "rust_tests": 2,
+    "workbench_ui_scenarios": 22,
+    "javascript_errors": [],
+    "standalone_engine_checks": 10,
+    "corpus_total": 418,
+    "lossless_valid": 403,
+    "expected_rejected": 15,
+    "readonly_valid": 32,
+    "hardware_verified": false,
+    "native_window_physical_input_verified": false,
+    "installer_executed": false
+  },
+  "source_files": {
+    "workbench.js": "88246b54a84bc37460c437fa1c994b892346fd846adc403bac5be7c0f2af266b",
+    "engine.py": "69f1f9599b528b6971f7961d61ce507467d9315f2e377379e2fee55f1c710eab"
+  }
+}

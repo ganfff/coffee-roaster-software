@@ -76,8 +76,8 @@ npm run build
 
 | 文件 | 说明 |
 |---|---|
-| `src-tauri/target/release/roaster-desktop.exe` | 绿色单文件，可直接运行 |
-| `src-tauri/target/release/bundle/nsis/RoasterDesktop_0.1.0_x64-setup.exe` | **给客户的安装包**（NSIS，~5-10MB） |
+| `src-tauri/target/release/roaster-desktop.exe` | 程序入口，需连同 AI 与 workbench 运行目录分发 |
+| `src-tauri/target/release/bundle/nsis/RoasterDesktop_0.4.0_x64-setup.exe` | 包含 AI 与离线工作台引擎的安装包 |
 
 客户安装体验：双击 setup.exe → 下一步 → 桌面出现图标 → 打开即用（首次点 ⚙ 填一次烘焙机地址）。
 
@@ -140,7 +140,15 @@ desktop/
 - **树莓派本机不需要这个壳**：本机触摸屏场景继续用 Chromium Kiosk 模式即可，
   桌面壳是给「Windows/Mac 电脑远程操作烘焙机」的场景用的。
 
-## AI 烘焙助手（桌面 v0.2.0 / Web 资源 v3.22）
+## 完整 AI 工作区（桌面 0.4.0 / Web v3.24）
+
+全局「AI 对话」支持多轮历史、停止、编辑后重发、重新生成及手动切换模型续聊；可带入曲线、记录、原生文件和图片。设置中的「订阅登录 / API Key / 自定义配置」按供应商能力展示登录方式，五家订阅为 ChatGPT、Claude、Copilot、Kimi Code 和 xAI；自定义接口支持 Chat Completions、Responses、Anthropic 三种协议。
+
+桌面与网页默认连接当前后端共享 AI，首次使用配对码；Windows 也可主动选择本机独立模式。账号和会话归所选宿主。迁移旧本机配置时由 Rust 直接传到已配对后端，旧文件保留。部署和配对见 [AI 宿主与配对](../docs/guides/ai-host-deployment.md)，验证见 [v3.24 QA](../docs/qa/ai-workspace-v3.24.md)。
+
+`npm run test:ai:ui` 使用随机本机端口、安全模拟器与真实共享 AI 核心，模型为确定性测试源；`node tools/test-ai-chat-ui.mjs --native` 在构建后的真实 Tauri WebView 中验证配对、Rust 代理、聊天和内置工作台引擎，默认启动地址 8000 必须空闲。两者均不请求云端模型或连接真实串口。
+
+## 早期 AI 烘焙助手（桌面 v0.2.0 / Web 资源 v3.22，历史说明）
 
 Windows 桌面版增加记录复盘、曲线设计/优化和实时只读辅导。普通网页与树莓派 kiosk 保持共享页面，第一版不提供 AI 入口。模型不会启动/结束烘焙、修改 SV、预测参数或当前执行曲线。
 
@@ -178,3 +186,17 @@ uv run --python 3.12 --with-requirements requirements.txt --with httpx python -m
 ```
 
 设计、接口和验证边界见 [`docs/qa/ai-v3.22.md`](../docs/qa/ai-v3.22.md)。
+
+## 原生文件工作台（0.3.0）
+
+顶部“原生工作台”完整接入参考项目已经实现的离线功能，直接复用保真格式与数值核心，并支持原生文件、CSV、PNG 与多页 PDF。通过 Tauri IPC 调用内置引擎，断开设备后仍可编辑分析；“存入曲线库”和“从曲线库打开”与现有控机流程联通。使用和边界见 [原生工作台指南](../docs/guides/native-workbench.md)。
+
+首次开发需要 Python 3.12 x64，并安装 `desktop/workbench-requirements.txt`；可用 `WORKBENCH_PYTHON` 指定构建环境。`dev`、`dev:sim`、`build` 自动准备 `desktop/runtime/workbench/`，产品运行无需系统 Python。生成物不纳入 Git；引擎源码位于 `roaster/src/workbench/`，不依赖本机参考文件夹。
+
+```powershell
+npm run prepare:workbench
+npm run test:workbench:ui
+../roaster/.venv/Scripts/python.exe tools/verify-workbench-package.py
+```
+
+`test:workbench:ui` 使用随机可用本机端口的安全模拟器和真实离线引擎，不启动串口。默认使用源码引擎；`WORKBENCH_SOURCE=0` 使用打包引擎。Windows 保存使用原生文件对话框与原子替换，取消保留草稿。绿色分发必须包含 `workbench/` 整个目录，以及原有 `ai-node.exe`、`ai/` 和 Node 清单。

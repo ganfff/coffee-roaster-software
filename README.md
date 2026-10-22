@@ -13,7 +13,11 @@
 
 Flutter 完整实现保存在独立分支 `feature/flutter-app`，避免当前 Tauri 工作区同时混入两套平台生成文件。迁移说明见 [`docs/guides/flutter-migration.md`](docs/guides/flutter-migration.md)。
 
+桌面 0.3.0 / Web v3.23 新增原生文件工作台：完整接入参考项目已实现的 `.kpro/.klog` 离线编辑、ABC、参数、日志、比较和导出，并与当前曲线库和记录联通。使用及边界见 [`原生工作台`](docs/guides/native-workbench.md)。
+
 ## 常用命令
+
+桌面 0.4.0 / Web v3.24 增加完整 AI 对话、订阅登录与设备共享 AI，会话支持跨桌面和网页继续。设置页统一卡片与表单；原生工作台内置 KL 功能说明、适配变化、注意事项和原生 AI 候选。部署入口见 [AI 宿主与配对](docs/guides/ai-host-deployment.md)。
 
 ```powershell
 # Tauri 前端静态检查

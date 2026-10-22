@@ -73,6 +73,8 @@ export function metrics(context) {
 
 export function modelContext(context) {
   const copy=structuredClone(context);
+  // Native byte-preserving attachments belong to offline storage, not prompts.
+  for(const profile of [copy.active_profile,copy.record?.profile_snapshot,copy.source]) if(profile)delete profile.native_source;
   if(copy.reference_record) copy.reference_record=modelContext({record:copy.reference_record});
   const raw=copy.record?.data || copy.samples || [];
   // Five-second buckets retain temperature/ROR extrema and their times.

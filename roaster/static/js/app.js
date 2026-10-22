@@ -1588,6 +1588,7 @@
   }
 
   function initTabs() {
+    window.addEventListener('roaster-profiles-changed', () => loadProfiles());
     document.querySelectorAll('.tab-btn').forEach(btn => {
       btn.addEventListener('click', () => activateWorkspace(btn.dataset.tab));
     });

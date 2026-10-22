@@ -1,8 +1,10 @@
 import json
+import asyncio
+import logging
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect, HTTPException, Response, Query
-from fastapi.middleware.cors import CORSMiddleware
+from src.ai.api import NonAiCORSMiddleware, router as ai_router, close_host as close_ai_host
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import PlainTextResponse, JSONResponse, FileResponse
 
@@ -15,6 +17,7 @@ from src.services.data_manager import (
 )
 from src.core.models import RoastProfile, RoastContext, CupFeedback
 from src.core.analysis import validate_candidate
+from src.workbench.engine import dispatch as workbench_dispatch
 
 
 class ConnectionManager:
@@ -55,19 +58,29 @@ async def lifespan(app: FastAPI):
     controller: RoasterController = app.state.controller
     await controller.connect_hardware()
     controller.set_broadcast_callback(manager.broadcast)
-    yield
-    await controller.disconnect_hardware()
+    try:
+        yield
+    finally:
+        # Hardware shutdown must never wait for or be skipped by optional AI cleanup.
+        try:
+            await controller.disconnect_hardware()
+        finally:
+            try:
+                await close_ai_host(app)
+            except Exception:
+                logging.getLogger(__name__).warning("AI 服务关闭失败；设备断开流程已先执行")
 
 
 app = FastAPI(lifespan=lifespan)
 
 # Tauri 桌面壳 / 手机 App 等跨源前端需要 CORS 放行（局域网设备场景，放开即可）
 app.add_middleware(
-    CORSMiddleware,
+    NonAiCORSMiddleware,
     allow_origins=["*"],
     allow_methods=["*"],
     allow_headers=["*"],
 )
+app.include_router(ai_router)
 
 # 静态文件服务（/static 前缀，历史兼容）
 app.mount("/static", StaticFiles(directory="static"), name="static")
@@ -81,6 +94,35 @@ async def root():
 @app.get("/editor.html")
 async def editor_page():
     return FileResponse("static/editor.html")
+
+
+@app.post("/api/v1/workbench")
+async def api_workbench(payload: dict):
+    try:
+        return await asyncio.to_thread(workbench_dispatch, payload)
+    except (ValueError, TypeError, KeyError, IndexError, OverflowError) as exc:
+        raise HTTPException(422, str(exc))
+
+
+@app.post("/api/v1/workbench/profiles")
+async def api_save_native_profile(payload: dict):
+    controller = app.state.controller
+    if controller.state.value != "IDLE":
+        raise HTTPException(409, "请在待机时将原生曲线保存到曲线库")
+    try:
+        converted = await asyncio.to_thread(workbench_dispatch, {**payload, "action": "to_app"})
+        if controller.state.value != "IDLE":
+            raise HTTPException(409, "请在待机时将原生曲线保存到曲线库")
+        candidate = converted["profile"]
+        result = validate_candidate(candidate, controller.config.get("max_safe_temperature", 250.0))
+        if not result["valid"]:
+            raise HTTPException(422, detail=result)
+        # New UUID only; saving never applies or changes the active curve.
+        profile = RoastProfile.model_validate(candidate)
+        await app.state.dm.save_profile(profile)
+        return {"success": True, "id": profile.id, "conversion": candidate["native_conversion"]}
+    except (ValueError, TypeError, KeyError, IndexError, OverflowError) as exc:
+        raise HTTPException(422, str(exc))
 
 
 # ========== WebSocket ==========

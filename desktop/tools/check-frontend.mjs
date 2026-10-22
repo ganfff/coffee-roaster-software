@@ -6,9 +6,9 @@ import { fileURLToPath } from 'node:url';
 const here = dirname(fileURLToPath(import.meta.url));
 const root = resolve(here, '..', '..');
 const staticRoot = resolve(root, 'roaster', 'static');
-const jsFiles = ['theme.js', 'utils.js', 'tauri-adapter.js', 'app.js', 'editor.js', 'ai.js', 'ai-bridge.js']
+const jsFiles = ['theme.js', 'utils.js', 'tauri-adapter.js', 'app.js', 'editor.js', 'ai.js', 'ai-bridge.js', 'workbench.js', 'workbench-pdf.js', 'ai-chat.js', 'workbench-help.js']
   .map(name => resolve(staticRoot, 'js', name));
-const cssFiles = ['theme.css', 'style.css', 'editor.css', 'ai.css']
+const cssFiles = ['theme.css', 'style.css', 'editor.css', 'ai.css', 'workbench.css']
   .map(name => resolve(staticRoot, 'css', name));
 const htmlFiles = [resolve(staticRoot, 'index.html'), resolve(staticRoot, 'editor.html')];
 const failures = [];
@@ -60,10 +60,10 @@ const [indexHtml, editorHtml, themeJs, appJs, editorJs, tauriAdapter, styleCss, 
 
 for (const [name, html] of [['index.html', indexHtml], ['editor.html', editorHtml]]) {
   check(!html.includes('?v=3.20'), `${name}: stale v3.20 cache key`);
-  check(html.indexOf('js/theme.js?v=3.22') < html.indexOf('css/theme.css?v=3.22'), `${name}: theme.js must load before theme.css`);
+  check(html.indexOf('js/theme.js?v=3.24') < html.indexOf('css/theme.css?v=3.24'), `${name}: theme.js must load before theme.css`);
 }
 
-const authoredSources = [indexHtml, editorHtml, appJs, editorJs, tauriAdapter].join('\n');
+const authoredSources = [indexHtml, editorHtml, appJs, editorJs, tauriAdapter, await readFile(resolve(staticRoot,'js/ai-chat.js'),'utf8')].join('\n');
 check(!/<svg\b/i.test(authoredSources), 'Authored frontend contains inline SVG');
 const cssWithoutComments = stripComments([styleCss, editorCss, themeCss].join('\n'));
 check(!/backdrop-filter\s*:|filter\s*:\s*blur/i.test(cssWithoutComments), 'Blur/backdrop-filter is forbidden');

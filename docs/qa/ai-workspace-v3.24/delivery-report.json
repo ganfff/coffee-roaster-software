@@ -1,0 +1,36 @@
+{
+  "date": "2026-10-22T08:53:11.185330+00:00",
+  "desktop_version": "0.4.0",
+  "web_version": "3.24",
+  "branch": "codex/github-sync",
+  "base_commit": "78e4048744015f6942161972bcb4d0fec225c067",
+  "uncommitted_changes_preserved": true,
+  "artifacts": [
+    {
+      "name": "RoasterDesktop_0.4.0_x64-setup.exe",
+      "bytes": 42259366,
+      "sha256": "6fd430ed6fa618e7b3ae80f16e98ab2c2dabc0835504aade0a9df0891f111288"
+    },
+    {
+      "name": "RoasterAIHost_0.4.0_linux_arm64.tar.gz",
+      "bytes": 58903346,
+      "sha256": "38d4048d4a7ae5dbed136c3dfe68b2080243ab310f75dd1dd3248792842d0982"
+    }
+  ],
+  "checks": {
+    "ai": 37,
+    "python": 51,
+    "rust": 4,
+    "web_ui": 12,
+    "workbench_ui_packaged_engine": 22,
+    "workbench_native_candidate_ui": 4,
+    "isolated_packaged_engine": 11,
+    "tauri_release_ui": 2
+  },
+  "unverified": [
+    "real subscription authorization and inference",
+    "Raspberry Pi ARM64 execution",
+    "physical roaster",
+    "NSIS install and uninstall"
+  ]
+}

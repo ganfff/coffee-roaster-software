@@ -7,3 +7,4 @@ crcmod==1.7
 pyserial-asyncio-fast==0.14.0
 aiofiles==24.1.0
 aiosqlite==0.20.0
+numpy>=2.1,<3
