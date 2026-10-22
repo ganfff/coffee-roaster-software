@@ -2,6 +2,7 @@
 import base64
 import hashlib
 import json
+import os
 from pathlib import Path
 import unittest
 
@@ -13,7 +14,7 @@ from src.workbench.native.overlays import cross_plot_points
 from src.workbench.native.phases import calculate_profile_phases
 
 ROOT = Path(__file__).resolve().parents[2]
-REFERENCE = ROOT / "kaffelogic逆向"
+REFERENCE = Path(os.environ.get("WORKBENCH_REFERENCE", str(ROOT.parent / "kaffelogic逆向")))
 LOG = (b"profile_schema_version:1.8\r\nnative_schema_version:1.8\r\nunknown:keep:colons\r\n"
        b"offsets\t0\t0\t-0.5\r\ntime\t#=temp\t=profile\t=actual_ROR\r\n"
        b"0\t20\t21\t1.25\t\r\n!unknown:tag:keep\r\n1\t22\t23\t2.5\t\r\n"

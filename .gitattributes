@@ -32,6 +32,6 @@
 *.sqlite3 binary
 
 # Native documents and byte-fidelity QA exports must keep their original newlines.
-*.kpro -text
-*.klog -text
-*.csv -text
+*.kpro binary
+*.klog binary
+*.csv binary

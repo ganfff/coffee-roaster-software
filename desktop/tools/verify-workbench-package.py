@@ -10,7 +10,7 @@ import tempfile
 
 ROOT = Path(__file__).resolve().parents[2]
 SOURCE = ROOT / "desktop/runtime/workbench"
-REPORT = Path(os.environ.get("WORKBENCH_PACKAGE_REPORT") or ROOT / "docs/qa/workbench-v3.23/package-report.json")
+REPORT = Path(os.environ.get("WORKBENCH_PACKAGE_REPORT") or ROOT / "docs/qa/ai-workspace-v3.24/workbench-package-report.json")
 
 
 def main():

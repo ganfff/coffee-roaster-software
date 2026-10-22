@@ -1,0 +1,16 @@
+{
+  "comparison": "nested reference vs adjacent independent reference repository",
+  "checked_files": 4562,
+  "different_or_missing": [],
+  "excluded_reproducible_or_runtime": [
+    ".git",
+    ".pytest_cache",
+    ".tools",
+    ".venv",
+    "__pycache__",
+    "build",
+    "dist"
+  ],
+  "nested_head": "412a250ebd2a89d49f2775042dd0c9c9150204b5",
+  "corpus_verified_files": 418
+}

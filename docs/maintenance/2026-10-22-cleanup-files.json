@@ -1,0 +1,127 @@
+{
+  "applied": true,
+  "version": "0.4.0",
+  "removed_bytes": 8833411618,
+  "targets": [
+    {
+      "Relative": ".codex/ai-native-qa",
+      "Bytes": 35403110
+    },
+    {
+      "Relative": ".pytest_cache",
+      "Bytes": 645
+    },
+    {
+      "Relative": "desktop/build",
+      "Bytes": 1521455586
+    },
+    {
+      "Relative": "desktop/src-tauri/target/debug",
+      "Bytes": 5370108747
+    },
+    {
+      "Relative": "desktop/src-tauri/target/release/.fingerprint",
+      "Bytes": 460046
+    },
+    {
+      "Relative": "desktop/src-tauri/target/release/build",
+      "Bytes": 367980323
+    },
+    {
+      "Relative": "desktop/src-tauri/target/release/deps",
+      "Bytes": 1354600621
+    },
+    {
+      "Relative": "desktop/src-tauri/target/release/examples",
+      "Bytes": 0
+    },
+    {
+      "Relative": "desktop/src-tauri/target/release/incremental",
+      "Bytes": 0
+    },
+    {
+      "Relative": "desktop/src-tauri/target/release/nsis",
+      "Bytes": 88837
+    },
+    {
+      "Relative": "desktop\\src-tauri\\target\\release\\bundle\\nsis\\RoasterDesktop_0.2.0_x64-setup.exe",
+      "Bytes": 26051462
+    },
+    {
+      "Relative": "desktop\\src-tauri\\target\\release\\bundle\\nsis\\RoasterDesktop_0.3.0_x64-setup.exe",
+      "Bytes": 41266565
+    },
+    {
+      "Relative": "desktop\\src-tauri\\target\\release\\bundle\\nsis\\RoasterDesktop_3.21.0_x64-setup.exe",
+      "Bytes": 1997762
+    },
+    {
+      "Relative": "desktop\\tools\\__pycache__",
+      "Bytes": 2444
+    },
+    {
+      "Relative": "dist/github-upload",
+      "Bytes": 2991273
+    },
+    {
+      "Relative": "dist/RoasterDesktop-v3.21-windows-x64",
+      "Bytes": 9990143
+    },
+    {
+      "Relative": "dist\\RoasterAIHost_0.3.0_linux_arm64.tar.gz",
+      "Bytes": 59239962
+    },
+    {
+      "Relative": "dist\\RoasterAIHost_0.3.0_linux_arm64.tar.gz.sha256",
+      "Bytes": 105
+    },
+    {
+      "Relative": "dist\\RoasterDesktop_0.3.0_SHA256SUMS.txt",
+      "Bytes": 102
+    },
+    {
+      "Relative": "dist\\RoasterDesktop_0.3.0_x64-setup.exe",
+      "Bytes": 41266565
+    },
+    {
+      "Relative": "roaster/.pytest_cache",
+      "Bytes": 5613
+    },
+    {
+      "Relative": "roaster\\src\\__pycache__",
+      "Bytes": 156
+    },
+    {
+      "Relative": "roaster\\src\\ai\\__pycache__",
+      "Bytes": 40282
+    },
+    {
+      "Relative": "roaster\\src\\core\\__pycache__",
+      "Bytes": 57044
+    },
+    {
+      "Relative": "roaster\\src\\hardware\\__pycache__",
+      "Bytes": 20422
+    },
+    {
+      "Relative": "roaster\\src\\services\\__pycache__",
+      "Bytes": 19210
+    },
+    {
+      "Relative": "roaster\\src\\web\\__pycache__",
+      "Bytes": 26012
+    },
+    {
+      "Relative": "roaster\\src\\workbench\\__pycache__",
+      "Bytes": 56489
+    },
+    {
+      "Relative": "roaster\\src\\workbench\\native\\__pycache__",
+      "Bytes": 102289
+    },
+    {
+      "Relative": "roaster\\tests\\__pycache__",
+      "Bytes": 179803
+    }
+  ]
+}

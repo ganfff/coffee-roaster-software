@@ -1,6 +1,6 @@
 # Ganf's 咖啡烘焙机控制系统
 
-一款运行在树莓派 4B 并可通过 Tauri 桌面壳远程操作的专业热风咖啡烘焙机上位机软件。v3.22 延续 Apple 风格的 Calm Canvas 信息架构：左侧实时遥测、中央大曲线、右侧情境操作架、顶部工作区导航和底部常驻连接/急停；浅色、深色与跟随系统共用同一套语义设计令牌。控制算法、REST/WebSocket 与 TC4S/RS485 接口保持不变。
+一款运行在树莓派 4B 并可通过 Tauri 桌面壳远程操作的专业热风咖啡烘焙机上位机软件。v3.24 延续 Apple 风格的 Calm Canvas 信息架构：左侧实时遥测、中央大曲线、右侧情境操作架、顶部工作区导航和底部常驻连接/急停；浅色、深色与跟随系统共用同一套语义设计令牌。控制算法、REST/WebSocket 与 TC4S/RS485 接口保持不变。
 
 ## 项目结构
 
@@ -15,6 +15,8 @@ roaster/
 ├── README.md                    # 本文件
 ├── PITFALLS.md                  # 已知坑点与注意事项
 ├── src/
+│   ├── ai/                   # 独立 AI 宿主、配对与 API
+│   ├── workbench/            # 离线原生格式与数值引擎
 │   ├── hardware/
 │   │   └── tc4s_async.py        # 异步 TC4S Modbus RTU 通讯模块
 │   ├── core/
@@ -364,4 +366,4 @@ MIT License
 
 ## AI 烘焙助手
 
-Windows 桌面 v0.2.0 支持记录复盘、曲线设计/优化与实时只读辅导。配置、运行环境和操作步骤见 [desktop/README.md](../desktop/README.md#ai-烘焙助手桌面-v020--web-资源-v322)，验证边界见 [QA 记录](../docs/qa/ai-v3.22.md)。后端新增只读分析快照与安全候选校验/保存接口；旧控制与 WebSocket 协议保持兼容。曲线与记录的可选豆子/杯测资料向后兼容，首次启动会追加 SQLite 字段。
+桌面 0.4.0 / Web 3.24 支持全局聊天、记录复盘、曲线候选与逐锅开启的只读辅导。网页和桌面默认使用后端共享的独立 Node AI 服务，首次配对；原生桌面还可选择本机模式。配置和操作见 [桌面说明](../desktop/README.md)，部署与凭据迁移见 [AI 宿主](../docs/guides/ai-host-deployment.md)，验证边界见 [当前 QA](../docs/qa/ai-workspace-v3.24.md)。AI 不调用控制器或串口；候选须经用户校验采用与另行保存，不修改正在执行的曲线。

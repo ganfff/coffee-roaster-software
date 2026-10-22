@@ -1,44 +1,47 @@
-# 项目结构约定
+# 项目目录约定
 
-## 稳定源码目录
+当前产品入口保持 `roaster/` 与 `desktop/` 的相对位置，Tauri 的 `frontendDist` 指向共享网页资源。
 
 ```text
 咖啡烘焙机-软件/
-├── roaster/                 # 核心服务、硬件接口和共享 Web 前端
-│   ├── src/                 # Python 业务代码
-│   ├── static/              # HTML/CSS/JavaScript/Chart.js
-│   ├── data/profiles/       # 可版本化烘焙曲线
-│   └── tools/               # 明确需要人工运行的硬件测试工具
-├── desktop/                 # Tauri 壳
-│   ├── src-tauri/           # Rust/Tauri 配置
-│   └── tools/               # 模拟器、静态检查和资源生成脚本
-├── docs/                    # 项目级说明、设计与 QA
-├── scripts/                 # 仓库维护脚本
-└── README.md                # 唯一根入口
+├── roaster/
+│   ├── src/          # core/hardware/services/web/ai/workbench
+│   ├── static/       # 共享网页、AI 聊天、工作台及离线资源
+│   ├── tests/        # 契约与格式测试，fixtures 为合成数据
+│   └── data/         # profiles 可版本化；records/ai 属于本机运行数据
+├── desktop/
+│   ├── ai/           # Node AI 服务与测试
+│   ├── src-tauri/    # Rust/Tauri
+│   └── tools/        # 构建、模拟和验证
+├── docs/
+│   ├── guides/       # 当前使用/部署指南
+│   ├── qa/           # 当前证据；archive/ 保存历史
+│   ├── design/       # 仍在使用的设计基准
+│   └── maintenance/  # 整理与同步记录
+├── scripts/          # 仓库维护命令
+├── dist/             # 本机最新交付，不进入 Git
+└── README.md         # 唯一根入口
 ```
 
-不要随意移动 `roaster/` 或 `desktop/`：`desktop/src-tauri/tauri.conf.json` 的 `frontendDist` 依赖两者的稳定相对位置。
+## 清理范围
 
-## 分支边界
+使用 PowerShell 7 执行 `scripts/clean-workspace.ps1`，默认只预览；加 `-Apply` 才删除。
 
-- `codex/tauri-calm-canvas`：v3.21 Tauri/Web 前端完成态。
-- `feature/flutter-app`：完整 Flutter 客户端；它不是当前 Tauri 分支的工作目录组成部分。
-- 当前整理分支只调整仓库入口、文档层级和可再生生成物，不合并 Flutter 功能，也不修改控制算法或硬件通信。
+| 参数 | 范围 |
+| --- | --- |
+| 无额外参数 | Python/pytest 缓存和本轮隔离 WebView QA 缓存 |
+| `-Build` | 重复打包 staging、Rust debug 与 release 编译中间物；保留 release 程序和运行资源 |
+| `-OldPackages` | 已识别的旧版交付和旧上传临时包；根据 `desktop/package.json` 保留当前版本 |
+| `-Dependencies` | 额外删除可由 `npm ci` 恢复的 Node 依赖，日常整理不必使用 |
+| `-Report 路径` | 在项目内保存清理清单和字节数 |
 
-## 不进入 Git 的内容
+脚本拒绝删除 Git 已跟踪路径、项目外路径和指向生成目录外的链接。不清理设备配置、曲线、记录、AI 数据、凭据、开发虚拟环境或最新运行时。删除编译中间物后，下一次 Rust 构建会重新编译。
 
-| 类型 | 示例 | 恢复方式 |
-|---|---|---|
-| Node 依赖 | `desktop/node_modules/` | `npm install` |
-| Rust/Tauri 构建 | `desktop/src-tauri/target/` | `npm run build:debug` 或 `npm run dev` |
-| Python 缓存 | `__pycache__/`, `.pytest_cache/` | 运行时自动生成 |
-| Flutter 缓存 | `.dart_tool/`, `build/`, `flutter/ephemeral/` | `flutter pub get` / `flutter build` |
-| 本机工具配置 | `.agents/`, `.codex/`, `.vscode/` | 本机保留，不提交 |
-| 运行记录 | `roaster/data/records/` | 真实运行时生成，禁止混入源码提交 |
+## 文件放置与同步
 
-## 新文件放置规则
-
-- 面向使用者的运行说明放到所属模块 `README.md`。
-- 跨模块指南放到 `docs/guides/`，视觉证据放到 `docs/design/<主题>/`，验收报告放到 `docs/qa/`。
-- 可重复执行的仓库维护命令放到 `scripts/`；模块专用工具留在模块自己的 `tools/`。
-- 根目录只保留仓库入口、Git 配置与一级模块目录。
+- 模块使用说明放各模块 README；跨模块操作放 `docs/guides/`；产品版本变化放 `roaster/UPDATE_LOG.md`。
+- 当前验收放 `docs/qa/`，旧版材料连同图片/报告移入 `docs/qa/archive/`，保留可追溯链接。
+- 发布文件只保留本机 `dist/` 当前版本；校验值和验证边界进入 Git。安装包、依赖、缓存与凭据不放源码仓库。
+- Git 主交付分支为 `main`，工作分支按任务使用 `codex/` 前缀；同步前 fetch 并比较提交，正常快进，不强推。
+- KL 参考项目独立保留在相邻目录；本项目包含已迁移引擎，不再嵌套另一套 Git 仓库。可选语料用 `WORKBENCH_REFERENCE` 指定。
+- Flutter 历史实现留在 `feature/flutter-app`，不在当前目录复制生成文件。本机 `.agents/`、`.codex/`、`.vscode/` 与 Claude 本地设置保留，不作为产品源码。

@@ -58,4 +58,4 @@ npm run build
 
 生产包运行不依赖参考文件夹、虚拟环境、系统 Python、Qt 或 Kaffelogic 安装。独立引擎只读入 stdin JSON，输出 stdout JSON，不访问串口、设备或网络。FastAPI 使用同一核心并在线程中完成数值工作；模拟器也只调用这个离线引擎。Windows 真实后端与串口不用于本机验收。
 
-迁移来源说明见 `roaster/src/workbench/NOTICE.md`，当次验证见 [workbench-v3.23](../qa/workbench-v3.23.md)。
+迁移来源说明见 `roaster/src/workbench/NOTICE.md`，当次验证见 [workbench-v3.23](../qa/archive/workbench-v3.23.md)。

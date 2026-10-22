@@ -1,202 +1,65 @@
-# RoasterDesktop — Tauri 桌面壳
+# RoasterDesktop
 
-把 `roaster/static/` 里的网页前端**原样**包进一个 Windows / macOS / Linux 桌面应用。
-不重写任何 UI 代码；桌面壳通过 HTTP/WebSocket 连接烘焙机后端（FastAPI）。
+当前版本 **0.4.0**，复用 `../roaster/static/` 的 Web 3.24。桌面通过 HTTP/WebSocket 连接设备后端，Rust 管理本机 AI 与独立原生文件引擎。
 
-```
-┌─────────────────────────────┐
-│  RoasterDesktop (Tauri 壳)   │     ┌──────────────────────────┐
-│  ┌───────────────────────┐  │     │  烘焙机后端 (树莓派/本机)  │
-│  │ WebView2 渲染         │  │     │  python main.py          │
-│  │ roaster/static 前端   │──┼────►│  FastAPI :8000           │──► RS485/TC4S
-│  │ (与浏览器版同一份代码) │  │     │  REST /api/v1/* + WS /ws │
-│  └───────────────────────┘  │     └──────────────────────────┘
-└─────────────────────────────┘
-```
+## 开发环境
 
-## 一、环境准备（首次一次性）
-
-### Windows
-
-1. **Node.js** LTS — https://nodejs.org （本仓库开发机已装 v25）
-2. **Rust** — `winget install Rustlang.Rustup`（已装 1.97）；装完重开终端
-3. **MSVC 生成工具** — Visual Studio 2022（Community 即可）勾选「使用 C++ 的桌面开发」工作负载（本机已装）
-4. **WebView2** — Windows 11 自带；Win10 老机器装「WebView2 Runtime」
-
-### macOS（如需出 Mac 版）
-
-```bash
-xcode-select --install
-curl --proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf | sh
-```
-
-### Linux（如需出 Linux 版）
-
-```bash
-sudo apt install libwebkit2gtk-4.1-dev build-essential curl wget file libxdo-dev libssl-dev libayatana-appindicator3-dev librsvg2-dev
-curl --proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf | sh
-```
-
-## 二、开发
-
-```bash
-cd desktop
-npm install        # 首次：装 @tauri-apps/cli
-npm run dev        # 开发模式：打开桌面窗口，改 roaster/static/ 里文件后自动热重载
-```
-
-只做界面开发或验收时，使用完全隔离真实串口的模拟器：
-
-```bash
-npm run dev:sim -- --freeze             # 固定在 05:42 的烘焙中场景
-npm run dev:sim -- --scenario=idle      # 待机
-npm run dev:sim -- --scenario=cooling   # 冷却
-npm run dev:sim -- --scenario=error     # 错误
-npm run check:frontend                  # 静态契约与资源检查
-```
-
-模拟器只绑定本机 HTTP/WebSocket，不导入 Python 硬件模块，也不会打开 TC4S/RS485 端口。最终界面验收仍应在 `roaster-desktop.exe` 原生窗口内完成。
-
-窗口打开后，默认连 `http://localhost:8000`（本机后端）。
-
-**连局域网上的树莓派**：点窗口右下角半透明的 **⚙** 按钮 → 填 `http://<树莓派IP>:8000`
-→ 「保存并重连」。地址存在本机 localStorage，只需设置一次。
-
-> ⚙ 按钮只在 Tauri 壳里出现；浏览器打开同一前端时不会显示。
-> 实现见 `roaster/static/js/tauri-adapter.js`（浏览器环境下它是完全的空操作）。
-
-## 三、打包分发
-
-```bash
-cd desktop
-npm run build
-```
-
-产物：
-
-| 文件 | 说明 |
-|---|---|
-| `src-tauri/target/release/roaster-desktop.exe` | 程序入口，需连同 AI 与 workbench 运行目录分发 |
-| `src-tauri/target/release/bundle/nsis/RoasterDesktop_0.4.0_x64-setup.exe` | 包含 AI 与离线工作台引擎的安装包 |
-
-客户安装体验：双击 setup.exe → 下一步 → 桌面出现图标 → 打开即用（首次点 ⚙ 填一次烘焙机地址）。
-
-版本号升级：同时改 `desktop/package.json`、`desktop/src-tauri/Cargo.toml`、`desktop/src-tauri/tauri.conf.json` 三处的 `version`。
-
-## 四、macOS / Linux 打包
-
-在对应系统上执行同样的 `npm run build`（Tauri 不支持 Windows 上交叉打包 Mac）：
-
-- macOS 产物：`bundle/dmg/*.dmg`、`bundle/macos/*.app`
-- Linux 产物：`bundle/deb/*.deb`、`bundle/appimage/*.AppImage`
-
-把 `tauri.conf.json` 的 `bundle.targets` 改成 `"all"` 可一次出全部格式。
-
-## 五、桌面版的远程升级（对接 OTA 计划）
-
-Tauri 官方有 **updater 插件**（签名 + 自动下载替换），建议路线：
-
-```bash
-npm run tauri add updater
-```
-
-1. 生成签名密钥：`npx tauri signer generate -w ~/.tauri/roaster.key`
-2. `tauri.conf.json` 配置 `plugins.updater.endpoints` 指向你的 manifest（如 `https://你的服务器/roaster-desktop/latest.json`）
-3. 每次发版：`npm run build` 后把 `bundle/` 产物 + `.sig` 签名上传到服务器，更新 manifest 里的版本号和下载地址
-4. 客户端启动时自动检查、弹窗确认、下载替换、重启完成
-
-manifest 格式与完整步骤见官方文档 https://v2.tauri.app/plugin/updater/ 。
-这套 manifest 协议可以和树莓派应用级 OTA、ESP32 OTA **共用同一台静态文件服务器**。
-
-## 六、目录结构
-
-```
-desktop/
-├── package.json            # npm 脚本与 Tauri CLI
-├── tools/
-│   ├── check-frontend.mjs  # HTML/CSS/JS/资源与安全契约检查
-│   ├── dev-sim.mjs         # 安全模拟器 + Tauri 联合启动
-│   ├── roaster-simulator.mjs # 仅本机 HTTP/WebSocket 模拟数据
-│   ├── sync-icons.mjs      # 可重复生成离线 Phosphor 图标子集
-│   ├── gen-icon.js         # 应用图标生成器（纯 Node，无依赖）
-│   └── icon-source.png     # 1024x1024 源图标
-└── src-tauri/
-    ├── tauri.conf.json     # 窗口尺寸/标题/CSP/打包配置（frontendDist 指向 ../../roaster/static）
-    ├── Cargo.toml          # Rust 依赖
-    ├── build.rs
-    ├── capabilities/
-    │   └── default.json    # 权限：默认 + 允许新开窗口（导出预览用）
-    ├── icons/              # npx tauri icon 生成的全套图标
-    └── src/
-        └── main.rs         # 最小入口（壳无原生逻辑）
-```
-
-## 七、已知边界
-
-- **记录导出（CSV/JSON）**：桌面版里点导出会新开一个系统窗口显示内容（后端返回的是
-  内联文本而非附件下载）。要「保存为文件」对话框体验，后续加
-  `tauri-plugin-dialog` + `tauri-plugin-fs` 即可，前端不用改。
-- **iOS 不支持**：Tauri 移动端目前不成熟；苹果手机用户继续用浏览器/PWA。
-- **树莓派本机不需要这个壳**：本机触摸屏场景继续用 Chromium Kiosk 模式即可，
-  桌面壳是给「Windows/Mac 电脑远程操作烘焙机」的场景用的。
-
-## 完整 AI 工作区（桌面 0.4.0 / Web v3.24）
-
-全局「AI 对话」支持多轮历史、停止、编辑后重发、重新生成及手动切换模型续聊；可带入曲线、记录、原生文件和图片。设置中的「订阅登录 / API Key / 自定义配置」按供应商能力展示登录方式，五家订阅为 ChatGPT、Claude、Copilot、Kimi Code 和 xAI；自定义接口支持 Chat Completions、Responses、Anthropic 三种协议。
-
-桌面与网页默认连接当前后端共享 AI，首次使用配对码；Windows 也可主动选择本机独立模式。账号和会话归所选宿主。迁移旧本机配置时由 Rust 直接传到已配对后端，旧文件保留。部署和配对见 [AI 宿主与配对](../docs/guides/ai-host-deployment.md)，验证见 [v3.24 QA](../docs/qa/ai-workspace-v3.24.md)。
-
-`npm run test:ai:ui` 使用随机本机端口、安全模拟器与真实共享 AI 核心，模型为确定性测试源；`node tools/test-ai-chat-ui.mjs --native` 在构建后的真实 Tauri WebView 中验证配对、Rust 代理、聊天和内置工作台引擎，默认启动地址 8000 必须空闲。两者均不请求云端模型或连接真实串口。
-
-## 早期 AI 烘焙助手（桌面 v0.2.0 / Web 资源 v3.22，历史说明）
-
-Windows 桌面版增加记录复盘、曲线设计/优化和实时只读辅导。普通网页与树莓派 kiosk 保持共享页面，第一版不提供 AI 入口。模型不会启动/结束烘焙、修改 SV、预测参数或当前执行曲线。
-
-1. 打开「设置 → AI 服务」，选择供应商并保存 API Key，点击「加载模型目录」选择模型，再点击「测试连接」。测试会产生少量模型调用。DeepSeek、Moonshot 中国、OpenAI、Anthropic、Gemini、OpenRouter 使用各自目录；自定义模式填写 OpenAI Chat Completions 兼容 API 根地址与模型 ID（例如 `http://127.0.0.1:1234/v1`），本地无密钥服务可留空 Key。
-2. 「烘焙记录」打开一锅记录，展开「AI 烘焙复盘」。可保存豆子、处理法、重量、目标及杯测笔记；没有杯测时只评价过程，没有完整事件时不编造 DTR。「按建议设计下一锅」在待机时进入原始快照的编辑器副本。
-3. 「曲线管理」点击「AI 设计曲线」或卡片上的「AI 优化」。编辑器支持锁定前段秒数和选择历史参考；候选以紫色虚线叠加，采用前展示节点与自动结束阈值变化。采用后可以撤销/重做，再「保存曲线」生成新 UUID，返回曲线库手动应用。
-4. 烘焙中展开「AI 实时辅导」，点击「开启本锅持续辅导」。按阶段变化和约每分钟生成建议，也可单次提问；暂停、出豆、断线、ERROR、切换设备或离开页面均终止相关请求。下一锅需重新开启。
-
-密钥通过 Windows 凭据管理器保存；AI 配置与对话保存在系统应用数据目录的 `com.ganf.roaster/ai` 下，按设备和对象区分。前端只读取是否配置密钥；不写入 localStorage、不随 Git 上传。自定义地址不支持 URL 内嵌密码或查询参数中的密钥，密钥使用独立输入框。「删除密钥」移除当前供应商/地址凭据；「新对话」清除当前对象对话。
-
-### 运行环境与打包变化
-
-`npm run prepare:ai` 下载并核验锁定的 Node 24 LTS（版本与 SHA256 在 `ai/runtime-manifest.json`），生成拆分的 ESM `.mjs` 与 Tauri IPC 前端桥。`dev`、`dev:sim` 与 `build` 自动准备资源；无需额外安装 Python AI SDK。
-
-正式 NSIS 安装包包含 Node 和 AI 资源，客户无需安装系统 Node。绿色版现在必须整体分发 `roaster-desktop.exe`、`ai-node.exe`、`ai/` 与 `node-manifest.json`；不再是单个 EXE。旧的单文件/5–10MB 说明仅适用于 v0.1.0。Node 与生成物位于被忽略的 `desktop/runtime/`，源码、锁文件与下载校验清单进入 Git。
-
-后端需同步本次代码并重新启动，以提供 `/api/v1/analysis/context`、候选校验及副本保存接口。旧后端可继续复盘已有记录；实时辅导和安全保存 AI 曲线会提示更新后端。
-
-### 验证命令
+Windows 构建需要 Node、Rust/MSVC、WebView2，以及 Python 3.12 x64 的工作台打包环境。首次建立隔离环境：
 
 ```powershell
-npm run prepare:ai
+# 在项目根目录执行
+py -3.12 -m venv desktop/.venv
+desktop/.venv/Scripts/python.exe -m pip install -r desktop/workbench-requirements.txt
+Set-Location desktop
+npm ci
+npm run check:frontend
+npm run dev:sim -- --freeze
+```
+
+工作台解释器依次使用 `WORKBENCH_PYTHON`、`desktop/.venv`、`roaster/.venv`、根 `.venv`、系统 Python。构建要求安装 `workbench-requirements.txt`；源码分析只需后端依赖。项目不依赖旧 KL 副本或其虚拟环境。
+
+安全模拟器支持 `--scenario=idle`、`--scenario=cooling`、`--scenario=error`；只绑定本机，不访问串口。真实设备地址在设置页的连接配置中填写。Windows 不启动真实硬件后端。
+
+## 当前功能
+
+- AI 对话在全局侧栏或放大视图使用，支持历史、停止、编辑重发、重新生成、附件和模型切换。设置提供订阅登录、API Key、自定义配置。
+- 默认使用当前后端共享 AI；客户端首次配对。Windows 可主动切到本机模式，旧本机配置和历史迁移需要明确操作。
+- 原生工作台离线编辑 `.kpro/.klog`，内置功能说明与参数帮助。AI 候选先预览再确认采用；保存、入库与应用仍由用户分别操作。
+- 账号、密钥和配对凭据不进入 Git；Windows 凭据由系统凭据管理器保护。
+
+详见 [AI 配对与部署](../docs/guides/ai-host-deployment.md)、[原生工作台](../docs/guides/native-workbench.md)。
+
+## 构建与分发
+
+```powershell
+npm run build
+npm run package:ai:arm64
+```
+
+构建前自动校验并准备 `runtime/` 中的 Node、AI ESM bundle 和原生工作台引擎。Node 版本和下载 SHA256 固定在 `ai/runtime-manifest.json`。Windows 安装包位于 `src-tauri/target/release/bundle/nsis/`；最终交付统一复制到根 `dist/`。ARM64 包直接输出到根 `dist/`。
+
+安装包包含运行时，用户无需安装 Node/Python。绿色版必须整体保留程序、AI、Node 清单和 `workbench/` 资源，不能只复制 EXE。ARM64 包是设备后端部署包；部署步骤见 [AI 宿主说明](../docs/guides/ai-host-deployment.md)。当前实测交付平台为 Windows x64，ARM64 执行与实机仍待目标设备验收。
+
+版本以 `package.json`、`package-lock.json`、`src-tauri/Cargo.toml`、`Cargo.lock` 和 `tauri.conf.json` 为准，升级时同步维护。
+
+## 验证
+
+```powershell
 npm run test:ai
 npm run test:ai:ui
+npm run test:ai:native-ui
+npm run test:workbench:ui
+npm run test:workbench:native-ui
 npm run check:frontend
 cargo test --manifest-path src-tauri/Cargo.toml
-npm run build
 ```
 
-`test:ai:ui` 使用本机安全模拟器和模拟原生 IPC，浏览器需已安装 Microsoft Edge，使用端口 8031；它不启动 Python 硬件后端或请求云端模型。后端 ASGI 测试注入 fake controller、不运行硬件 lifespan：
+AI UI 使用真实共享核心、确定性模型与安全模拟器，不调用云端模型。原生 UI 检查运行构建后的实际 Tauri WebView，启动地址 8000 必须空闲。工作台 UI 默认源码引擎；`WORKBENCH_SOURCE=0` 使用打包引擎。默认多通道日志为仓库内的合成夹具；`WORKBENCH_SAMPLE` 可指定真实样本，`WORKBENCH_QA_DIR` 可重定向报告目录。
 
-```powershell
-Set-Location ../roaster
-uv run --python 3.12 --with-requirements requirements.txt --with httpx python -m unittest discover -s tests -v
-```
+后端 `pytest` 默认可选读取相邻独立 `kaffelogic逆向` 项目的 418 文件语料及原版 oracle；也可用 `WORKBENCH_REFERENCE` 指定。没有参考库时两项扩展回归跳过，日常 UI 与构建仍可独立运行。
 
-设计、接口和验证边界见 [`docs/qa/ai-v3.22.md`](../docs/qa/ai-v3.22.md)。
+当前证据见 [v3.24 QA](../docs/qa/ai-workspace-v3.24.md)，历版证据见 [QA 归档](../docs/qa/archive/README.md)。
 
-## 原生文件工作台（0.3.0）
+## 目录
 
-顶部“原生工作台”完整接入参考项目已经实现的离线功能，直接复用保真格式与数值核心，并支持原生文件、CSV、PNG 与多页 PDF。通过 Tauri IPC 调用内置引擎，断开设备后仍可编辑分析；“存入曲线库”和“从曲线库打开”与现有控机流程联通。使用和边界见 [原生工作台指南](../docs/guides/native-workbench.md)。
-
-首次开发需要 Python 3.12 x64，并安装 `desktop/workbench-requirements.txt`；可用 `WORKBENCH_PYTHON` 指定构建环境。`dev`、`dev:sim`、`build` 自动准备 `desktop/runtime/workbench/`，产品运行无需系统 Python。生成物不纳入 Git；引擎源码位于 `roaster/src/workbench/`，不依赖本机参考文件夹。
-
-```powershell
-npm run prepare:workbench
-npm run test:workbench:ui
-../roaster/.venv/Scripts/python.exe tools/verify-workbench-package.py
-```
-
-`test:workbench:ui` 使用随机可用本机端口的安全模拟器和真实离线引擎，不启动串口。默认使用源码引擎；`WORKBENCH_SOURCE=0` 使用打包引擎。Windows 保存使用原生文件对话框与原子替换，取消保留草稿。绿色分发必须包含 `workbench/` 整个目录，以及原有 `ai-node.exe`、`ai/` 和 Node 清单。
+`ai/` 是 AI 服务及契约测试，`src-tauri/` 是 Rust 宿主，`tools/` 是构建/验证/模拟脚本。`runtime/` 为已准备的运行时；`build/`、`src-tauri/target/` 为生成物；`.venv/` 和 `node_modules/` 为本机依赖，均不进入 Git。

@@ -1,42 +1,30 @@
-# Ganf's 咖啡烘焙机软件
+# Ganf's 咖啡烘焙机
 
-这是咖啡烘焙机控制系统的统一工作区。稳定运行路径保持简短：核心后端与 Web 前端在 `roaster/`，Tauri 桌面壳在 `desktop/`，项目级资料统一进入 `docs/`。
+当前交付：**桌面 0.4.0 / Web 3.24**。包含烘焙控制、曲线与记录、原生 `.kpro/.klog` 工作台，以及桌面/网页共享 AI 对话。
 
-## 目录入口
+| 目录 | 内容 | 入口 |
+| --- | --- | --- |
+| `roaster/` | Python 后端、设备控制、共享网页、AI 和离线格式引擎 | [运行说明](roaster/README.md) |
+| `desktop/` | Tauri 桌面壳、AI worker、打包与安全模拟器 | [开发与构建](desktop/README.md) |
+| `docs/` | 使用指南、当前验收、历史归档与维护记录 | [文档索引](docs/README.md) |
+| `scripts/` | 项目维护和生成物清理 | [目录约定](docs/project-structure.md) |
+| `dist/` | 本机最新安装包、ARM64 部署包和校验文件；不进入 Git | [交付记录](docs/qa/ai-workspace-v3.24/delivery-report.json) |
 
-| 目录 | 用途 | 首选入口 |
-|---|---|---|
-| `roaster/` | FastAPI、WebSocket、控制器、TC4S/RS485、Web 前端 | [`roaster/README.md`](roaster/README.md) |
-| `desktop/` | 复用 Web 前端的 Tauri 桌面应用 | [`desktop/README.md`](desktop/README.md) |
-| `docs/` | 架构、迁移指南、设计基准和 QA 证据 | [`docs/README.md`](docs/README.md) |
-| `scripts/` | 仓库级维护脚本 | [`scripts/clean-workspace.ps1`](scripts/clean-workspace.ps1) |
-
-Flutter 完整实现保存在独立分支 `feature/flutter-app`，避免当前 Tauri 工作区同时混入两套平台生成文件。迁移说明见 [`docs/guides/flutter-migration.md`](docs/guides/flutter-migration.md)。
-
-桌面 0.3.0 / Web v3.23 新增原生文件工作台：完整接入参考项目已实现的 `.kpro/.klog` 离线编辑、ABC、参数、日志、比较和导出，并与当前曲线库和记录联通。使用及边界见 [`原生工作台`](docs/guides/native-workbench.md)。
+原生工作台提供编辑、ABC、参数、日志、比较、变换、合并及导出，内置离线说明中心。AI 支持多轮聊天、五家订阅登录、API Key、自定义接口和可撤销候选。使用见 [工作台指南](docs/guides/native-workbench.md)、[AI 配对与部署](docs/guides/ai-host-deployment.md)。
 
 ## 常用命令
 
-桌面 0.4.0 / Web v3.24 增加完整 AI 对话、订阅登录与设备共享 AI，会话支持跨桌面和网页继续。设置页统一卡片与表单；原生工作台内置 KL 功能说明、适配变化、注意事项和原生 AI 候选。部署入口见 [AI 宿主与配对](docs/guides/ai-host-deployment.md)。
-
 ```powershell
-# Tauri 前端静态检查
 Set-Location desktop
-npm install
+npm ci
 npm run check:frontend
+npm run dev:sim -- --freeze   # 安全模拟器与原生窗口
 
-# 安全模拟器 + 原生 Tauri 窗口（不访问真实串口）
-npm run dev:sim -- --freeze
-
-# 预览可清理的生成物；确认后再实际清理
 Set-Location ..
-.\scripts\clean-workspace.ps1
-.\scripts\clean-workspace.ps1 -Apply
+./scripts/clean-workspace.ps1 -Build -OldPackages          # 预览
+./scripts/clean-workspace.ps1 -Build -OldPackages -Apply   # 清理生成物，保留最新版
 ```
 
-## 开发边界
+Windows 只做源码、前端、模拟器和打包验证；不要启动真实串口、GPIO 或加热控制。设备操作只在已明确授权的目标设备上执行。AI 仅分析和提出候选，不控制设备。
 
-- Windows 只做源码、前端、模拟器和桌面构建验证；不要启动真实串口、GPIO 或加热控制。
-- `desktop/node_modules/`、`desktop/src-tauri/target/`、Python/Flutter 缓存和本地 IDE 配置不纳入 Git。
-- `.agents/`、`.codex/`、`.vscode/` 与 `.claude/settings.local.json` 是本机工具配置，保留在本地但不属于产品源码。
-- 更新前先看 [`roaster/UPDATE_LOG.md`](roaster/UPDATE_LOG.md)；修改已知敏感路径前先看 [`roaster/PITFALLS.md`](roaster/PITFALLS.md)。
+更新记录集中在 [UPDATE_LOG](roaster/UPDATE_LOG.md)，当前验证在 [v3.24 QA](docs/qa/ai-workspace-v3.24.md)，整理记录在 [项目清理记录](docs/maintenance/2026-10-22-workspace-cleanup.md)。Flutter 历史实现位于独立分支 `feature/flutter-app`，不混入当前目录。

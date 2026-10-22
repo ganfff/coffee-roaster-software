@@ -1,12 +1,13 @@
 // Safe simulator bridge: invokes only the pure numerical worker, never main.py.
 import {spawn} from 'node:child_process';
 import {existsSync} from 'node:fs';
+import {workbenchPython} from './python-runtime.mjs';
 import {resolve,dirname} from 'node:path';
 import {fileURLToPath} from 'node:url';
 const root=resolve(dirname(fileURLToPath(import.meta.url)),'../..');
 export function workbenchRequest(request) {
   const binary=resolve(root,'desktop/runtime/workbench/RoasterWorkbenchEngine.exe');
-  const python=process.env.WORKBENCH_PYTHON || resolve(root,'kaffelogic逆向/.venv/Scripts/python.exe');
+  const python=workbenchPython();
   const packed=existsSync(binary)&&process.env.WORKBENCH_SOURCE!=='1';
   return new Promise((ok,fail)=>{
     const child=spawn(packed?binary:python,packed?[]:['-m','src.workbench.engine'],{cwd:resolve(root,'roaster'),env:{...process.env,PYTHONPATH:resolve(root,'roaster')},stdio:['pipe','pipe','pipe'],windowsHide:true});
