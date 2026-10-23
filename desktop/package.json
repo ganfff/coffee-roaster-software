@@ -1,7 +1,7 @@
 {
   "name": "roaster-desktop",
   "private": true,
-  "version": "0.6.1",
+  "version": "0.6.2",
   "description": "咖啡烘焙机控制台 — Tauri 桌面壳（复用 roaster/static 前端）",
   "scripts": {
     "prepare:ai": "node tools/prepare-ai.mjs",
@@ -17,6 +17,7 @@
     "check:frontend": "node tools/check-frontend.mjs",
     "check:themes": "node tools/theme-palettes.mjs --check",
     "test:local-ai:ui": "node tools/test-local-ai-ui.mjs",
+    "test:editor:session": "node tools/test-editor-session-ui.mjs",
     "build": "tauri build",
     "build:debug": "tauri build --debug",
     "test:workbench:native-ui": "node ../roaster/tests/test_workbench_native_ui.mjs",

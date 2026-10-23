@@ -121,7 +121,9 @@
   // ai/bridge.mjs
   window.RoasterNativeAI = { invoke, listen };
   var native = !!window.__TAURI_INTERNALS__;
-  var selected = { kind: native ? "local" : "backend", backend: location.origin };
+  var localDebug = native && window.ROASTER_DEBUG?.mode === "safe-simulator" && window.ROASTER_DEBUG.backend === location.origin && location.hostname === "127.0.0.1";
+  var webHost = !native || localDebug;
+  var selected = { kind: webHost ? "backend" : "local", backend: location.origin };
   var socket = null;
   var reconnect = null;
   var disposed = false;
@@ -142,7 +144,7 @@
   };
   var webRequest = (path, options = {}) => fetch("/api/v1/ai" + path, { credentials: "same-origin", ...options }).then(response);
   function connectWeb() {
-    if (native || disposed || !subscribers.size || socket) return;
+    if (!webHost || disposed || !subscribers.size || socket) return;
     const url = new URL("/api/v1/ai/ws", location.href);
     url.protocol = location.protocol === "https:" ? "wss:" : "ws:";
     url.searchParams.set("after", String(cursor));
@@ -169,7 +171,7 @@
     };
   }
   var nativeUnlisten = null;
-  if (native) listen("roaster-ai-service", (event) => {
+  if (!webHost) listen("roaster-ai-service", (event) => {
     const value = event.payload;
     if (selected.kind === "local" && value.host) return;
     if (selected.kind === "backend" && value.host !== selected.backend) return;
@@ -183,8 +185,8 @@
       return { ...selected };
     },
     async setHost(value) {
-      if (native) await invoke("ai_remote_stop");
-      selected = { kind: native ? "local" : "backend", backend: location.origin };
+      if (!webHost) await invoke("ai_remote_stop");
+      selected = { kind: webHost ? "backend" : "local", backend: location.origin };
       cursor = 0;
       if (socket) {
         socket.onclose = null;
@@ -195,7 +197,7 @@
       connectWeb();
     },
     request(method, params = {}) {
-      if (native) return invoke("ai_rpc", { method, params });
+      if (!webHost) return invoke("ai_rpc", { method, params });
       return webRequest("/rpc", { method: "POST", keepalive: method === "runs.cancel", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ method, params }) });
     },
     listen(callback) {
@@ -211,18 +213,18 @@
       };
     },
     status() {
-      return native ? selected.kind === "local" ? Promise.resolve({ available: true, paired: true, host: "local" }) : invoke("ai_remote_status", { backend: selected.backend }) : webRequest("/status");
+      return !webHost ? Promise.resolve({ available: true, paired: true, host: "local" }) : webRequest("/status");
     },
     async pair(code, name) {
-      const result = native ? await invoke("ai_remote_pair", { backend: selected.backend, code, name }) : await webRequest("/pair", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ code, name }) });
+      const result = !webHost ? await invoke("ai_remote_pair", { backend: selected.backend, code, name }) : await webRequest("/pair", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ code, name }) });
       connectWeb();
       return result;
     },
     clients() {
-      return native ? invoke("ai_remote_clients", { backend: selected.backend }) : webRequest("/clients");
+      return !webHost ? invoke("ai_remote_clients", { backend: selected.backend }) : webRequest("/clients");
     },
     revoke(id) {
-      return native ? invoke("ai_remote_revoke", { backend: selected.backend, id }) : webRequest("/clients/" + encodeURIComponent(id), { method: "DELETE" });
+      return !webHost ? invoke("ai_remote_revoke", { backend: selected.backend, id }) : webRequest("/clients/" + encodeURIComponent(id), { method: "DELETE" });
     },
     dispose() {
       disposed = true;

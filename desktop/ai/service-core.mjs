@@ -41,6 +41,15 @@ function publicData(value) {
   if(value&&typeof value==='object')return Object.fromEntries(Object.entries(value).filter(([key])=>!['native_source','document','raw_bytes','original_bytes','data_base64','base64','api_key','apiKey','access','refresh','master_key'].includes(key)).map(([key,item])=>[key,publicData(item)]));
   return value;
 }
+// pi-ai wraps every refresh failure in an OAuth error, including offline/timeouts.
+// Only an explicit authorization rejection requires the user to log in again.
+function authorizationRejected(error) {
+  for(let cause=error,depth=0;cause&&depth<8;cause=cause.cause,depth++){
+    if(cause.code==='AUTH'||[401,403].includes(Number(cause.status??cause.statusCode)))return true;
+    if(/invalid[_ -](grant|token|client)|refresh[_ -]token[_ -](reused|expired|revoked)|(?:refresh token|authorization|credential).*(?:revoked|invalidated)|reconnect ChatGPT|(?:status|HTTP)[=: ]+(?:401|403)\b/i.test(String(cause.message||'')))return true;
+  }
+  return false;
+}
 async function atomic(path,value) {
   const temp=path+'.'+randomUUID()+'.tmp';
   await writeFile(temp,value,{mode:0o600});
@@ -75,6 +84,10 @@ export class AIService {
     try{this.state=JSON.parse(await readFile(join(this.dir,'state.json'),'utf8'));}catch(error){if(error.code!=='ENOENT')throw new ServiceError('STORAGE','AI 历史文件无法读取，原文件保持不变');this.state={version:1,installation_id:randomUUID(),profiles:[],conversations:[],attachments:[],runs:[],legacy_imports:[]};}
     if(this.state.version!==1||!Array.isArray(this.state.profiles)||!Array.isArray(this.state.conversations))fail('AI 历史格式不支持','STORAGE');
     for(const key of ['attachments','runs','legacy_imports'])this.state[key]??=[];
+    for(const profile of this.state.profiles)if(profile.catalog_status==='loading'){
+      profile.catalog_status=profile.catalog?.some(model=>model.id===profile.model)?'ready':'not_loaded';
+      delete profile.catalog_error;
+    }
     for(const job of this.state.runs)if(job.status==='running'){
       job.status='interrupted';job.error={code:'INTERRUPTED',message:'AI 服务已重启，可以重试此消息'};
       for(const msg of this.conversation(job.conversation_id).messages)if(msg.run_id===job.id&&msg.status==='streaming'){msg.status='interrupted';msg.error=job.error;}
@@ -163,7 +176,7 @@ export class AIService {
       else if(!prior&&!profile.needs_model_choice)profile.model=list[0]?.id||'';
       profile.model_name=list.find(m=>m.id===profile.model)?.name||'';
       this.modelsCache.delete(profile.id);await this.save();return expose(list);
-    }catch(error){const authFailure=/^(auth|oauth)$/i.test(error.code||'');if(this.state.profiles.includes(profile)){profile.catalog_status=activeSignal.aborted?'not_loaded':authFailure?'auth_required':'error';profile.catalog_error=activeSignal.aborted?'模型加载已停止，请重试':authFailure?'登录状态已失效或没有权限，请重新登录':this.error(error).message;await this.save();}if(authFailure)throw new ServiceError('AUTH','登录状态已失效或没有权限，请重新登录');throw error;}
+    }catch(error){const authFailure=authorizationRejected(error);if(this.state.profiles.includes(profile)){profile.catalog_status=activeSignal.aborted?'not_loaded':authFailure?'auth_required':'error';profile.catalog_error=activeSignal.aborted?'模型加载已停止，请重试':authFailure?'登录状态已失效或没有权限，请重新登录':/^(auth|oauth)$/i.test(error.code||'')?'暂时无法恢复账户连接，请检查网络后重试，登录信息已保留':this.error(error).message;await this.save();}if(authFailure)throw new ServiceError('AUTH','登录状态已失效或没有权限，请重新登录');throw error;}
   }
   collection(profile) {
     if(this.modelsCache.has(profile.id))return this.modelsCache.get(profile.id);

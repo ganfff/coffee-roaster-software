@@ -5,13 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="color-scheme" content="dark light" />
   <title>曲线编辑器 - Ganf's 咖啡烘焙机</title>
-  <script src="js/theme.js?v=3.27"></script>
-  <link rel="stylesheet" href="css/theme.css?v=3.27" />
-  <link rel="stylesheet" href="css/ai.css?v=3.27" />
+  <script src="js/theme.js?v=3.28"></script>
+  <link rel="stylesheet" href="css/theme.css?v=3.28" />
+  <link rel="stylesheet" href="css/ai.css?v=3.28" />
   <link rel="stylesheet" href="assets/icons/phosphor/phosphor.css?v=2.1.2" />
-  <link rel="stylesheet" href="css/editor.css?v=3.27" />
+  <link rel="stylesheet" href="css/editor.css?v=3.28" />
   <script src="js/vendor/chart.umd.min.js"></script>
-  <link rel="stylesheet" href="css/atlas.css?v=3.27" />
+  <link rel="stylesheet" href="css/atlas.css?v=3.28" />
 </head>
 <body>
   <div id="app" class="editor-app">
@@ -21,8 +21,9 @@
       <div class="header-actions">
         <button id="btn-undo" class="ctrl-btn icon-control" aria-label="撤销" title="撤销 (Ctrl+Z)" disabled><i class="ph ph-arrow-counter-clockwise"></i></button>
         <button id="btn-redo" class="ctrl-btn icon-control" aria-label="重做" title="重做 (Ctrl+Y)" disabled><i class="ph ph-arrow-clockwise"></i></button>
-        <button id="btn-export" class="ctrl-btn"><i class="ph ph-download-simple"></i><span>导出 JSON</span></button>
-        <button id="btn-save" class="ctrl-btn primary"><i class="ph ph-floppy-disk"></i><span>保存曲线</span></button>
+        <button id="ai-launcher" class="ctrl-btn" aria-label="AI 对话" aria-controls="ai-chat" aria-expanded="false"><i class="ph ph-chat-circle-dots" aria-hidden="true"></i><span>AI 对话</span></button>
+        <button id="btn-export" class="ctrl-btn" aria-label="导出 JSON"><i class="ph ph-download-simple" aria-hidden="true"></i><span>导出 JSON</span></button>
+        <button id="btn-save" class="ctrl-btn primary" aria-label="保存曲线"><i class="ph ph-floppy-disk" aria-hidden="true"></i><span>保存曲线</span></button>
       </div>
     </header>
 
@@ -34,12 +35,12 @@
 
     <main class="editor-main">
       <section class="canvas-area">
-        <div class="canvas-heading"><div><h1>温度与 ROR 目标</h1></div><div class="curve-legend"><span class="curve-key temperature"><i></i>目标温度</span><span class="curve-key ror"><i></i>ROR</span></div></div>
+        <div class="canvas-heading"><h1>温度与 ROR 目标</h1></div>
         <div class="chart-wrapper"><canvas id="editor-chart" role="img" aria-label="目标温度曲线编辑画布"></canvas></div>
         <div class="canvas-hint"><span class="hint-item"><i class="ph ph-cursor-click"></i>拖动节点调整时间与温度</span><span class="hint-item"><i class="ph ph-keyboard"></i>Shift 吸附 · 方向键微调 · Ctrl+Z 撤销</span></div>
       </section>
 
-      <aside class="props-panel">
+      <aside class="props-panel" aria-label="曲线节点与助手">
         <section class="panel-block node-library">
           <div class="panel-heading"><div><h2>节点列表</h2></div><button id="btn-add-node" class="ctrl-btn icon-control" aria-label="添加节点" title="添加节点"><i class="ph ph-plus"></i></button></div>
           <div class="nodes-table-header"><span>时间</span><span>温度</span><span>ROR</span><span></span></div>
@@ -49,7 +50,7 @@
 
         <section class="panel-block selection-panel">
           <div class="panel-heading"><div><h2>选中节点</h2></div></div>
-          <div class="form-row form-row-time"><label>时间</label><div class="time-inputs"><span class="number-shell"><input type="number" id="sel-time-min" min="0" step="1" inputmode="numeric" /><em>分</em></span><span class="number-shell"><input type="number" id="sel-time-sec" min="0" step="1" inputmode="numeric" /><em>秒</em></span></div></div>
+          <div class="form-row form-row-time"><label>时间</label><div class="time-inputs"><span class="number-shell"><input type="number" id="sel-time-min" aria-label="节点时间（分）" min="0" step="1" inputmode="numeric" /><em>分</em></span><span class="number-shell"><input type="number" id="sel-time-sec" aria-label="节点时间（秒）" min="0" step="1" inputmode="numeric" /><em>秒</em></span></div></div>
           <div class="form-row"><label for="sel-temp">温度</label><span class="number-shell"><input type="number" id="sel-temp" min="0" max="300" step="0.1" /><em>°C</em></span></div>
         </section>
 
@@ -58,12 +59,12 @@
     </main>
   </div>
   <div id="editor-toast" class="editor-toast" role="status" aria-live="polite"></div>
-  <script src="js/tauri-adapter.js?v=3.27"></script>
-  <script src="js/utils.js?v=3.27"></script>
-  <script src="js/editor.js?v=3.27"></script>
-  <script src="js/ai-bridge.js?v=3.27"></script>
-  <script src="js/ai-chat.js?v=3.27"></script>
-  <script src="js/ai.js?v=3.27"></script>
-  <script src="js/atlas.js?v=3.27"></script>
+  <script src="js/tauri-adapter.js?v=3.28"></script>
+  <script src="js/utils.js?v=3.28"></script>
+  <script src="js/editor.js?v=3.28"></script>
+  <script src="js/ai-bridge.js?v=3.28"></script>
+  <script src="js/ai-chat.js?v=3.28"></script>
+  <script src="js/ai.js?v=3.28"></script>
+  <script src="js/atlas.js?v=3.28"></script>
 </body>
 </html>

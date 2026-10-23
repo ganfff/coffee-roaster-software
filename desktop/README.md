@@ -1,6 +1,6 @@
 # RoasterDesktop
 
-当前版本 **0.6.1**，复用 `../roaster/static/` 的 Web 3.27。桌面通过 HTTP/WebSocket 连接设备后端，Rust 管理本机 AI 与独立原生文件引擎。
+当前版本 **0.6.2**，复用 `../roaster/static/` 的 Web 3.28。桌面通过 HTTP/WebSocket 连接设备后端，Rust 管理本机 AI 与独立原生文件引擎。
 
 日常调试优先双击根目录 **调试网页.cmd**，或运行 `npm run dev:web`；网页、API、WebSocket、离线工作台和本机 AI 会一起启动。原生窗口用 `npm run dev:sim`，无需安装。完整说明见 [免安装调试与打包](../docs/guides/debugging-and-packaging.md)。
 
@@ -50,6 +50,7 @@ npm run package:ai:arm64
 
 ```powershell
 npm run test:ai
+npm run test:editor:session
 npm run test:ai:ui
 npm run test:ai:native-ui
 npm run test:workbench:ui
@@ -62,7 +63,7 @@ AI UI 使用真实共享核心、确定性模型与安全模拟器，不调用�
 
 后端 `pytest` 默认可选读取相邻独立 `kaffelogic逆向` 项目的 418 文件语料及原版 oracle；也可用 `WORKBENCH_REFERENCE` 指定。没有参考库时两项扩展回归跳过，日常 UI 与构建仍可独立运行。
 
-当前证据见 [v3.27 QA](../docs/qa/local-ai-v3.27.md)，历版证据见 [QA 归档](../docs/qa/archive/README.md)。
+当前证据见 [v3.28 QA](../docs/qa/editor-session-v3.28.md)，完整主题验证见 [v3.27 QA](../docs/qa/local-ai-v3.27.md)，历版证据见 [QA 归档](../docs/qa/archive/README.md)。
 
 ## 目录
 

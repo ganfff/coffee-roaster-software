@@ -77,13 +77,30 @@ h1,h2,h3 { letter-spacing:-.02em; }
 .records-shell.has-detail #records-list { display:block !important; }
 .records-shell #record-detail { min-width:0; }
 .record-info-card { box-shadow:none; }
-.editor-app .editor-header { min-height:64px; padding:12px 24px; background:var(--rail); }
+.editor-app .editor-header { min-height:70px; grid-template-columns:auto minmax(0,1fr) auto; padding:12px 24px; background:var(--rail); }
 .editor-app .profile-meta-bar { padding:16px 24px; }
 .editor-app .editor-main { gap:16px; padding:0 24px 24px; }
 .editor-app .canvas-area,.editor-app .props-panel { box-shadow:none; border-radius:var(--radius-lg); }
 .editor-app .canvas-heading h1 { font-size:18px; }
 .editor-app .panel-heading h2 { font-size:16px; }
 .editor-app .canvas-hint,.editor-app .nodes-table-header { font-size:12px; }
+.editor-app .header-actions { flex-wrap:wrap; }
+.editor-app .editor-header .ai-launcher { position:static; min-height:44px; padding:0 13px; box-shadow:none; }
+.editor-app .props-panel { overscroll-behavior:contain; scrollbar-gutter:stable; scroll-padding-block:16px; }
+.editor-app .ai-panel { margin:0 0 16px; }
+.editor-app .canvas-heading { min-width:0; }
+.editor-app .canvas-heading h1 { margin:0; }
+.editor-app .canvas-hint { flex-wrap:wrap; gap:8px 20px; }
+.editor-app .panel-block:last-child { margin-bottom:0; }
+
+/* A docked conversation still leaves the editor enough room to edit nodes. */
+@media(min-width:1280px) and (max-width:1599px) {
+ body:has(.ai-chat:not([hidden])) .editor-main { grid-template-columns:minmax(0,1fr) 300px; gap:12px; padding-inline:16px; }
+ body:has(.ai-chat:not([hidden])) .editor-app .props-panel { padding:10px; }
+ body:has(.ai-chat:not([hidden])) .editor-app .panel-block { padding:12px; }
+ body:has(.ai-chat:not([hidden])) .editor-app .header-actions .ctrl-btn { width:44px; padding:0; }
+ body:has(.ai-chat:not([hidden])) .editor-app .header-actions .ctrl-btn span { display:none; }
+}
 .wb-shell { gap:12px; padding:20px 24px; }
 .wb-heading h2 { font-size:24px; }
 .wb-toolbar { padding-bottom:12px; border-bottom:1px solid var(--separator); }
@@ -110,6 +127,7 @@ h1,h2,h3 { letter-spacing:-.02em; }
 @media(max-width:1279px) {
  .ai-chat,.ai-chat.ai-chat-expanded { top:56px; left:88px; right:0; bottom:56px; width:auto; border-radius:0; }
  body:has(.ai-chat:not([hidden])) #workspace { visibility:hidden; }
+ body:has(.editor-app) .ai-chat,body:has(.editor-app) .ai-chat.ai-chat-expanded { inset:12px; width:auto; border-radius:var(--radius-lg); }
  .workspace-context span { display:none; }
 }
 @media(max-width:1023px) {
@@ -142,6 +160,23 @@ h1,h2,h3 { letter-spacing:-.02em; }
  .editor-app .editor-header,.editor-app .profile-meta-bar { padding:12px; flex-wrap:wrap; }
  .editor-app .editor-header { gap:12px; }
  .editor-app .header-actions { flex-wrap:wrap; }
+}
+
+@media(min-width:821px) and (max-width:1023px) {
+ .editor-app .editor-main { display:grid; grid-template-columns:minmax(0,1fr) 300px; overflow:hidden; }
+ .editor-app .canvas-area { min-height:0; }
+ .editor-app .props-panel { min-height:0; overflow-y:auto; }
+}
+@media(max-width:820px) {
+ html:has(.editor-app) { height:auto; min-height:100%; overflow-y:auto; }
+ body:has(.editor-app) { height:auto; min-height:100dvh; overflow:visible; }
+ .editor-app { min-height:100dvh; }
+ .editor-app .editor-main { overflow:visible; }
+ .editor-app .props-panel { overflow:visible; }
+ .editor-app .canvas-area { grid-template-rows:auto minmax(300px,1fr) auto; gap:12px; min-height:420px; padding:16px; }
+ .editor-app .canvas-hint { padding-block:12px; }
+ .editor-app .editor-header { gap:8px; }
+ .editor-app .editor-header .ai-launcher { width:44px; padding:0; }
 }
 @media(prefers-reduced-motion:reduce) { *,*::before,*::after { animation:none !important; transition:none !important; scroll-behavior:auto !important; } }
 @media(max-height:480px) { .ai-chat,.ai-chat.ai-chat-expanded { top:6px; bottom:66px; } }
@@ -289,6 +324,7 @@ body:has(#tab-settings.active[data-settings-group=ai]) .ai-launcher { display:no
 
 
 @media(min-width:1280px) { body:has(.ai-chat.ai-chat-expanded:not([hidden])) #app { margin-right:0; width:100%; } body:has(.ai-chat.ai-chat-expanded:not([hidden])) .ai-chat.ai-chat-expanded { left:88px; right:0; width:auto; } }
+body:has(.editor-app):has(.ai-chat.ai-chat-expanded:not([hidden])) .ai-chat.ai-chat-expanded { inset:12px; width:auto; }
 .editor-app .node-insert-btn { min-width:44px; width:44px; min-height:44px; }
 .editor-app .nodes-table-header,.editor-app .node-item { grid-template-columns:repeat(3,minmax(0,1fr)) 44px; }
 @media(max-width:1279px) { .ai-chat-header .ai-actions button:nth-child(2) { display:none; } }

@@ -61,6 +61,9 @@
 .ph.ph-chart-line-up:before {
   content: "\e156";
 }
+.ph.ph-chat-circle-dots:before {
+  content: "\e16c";
+}
 .ph.ph-check:before {
   content: "\e182";
 }

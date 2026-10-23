@@ -60,7 +60,7 @@ test('login discovers and persists a default, new models enter inference registr
     await service.dispatch('profiles.save',{profile:{id:p.id,model:'replacement'}});assert.equal(service.publicProfile(saved).can_chat,true);
     status=401;await assert.rejects(service.dispatch('models',{profile_id:p.id,refresh:true}),e=>e.code==='AUTH');assert.equal(service.publicProfile(saved).can_chat,false);assert.equal(saved.catalog_status,'auth_required');
     status=200;rows=[];await service.dispatch('models',{profile_id:p.id,refresh:true});assert.equal(saved.catalog_status,'empty');assert.equal(service.publicProfile(saved).authenticated,true);assert.equal(service.publicProfile(saved).can_chat,false);
-    oauth.refresh=async()=>{throw Error('fixture expired authorization');};service.vault.data[p.id].expires=Date.now()-1;
+    oauth.refresh=async()=>{throw Error('invalid_grant: fixture authorization revoked');};service.vault.data[p.id].expires=Date.now()-1;
     await assert.rejects(service.dispatch('models',{profile_id:p.id,refresh:true}),e=>e.code==='AUTH');assert.equal(saved.catalog_status,'auth_required');
     const conversation=await service.dispatch('conversations.create',{profile_id:p.id});await service.dispatch('profiles.delete',{id:p.id});assert.equal((await service.dispatch('conversations.get',{id:conversation.id})).id,conversation.id);
   }finally{await service.shutdown();await rm(dir,{recursive:true,force:true});}

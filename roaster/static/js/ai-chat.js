@@ -14,6 +14,7 @@
   let profiles = [], providers = [], conversations = [], conversation = null, activeRun = null;
   let selectedProfile = '', contextBinding = null, queuedAttachments = [], queuedContext = null;
   let selectionInitialized = false;
+  const restoredCatalogs = new Set();
   let currentRecord = null, connected = false, socket = null, reconnectTimer, generation = 0;
   let latestStatus = null, loginId = null, authBox, settingsStatus, abortEvents, nativeReady, eventCursor = 0;
   const sequences = new Map(), transient = new Map(), runBindings = new Map();
@@ -71,8 +72,14 @@
     if (!profileSelect) return;
     profileSelect.replaceChildren();
     for (const p of profiles) { const o = el('option', p.name || p.provider); o.value = p.id; profileSelect.append(o); }
-    if(!selectionInitialized&&profiles.length){selectedProfile=selectedProfile||profiles[0].id;selectionInitialized=true;}
+    if(!selectionInitialized&&profiles.length){
+      const saved=localStorage.getItem(key('profile'));
+      selectedProfile=selectedProfile||(profiles.some(p=>p.id===saved)?saved:(profiles.find(p=>p.can_chat)||profiles.find(p=>p.authenticated)||profiles[0]).id);
+      selectionInitialized=true;
+    }
     if (!profiles.some(p => p.id === selectedProfile)) selectedProfile = '';
+    if(selectedProfile)localStorage.setItem(key('profile'),selectedProfile);
+    else if(selectionInitialized)localStorage.removeItem(key('profile'));
     if(!selectedProfile)option(profileSelect,'',profiles.length?'请选择账户':'连接 AI 账户');
     profileSelect.value = selectedProfile;
     profileSelect.disabled = !!activeRun || !profiles.length;
@@ -86,9 +93,15 @@
     connected = true; access.hidden = true;
     updateSelect(); renderHistory();
     const saved = conversation?.id || localStorage.getItem(key('conversation')) || (desktop && localStorage.getItem('roaster.ai.local.'+backend()+'.conversation'));
-    if (saved && conversations.some(c => c.id === saved)) await loadConversation(saved,{keepSelection:!!conversation});
+    if (saved && conversations.some(c => c.id === saved)) await loadConversation(saved,{keepSelection:!!selectedProfile||!!conversation});
     setStatus(profiles.length ? (!activeProfile()?'请选择要使用的账户':activeProfile().can_chat === false ? accountState(activeProfile()) : 'AI 已就绪') : '连接一个 AI 账户，开始对话');
     if (!desktop) connectEvents();
+    // Resume interrupted model loading once; reopening never starts OAuth.
+    for(const p of profiles){
+      if(p.login_id||!p.configured||restoredCatalogs.has(p.id)||!['loading','not_loaded','error','auth_required',undefined].includes(p.catalog_status))continue;
+      restoredCatalogs.add(p.id);
+      rpc('models',{profile_id:p.id,refresh:true}).then(refresh).then(()=>configForm&&loadSettings()).catch(async()=>{await refresh();if(configForm)await loadSettings();}).catch(fail);
+    }
   }
   async function loadConversation(id,{keepSelection=false}={}) {
     conversation = await rpc('conversations.get', {id});
@@ -357,8 +370,15 @@
   function connectEvents() {
     // One transport owns WebSocket reconnect, native events and replay cursors.
   }
-  function show() {if(!panel)return;panel.hidden=false;$('ai-launcher').setAttribute('aria-expanded','true');}
-  function hide() {panel.hidden=true;const launch=$('ai-launcher');launch.setAttribute('aria-expanded','false');(launch.offsetParent?launch:document.querySelector('.ai-settings-chat'))?.focus();}
+  function syncEditorConversation() {
+    const editor=document.querySelector('.editor-app');if(!editor||!panel)return;
+    const modal=!panel.hidden&&(innerWidth<1280||panel.classList.contains('ai-chat-expanded'));
+    editor.inert=modal;
+    if(modal){panel.setAttribute('role','dialog');panel.setAttribute('aria-modal','true');}
+    else {panel.removeAttribute('role');panel.removeAttribute('aria-modal');}
+  }
+  function show() {if(!panel)return;panel.hidden=false;$('ai-launcher').setAttribute('aria-expanded','true');syncEditorConversation();composer?.focus({preventScroll:true});}
+  function hide() {panel.hidden=true;syncEditorConversation();const launch=$('ai-launcher');launch.setAttribute('aria-expanded','false');(launch.offsetParent?launch:document.querySelector('.ai-settings-chat'))?.focus();}
   function renderQueued() {
     const target=$('ai-queued');if(!target)return;target.replaceChildren();
     if(queuedContext)target.append(button('已选数据 · 移除',()=>{queuedContext=null;contextBinding=null;renderQueued();}));
@@ -402,7 +422,7 @@
     list.closest('.ai-accounts-layout').dataset.hasAccounts=String(profiles.length>0);
     const result=await rpc('providers');providers=Array.isArray(result)?result:result.providers||[];
     editProfile(profiles.find(p=>p.id===selectedProfile)||null);
-    settingsStatus.textContent=desktop?'账户与历史保存在这台电脑':window.ROASTER_DEBUG?'账户与历史保存在本机调试空间':'账户与历史保存在当前服务所在设备';
+    settingsStatus.textContent=window.ROASTER_DEBUG?'账户与历史自动保存在这台电脑，网页与调试桌面共用':desktop?'账户与历史自动保存在这台电脑':'账户与历史自动保存在当前服务所在设备';
   }
   function accountState(p) {
     if(p.login_id)return '正在等待官方授权';
@@ -412,7 +432,7 @@
     if(p.catalog_status==='empty')return '此账户暂时没有可用模型';
     if(p.needs_model_choice)return '原模型已不可用，请重新选择';
     if(p.can_chat===true || p.can_chat===undefined&&p.model&&p.configured)return '可以开始对话';
-    if(p.authenticated)return '已登录，请加载模型';
+    if(p.authenticated)return '登录已保存，请加载模型';
     return p.provider==='anthropic'&&p.mode==='subscription'?'需要连接官方 Claude Code':'需要登录或连接账户';
   }
   function openAccountSettings(){
@@ -472,6 +492,7 @@
     if(!p){addAccountView();return;}
     configForm.dataset.profileId=p.id;
     configForm.append(el('h4',p.name||p.provider),el('p',accountState(p),'ai-account-state'));
+    if(p.authenticated&&p.catalog_status!=='auth_required')configForm.append(el('p','登录状态已安全保存，再次打开会自动恢复。','ai-account-state'));
     if(p.provider==='anthropic'&&p.mode==='subscription'){
       const note=el('p','使用官方 Claude Code 2.1.248 或更新版本，订阅登录由官方客户端管理。','ai-account-state');
       const guide=el('a','安装或更新 Claude Code');guide.href='https://code.claude.com/docs/en/setup';guide.target='_blank';guide.rel='noopener noreferrer';configForm.append(note,guide);
@@ -581,7 +602,7 @@
   function mount() {
     panel=el('aside',null,'ai-chat');panel.id='ai-chat';panel.hidden=true;panel.setAttribute('aria-label','AI 对话');
     const header=el('header',null,'ai-chat-header'),heading=el('h2','AI 烘焙助手');heading.id='ai-chat-title';const headerActions=el('div',null,'ai-actions');
-    headerActions.append(button('会话',()=>{$('ai-history').hidden=!$('ai-history').hidden;}),button('放大',()=>{panel.classList.toggle('ai-chat-expanded');headerActions.children[1].textContent=panel.classList.contains('ai-chat-expanded')?'收起':'放大';}),button('关闭',hide));header.append(heading,headerActions);
+    headerActions.append(button('会话',()=>{$('ai-history').hidden=!$('ai-history').hidden;}),button('放大',()=>{panel.classList.toggle('ai-chat-expanded');headerActions.children[1].textContent=panel.classList.contains('ai-chat-expanded')?'收起':'放大';syncEditorConversation();}),button('关闭',hide));header.append(heading,headerActions);
     const tools=el('div',null,'ai-chat-tools'),modelLine=el('div',null,'ai-model-line');profileSelect=el('select');profileSelect.id='ai-chat-profile';profileSelect.setAttribute('aria-label','当前 AI 账户');profileSelect.onchange=()=>{selectedProfile=profileSelect.value;updateSelect();setStatus('下一条消息使用所选账户，历史保留');const p=activeProfile();if(p&&!p.catalog?.length&&p.configured)rpc('models',{profile_id:p.id}).then(refresh).catch(fail);};
     modelSelect=el('select');modelSelect.id='ai-chat-model';modelSelect.setAttribute('aria-label','当前 AI 模型');modelSelect.onchange=()=>saveModel(activeProfile(),modelSelect.value).catch(fail);
     modelLine.append(profileSelect,modelSelect);tools.append(modelLine,button('新对话',newConversation),button('账户设置',openAccountSettings));
@@ -602,15 +623,15 @@
     attachmentChoices.append(button('文件或图片',()=>{attachments.open=false;input.click();}),button('曲线或记录',()=>{attachments.open=false;return selectBusiness();}),button('当前页面数据',async()=>{attachments.open=false;contextBinding=null;queuedContext=null;queuedContext=await currentContext();renderQueued();setStatus('已选入当前页面数据');}));attachments.append(attachmentChoices);actions.append(attachments,stopButton,sendButton);
     inputArea.append(queued,picker,label,actions,input);
     panel.append(header,tools,historyBox,access,inline,clients,messages,info,inputArea);
-    const launch=button('AI 对话',()=>{if(panel.hidden)show();else hide();});launch.id='ai-launcher';launch.classList.add('ai-launcher');launch.setAttribute('aria-expanded','false');launch.setAttribute('aria-controls','ai-chat');
-    document.body.append(panel,launch);
+    const launch=$('ai-launcher')||button('AI 对话',()=>{});launch.id='ai-launcher';launch.classList.add('ai-launcher');launch.onclick=()=>{if(panel.hidden)show();else hide();};launch.setAttribute('aria-expanded','false');launch.setAttribute('aria-controls','ai-chat');
+    document.body.append(panel);if(!launch.parentElement)document.body.append(launch);
     composer.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey&&!e.isComposing&&e.keyCode!==229){e.preventDefault();send().catch(fail);}});
     composer.addEventListener('paste',e=>{const files=[...(e.clipboardData?.files||[])];if(files.length){e.preventDefault();attach(files).catch(fail);}});
     panel.addEventListener('dragover',e=>{if(e.dataTransfer?.types.includes('Files')){e.preventDefault();panel.classList.add('ai-dragging');}});
     panel.addEventListener('dragleave',()=>panel.classList.remove('ai-dragging'));
     panel.addEventListener('drop',e=>{e.preventDefault();panel.classList.remove('ai-dragging');attach(e.dataTransfer.files).catch(fail);});
     panel.addEventListener('keydown',e=>{if(e.key==='Escape'){hide();e.stopPropagation();}});
-    function fitViewport(){const zoom=Number.parseFloat(getComputedStyle(document.body).zoom)||1;panel.style.setProperty('--ai-view-width',(innerWidth/zoom)+'px');}
+    function fitViewport(){const zoom=Number.parseFloat(getComputedStyle(document.body).zoom)||1;panel.style.setProperty('--ai-view-width',(innerWidth/zoom)+'px');syncEditorConversation();}
     fitViewport();window.addEventListener('resize',fitViewport);new MutationObserver(fitViewport).observe(document.body,{attributes:true,attributeFilter:['style']});
     mountSettings();renderMessages();renderQueued();
     refresh().then(async()=>{

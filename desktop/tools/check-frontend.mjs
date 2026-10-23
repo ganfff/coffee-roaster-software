@@ -60,7 +60,7 @@ const [indexHtml, editorHtml, themeJs, appJs, editorJs, tauriAdapter, styleCss, 
 
 for (const [name, html] of [['index.html', indexHtml], ['editor.html', editorHtml]]) {
   check(!html.includes('?v=3.20'), `${name}: stale v3.20 cache key`);
-  check(html.indexOf('js/theme.js?v=3.27') >= 0 && html.indexOf('js/theme.js?v=3.27') < html.indexOf('css/theme.css?v=3.27'), `${name}: current theme.js must load before theme.css`);
+  check(html.indexOf('js/theme.js?v=3.28') >= 0 && html.indexOf('js/theme.js?v=3.28') < html.indexOf('css/theme.css?v=3.28'), `${name}: current theme.js must load before theme.css`);
 }
 
 const authoredSources = [indexHtml, editorHtml, appJs, editorJs, tauriAdapter, await readFile(resolve(staticRoot,'js/ai-chat.js'),'utf8')].join('\n');
