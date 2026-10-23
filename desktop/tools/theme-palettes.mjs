@@ -25,8 +25,8 @@ const colors={
     light:['#eee4f0','#f8f1fa','#fffaff','#f5eaf7','#e4d0e8','#fffbff','#dec7e4','#ebdcef','#3c2444','#684d71','#674a71','#85418e','#6c3074','#e9c9ed','#ffffff','#8b6795','#d5bddc','#e8d9ec','#684d71','#3c2444','#fffaff']
   },
   graphite:{
-    dark:['#090909','#151515','#202020','#303030','#404040','#111111','#000000','#303030','#ffffff','#dedede','#c6c6c6','#ffffff','#dddddd','#3e3e3e','#101010','#9a9a9a','#555555','#3e3e3e','#dedede','#ffffff','#5f5f5f'],
-    light:['#e6e6e6','#f5f5f5','#ffffff','#f4f4f4','#d6d6d6','#ffffff','#cccccc','#e5e5e5','#101010','#393939','#484848','#191919','#383838','#cecece','#ffffff','#686868','#adadad','#d0d0d0','#393939','#101010','#ffffff']
+    dark:['#1b1c1e','#242528','#252628','#2c2d30','#35363a','#222325','#202123','#2c2d30','#edeeec','#c2c3c0','#b4b5b2','#92b5f6','#b9cffa','#303e55','#14233d','#82858a','#3b3d41','#38393d','#c2c3c0','#edeeec','#4a4c50'],
+    light:['#eeedea','#faf9f6','#fdfcf9','#f4f3f0','#e5e4e0','#fdfcf9','#e3e2de','#f4f3ef','#252629','#54565b','#5e6064','#245abd','#194697','#dce5f4','#ffffff','#7d7f83','#d4d3ce','#e1e0db','#54565b','#252629','#fdfcf9']
   }
 };
 export const palettes=Object.fromEntries(Object.entries(colors).map(([id,modes])=>[id,Object.fromEntries(Object.entries(modes).map(([mode,values])=>{if(values.length!==roles.length)throw Error('Incomplete palette '+id);return [mode,Object.fromEntries(roles.map((role,i)=>[role,values[i]]))];}))]));

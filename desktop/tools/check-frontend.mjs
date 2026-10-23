@@ -8,7 +8,7 @@ const root = resolve(here, '..', '..');
 const staticRoot = resolve(root, 'roaster', 'static');
 const jsFiles = ['theme.js', 'utils.js', 'tauri-adapter.js', 'app.js', 'editor.js', 'ai.js', 'ai-bridge.js', 'workbench.js', 'workbench-pdf.js', 'ai-chat.js', 'workbench-help.js', 'atlas.js', 'workspace-settings.js']
   .map(name => resolve(staticRoot, 'js', name));
-const cssFiles = ['theme.css', 'style.css', 'editor.css', 'ai.css', 'workbench.css', 'atlas.css']
+const cssFiles = ['theme.css', 'style.css', 'editor.css', 'ai.css', 'workbench.css', 'atlas.css', 'instrument.css']
   .map(name => resolve(staticRoot, 'css', name));
 const htmlFiles = [resolve(staticRoot, 'index.html'), resolve(staticRoot, 'editor.html')];
 const failures = [];
@@ -60,7 +60,7 @@ const [indexHtml, editorHtml, themeJs, appJs, editorJs, tauriAdapter, styleCss, 
 
 for (const [name, html] of [['index.html', indexHtml], ['editor.html', editorHtml]]) {
   check(!html.includes('?v=3.20'), `${name}: stale v3.20 cache key`);
-  check(html.indexOf('js/theme.js?v=3.28') >= 0 && html.indexOf('js/theme.js?v=3.28') < html.indexOf('css/theme.css?v=3.28'), `${name}: current theme.js must load before theme.css`);
+  check(html.indexOf('js/theme.js?v=3.29') >= 0 && html.indexOf('js/theme.js?v=3.29') < html.indexOf('css/theme.css?v=3.29'), `${name}: current theme.js must load before theme.css`);
 }
 
 const authoredSources = [indexHtml, editorHtml, appJs, editorJs, tauriAdapter, await readFile(resolve(staticRoot,'js/ai-chat.js'),'utf8')].join('\n');

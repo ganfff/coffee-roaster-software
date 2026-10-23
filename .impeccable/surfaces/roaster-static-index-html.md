@@ -8,11 +8,11 @@ related_targets: ["roaster/static/editor.html","roaster/static/js/workbench.js",
 # Shared application
 Mode: Operate. Targets: roaster/static/index.html, editor.html and dynamic Workbench/AI.
 ## Direction contract
-THESIS: Calm, familiar macOS-like operation: recognize the task, choose an account or model, and act without configuration jargon.
-OWN-WORLD: Neutral light/dark surfaces, system sans, 10/14/16/22px rounded scale, six complete classic/sage/sand/ocean/plum/graphite palettes. Color belongs to selection and action; chart and alarm meanings remain stable.
-STORY: Settings separate appearance, AI accounts, device connection and roasting preferences. Connect local model or subscription -> OS browser authorization -> automatic catalog/default selection -> chat. Desktop accounts and history always stay on this computer; device sharing is removed. Account removal preserves conversations.
-FIRST VIEWPORT: Keep the curve and readable telemetry dominant in roasting. Settings show four task groups and only the active group. AI shows account/model controls, conversation and a single attachment entry plus send/stop. At 1280px it docks with rounded corners; mobile/landscape retain emergency access.
-FORM: User-pinned macOS-like functional visual world, explicitly approved through ten decision questions and the implementation plan; code-led, no image comp. The brief takes precedence over the rolled alternatives; seed:0077eecd99fc977c.
+THESIS: A precise roasting workspace with tactile controls and a quiet, Codex-like conversation. Read the curve, identify the next action, and use it without competing text.
+OWN-WORLD: User-approved graphite and warm white, restrained blue actions, system sans, stable measurement numerals, 10/14/16px corners. A fine top highlight, lower edge and short press travel give actionable buttons physical depth. Content surfaces stay flat.
+STORY: Read telemetry -> record the next event. Open AI -> read or compose. History and new conversation are in the header; account/model selection and attachments are in the composer; infrequent actions live under named menus. Saved accounts restore silently; only an explicitly initiated login may open a browser.
+FIRST VIEWPORT: Four legible measurements above the dominant chart; a 296px command column with stacked phase rows and full event values. AI opens as a spacious 520px drawer, docks only with sufficient workspace width, and expands on request. Messages and a single inset composer dominate; emergency access remains outside the drawer.
+FORM: Code-led. The user's explicit Codex reference, physical-button request and graphite/warm-white answer pin the direction and supersede the rolled alternatives; seed:3329047aed8ff09d. An operator uses the warm light appearance by daylight and system-following graphite at night.
 FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, DESIGN.md, and every shipping raster carrying its provenance
 
 Signature interaction: a successful official login automatically loads and persists account models, then presents a direct start-chat action; model changes visibly confirm persistence.

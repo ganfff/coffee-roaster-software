@@ -10,6 +10,7 @@ const outputRoot = resolve(desktopRoot, '..', 'roaster', 'static', 'assets', 'ic
 const staticRoot = resolve(desktopRoot, '..', 'roaster', 'static');
 const runtimeSources = [
   'index.html', 'editor.html', 'js/app.js', 'js/editor.js', 'js/tauri-adapter.js',
+  'js/ai-chat.js', 'js/ai.js', 'js/workbench.js', 'js/atlas.js', 'js/workspace-settings.js',
 ].map(file => resolve(staticRoot, file));
 
 await mkdir(outputRoot, { recursive: true });

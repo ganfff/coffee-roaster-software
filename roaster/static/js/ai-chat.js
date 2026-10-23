@@ -20,9 +20,11 @@
   const sequences = new Map(), transient = new Map(), runBindings = new Map();
   const attachmentViews = new Map();
   const openedAuthUrls = new Set();
+  const requestedLogins = new Set();
+  const actionIcons={copy:'ph-copy','pencil-simple':'ph-pencil-simple','arrows-clockwise':'ph-arrows-clockwise','sidebar-simple':'ph-sidebar-simple','dots-three':'ph-dots-three','note-pencil':'ph-note-pencil',x:'ph-x','arrow-up':'ph-arrow-up',stop:'ph-stop'};
   const key = suffix => 'roaster.ai.' + host + '.' + (desktop ? 'this-computer' : location.origin) + '.' + suffix;
   function button(text, action, cls = '') { const b = el('button', text, 'ctrl-btn ' + cls); b.type = 'button'; b.onclick = () => { try { Promise.resolve(action()).catch(fail); } catch(error) { fail(error); } }; return b; }
-  function fail(error) { const raw = error?.message || String(error); const message = /not found|failed to fetch|networkerror/i.test(raw) ? 'AI 服务暂时无法连接，请检查后端地址后点击重新连接。' : raw; if (info) info.textContent = message; if (settingsStatus) settingsStatus.textContent = message; }
+  function fail(error) { const raw = error?.message || String(error); const message = /not found|failed to fetch|networkerror/i.test(raw) ? 'AI 服务暂时无法连接，请检查后端地址后点击重新连接。' : raw; setStatus(message); if (settingsStatus) settingsStatus.textContent = message; }
   async function jsonFetch(path, options) {
     const response = await fetch(path, {credentials: 'same-origin', ...options});
     const body = await response.json().catch(() => ({}));
@@ -34,7 +36,7 @@
     return transport.request(method, params);
   }
   function activeProfile() { return profiles.find(p => p.id === selectedProfile); }
-  function setStatus(text) { if (info) info.textContent = text; }
+  function setStatus(text) { if (info) {info.textContent = text;info.hidden=!text||/^AI 已就绪$|^用量 |^下一条消息使用所选账户$/.test(text);} }
   async function business(path, value, method) {
     return jsonFetch(path, value === undefined ? undefined : {method: method || 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(value)});
   }
@@ -83,7 +85,7 @@
     if(!selectedProfile)option(profileSelect,'',profiles.length?'请选择账户':'连接 AI 账户');
     profileSelect.value = selectedProfile;
     profileSelect.disabled = !!activeRun || !profiles.length;
-    if(modelSelect){const p=activeProfile();modelSelect.replaceChildren();for(const m of p?.catalog||[])option(modelSelect,m.id,m.name||m.id);if(!modelSelect.options.length)option(modelSelect,p?.model||'',p?.model_name||p?.model||'尚未选择模型');modelSelect.value=p?.model||'';modelSelect.disabled=!!activeRun||!p?.model;}
+    if(modelSelect){const p=activeProfile();modelSelect.replaceChildren();for(const m of p?.catalog||[])option(modelSelect,m.id,m.name||m.id);if(!modelSelect.options.length)option(modelSelect,p?.model||'',p?.model_name||p?.model||'尚未选择模型');modelSelect.value=p?.model||'';modelSelect.disabled=!!activeRun||!p?.model;const name=$('ai-model-name');if(name){name.textContent=p?.model_name||p?.model||'选择模型';name.title=(p?.name||'')+' · '+name.textContent;}}
   }
   async function refresh() {
     profiles = await rpc('profiles.list');
@@ -125,6 +127,7 @@
       const b = button(c.title || '新对话', async () => {
         if (activeRun && c.id !== conversation?.id) throw Error('请先停止当前回复，再切换会话');
         await loadConversation(c.id);
+        closeTrays();composer?.focus();
       }, 'ai-history-item');
       b.setAttribute('aria-current', c.id === conversation?.id ? 'true' : 'false'); history.append(b);
     }
@@ -142,7 +145,7 @@
       const artifacts = message.artifacts || (message.artifact ? [message.artifact] : []);
       if (!text && !artifacts.length) continue;
       const row = el('article', null, 'ai-message ai-message-' + message.role);
-      row.append(el('strong', message.role === 'user' ? '你' : (message.model || 'AI'), 'ai-message-label'));
+      row.append(el('strong', message.role === 'user' ? '你' : '烘焙助手', 'ai-message-label'));
       const content = el('div', null, 'ai-message-content'); markdown(content, text); row.append(content);
       for(const a of message.attachment_info || (message.attachments||[]).map(id=>({id,name:'附件'}))) {
         const wrap=el('div',null,'ai-message-attachment');
@@ -162,9 +165,9 @@
       for (const artifact of artifacts) row.append(artifactView(artifact, runBindings.get(message.run_id || message.request_id) || message.context_binding || contextBinding));
       if (message.compaction) row.append(el('p','较早上下文已压缩，完整消息仍保留在历史中','ai-muted'));
       const actions = el('div', null, 'ai-actions');
-      actions.append(button('复制', async () => { await navigator.clipboard.writeText(text); setStatus('已复制'); }));
-      if (message.role === 'user') actions.append(button('编辑后重发', () => { composer.value = text; composer.dataset.retryFrom = message.id; composer.focus(); setStatus('修改后发送将创建新的回复，原消息保留在历史中'); }));
-      else actions.append(button('重新生成', () => {
+      actions.append(iconButton('复制', 'copy', async () => { await navigator.clipboard.writeText(text); setStatus('已复制'); }));
+      if (message.role === 'user') actions.append(iconButton('编辑后重发', 'pencil-simple', () => { composer.value = text; composer.dataset.retryFrom = message.id; composer.focus(); setStatus('修改后发送将创建新的回复，原消息保留在历史中'); }));
+      else actions.append(iconButton('重新生成', 'arrows-clockwise', () => {
         const all = conversation.messages, at = all.indexOf(message);
         const previous = all.slice(0, at).reverse().find(m => m.role === 'user');
         if (previous) return send(messageText(previous), contextBinding, previous.id);
@@ -179,7 +182,7 @@
       for (const artifact of item.artifacts || []) row.append(artifactView(artifact, runBindings.get(id)));
       messages.append(row);
     }
-    if (!messages.children.length) { const welcome = el('div', null, 'ai-chat-welcome'); welcome.append(el('h3', '从当前这锅开始聊'), el('p', '分析记录、推敲曲线，或选入原生文件。发送前可以查看本次携带的数据。')); messages.append(welcome); }
+    if (!messages.children.length) { const welcome = el('div', null, 'ai-chat-welcome');const mark=el('i',null,'ph ph-coffee-bean');mark.setAttribute('aria-hidden','true');welcome.append(mark,el('h3', '一起推敲这锅咖啡'), el('p', '聊聊曲线、分析记录，或加入文件。')); messages.append(welcome); }
     if (atBottom) messages.scrollTop = messages.scrollHeight;
     $('ai-stop').disabled = !activeRun; $('ai-stop').hidden = !activeRun; $('ai-send').hidden = !!activeRun; $('ai-send').disabled = false;
   }
@@ -371,21 +374,24 @@
     // One transport owns WebSocket reconnect, native events and replay cursors.
   }
   function syncEditorConversation() {
-    const editor=document.querySelector('.editor-app');if(!editor||!panel)return;
+    const editor=document.querySelector('.editor-app')||$('workspace');if(!editor||!panel)return;
     const modal=!panel.hidden&&(innerWidth<1280||panel.classList.contains('ai-chat-expanded'));
     editor.inert=modal;
     if(modal){panel.setAttribute('role','dialog');panel.setAttribute('aria-modal','true');}
     else {panel.removeAttribute('role');panel.removeAttribute('aria-modal');}
   }
+  function closeTrays(){panel?.querySelectorAll('.ai-tray').forEach(n=>{n.hidden=true;const b=document.querySelector('[aria-controls="'+n.id+'"]');b?.setAttribute('aria-expanded','false');});}
+  function toggleTray(id,trigger){const tray=$(id),open=tray.hidden;closeTrays();tray.hidden=!open;trigger.setAttribute('aria-expanded',String(open));if(open)tray.querySelector('input,select,button')?.focus();}
   function show() {if(!panel)return;panel.hidden=false;$('ai-launcher').setAttribute('aria-expanded','true');syncEditorConversation();composer?.focus({preventScroll:true});}
-  function hide() {panel.hidden=true;syncEditorConversation();const launch=$('ai-launcher');launch.setAttribute('aria-expanded','false');(launch.offsetParent?launch:document.querySelector('.ai-settings-chat'))?.focus();}
+  function hide() {closeTrays();panel.hidden=true;syncEditorConversation();const launch=$('ai-launcher');launch.setAttribute('aria-expanded','false');(launch.offsetParent?launch:document.querySelector('.ai-settings-chat'))?.focus();}
   function renderQueued() {
     const target=$('ai-queued');if(!target)return;target.replaceChildren();
-    if(queuedContext)target.append(button('已选数据 · 移除',()=>{queuedContext=null;contextBinding=null;renderQueued();}));
-    else if(contextBinding?.options)target.append(button(contextBinding.options.title+' · 移除',()=>{contextBinding=null;renderQueued();}));
-    else target.append(button(window.RoasterEditor?'当前曲线草稿 · 点击仅聊天':$('tab-workbench')?.classList.contains('active')?'当前原生文件 · 点击仅聊天':currentRecord&&$('tab-records')?.classList.contains('active')?'当前记录 · 点击仅聊天':'当前设备快照 · 点击仅聊天',()=>{queuedContext={context:{},kind:'chat'};renderQueued();}));
-    for(const a of queuedAttachments)target.append(button((a.name||'附件')+' ×',async()=>{queuedAttachments=queuedAttachments.filter(v=>v.id!==a.id);await rpc('attachments.delete',{id:a.id});renderQueued();}));
+    const emptyContext=queuedContext&&queuedContext.kind==='chat'&&!Object.keys(queuedContext.context||{}).length;
+    if(!emptyContext){const label=queuedContext?'已选数据':contextBinding?.options?.title||(window.RoasterEditor?'当前曲线草稿':$('tab-workbench')?.classList.contains('active')?'当前原生文件':currentRecord&&$('tab-records')?.classList.contains('active')?'当前记录':'当前烘焙数据');target.append(contextChip(label,()=>{queuedContext={context:{},kind:'chat'};contextBinding=null;renderQueued();}));}
+    for(const a of queuedAttachments)target.append(contextChip(a.name||'附件',async()=>{queuedAttachments=queuedAttachments.filter(v=>v.id!==a.id);await rpc('attachments.delete',{id:a.id});renderQueued();}));
   }
+  function contextChip(label,action){const b=button('',action,'ai-context-chip');b.append(el('i',null,'ph ph-paperclip'),el('span',label),el('i',null,'ph ph-x'));b.setAttribute('aria-label','移除 '+label);b.title=label+' · 点击移除';return b;}
+  function iconButton(label,icon,action){const b=button('',action,'ai-icon-button');b.setAttribute('aria-label',label);b.title=label;const i=el('i',null,'ph '+actionIcons[icon]);i.setAttribute('aria-hidden','true');b.append(i);return b;}
   async function attach(files) {
     for(const file of files) {
       if(file.size>8*1024*1024)throw Error('单个附件最多 8 MiB');
@@ -450,12 +456,12 @@
   async function loginAccount(p){
     selectedProfile=p.id;updateSelect();openedAuthUrls.clear();authBox.replaceChildren();
     // Register before the RPC: auth events may arrive before its reply.
-    loginId=uid();
+    loginId=uid();requestedLogins.add(loginId);
     const pending=el('p','正在准备官方授权页面…','ai-status');pending.setAttribute('role','status');
-    authBox.append(pending,button('取消登录',async()=>{const id=loginId;if(id)await rpc('auth.cancel',{id});loginId=null;authBox.replaceChildren();await refresh();await loadSettings();}));
+    authBox.append(pending,button('取消登录',async()=>{const id=loginId;if(id)await rpc('auth.cancel',{id});requestedLogins.delete(id);loginId=null;authBox.replaceChildren();await refresh();await loadSettings();}));
     authBox.scrollIntoView({block:'nearest'});
     try {await rpc('auth.login',{id:loginId,profile_id:p.id,login_method:p.provider==='anthropic'?'official_cli':p.provider==='openai'?'browser':'device_code'});}
-    catch(error){loginId=null;authBox.replaceChildren();throw error;}
+    catch(error){requestedLogins.delete(loginId);loginId=null;authBox.replaceChildren();throw error;}
   }
   async function addAccount(provider,mode='subscription',extra={},apiKey){
     const saved=await rpc('profiles.save',{profile:{mode,provider,...extra},api_key:apiKey||undefined});
@@ -534,9 +540,9 @@
     }catch(error){if(status)status.textContent=error?.message||String(error);else throw error;}
   }
   function authEvent(event) {
-    if(!authBox)return;
-    if(!loginId)loginId=event.id;
-    if(event.id!==loginId)return;
+    // Events replay after startup/reconnect. Only a known login belongs to this UI;
+    // only a login explicitly started in this page may open the OS browser.
+    if(!authBox||!loginId||event.id!==loginId)return;
     const d=event.data||{};
     if(event.type==='auth_notify') {
       if(d.message)authBox.append(el('p',d.message));
@@ -544,10 +550,10 @@
       const url=safeAuthUrl(d.verificationUriComplete||d.verification_uri_complete||d.url||d.verificationUri||d.verification_uri);
       if(url&&!authBox.querySelector('[data-auth-url]')){
         const actions=el('div',null,'ai-actions');actions.dataset.authUrl='true';
-        const status=el('p','正在打开默认浏览器…','ai-status');status.setAttribute('role','status');
+        const status=el('p',requestedLogins.has(event.id)?'正在打开默认浏览器…':'授权尚未完成，点击打开官方页面继续。','ai-status');status.setAttribute('role','status');
         actions.append(button('打开官方授权页面',()=>openAuthPage(url,status),'primary'),button('复制授权地址',async()=>{await navigator.clipboard.writeText(url);status.textContent='授权地址已复制，可粘贴到浏览器打开';}));
         authBox.append(actions,status);
-        const token=event.id+'|'+url;if(!openedAuthUrls.has(token)){openedAuthUrls.add(token);void openAuthPage(url,status);}
+        const token=event.id+'|'+url;if(requestedLogins.has(event.id)&&!openedAuthUrls.has(token)){openedAuthUrls.add(token);void openAuthPage(url,status);}
       }
       const code=d.userCode||d.user_code;if(code){const row=el('div',null,'ai-device-code');row.append(el('span','设备码'),el('code',code),button('复制设备码',async()=>{await navigator.clipboard.writeText(code);settingsStatus.textContent='设备码已复制';}));authBox.append(row);}
     }else if(event.type==='auth_prompt') {
@@ -555,9 +561,9 @@
       const input=el(d.type==='select'?'select':'input');if(d.type!=='select')input.type=d.type==='secret'?'password':'text';input.setAttribute('aria-label',d.message||'授权信息');
       for(const o of d.options||[])option(input,o.value||o.id||o,o.label||o.name||o);
       wrap.append(input,button('提交授权信息',async()=>{await rpc('auth.respond',{id:loginId,prompt_id:d.prompt_id||d.id,value:input.value});input.value='';wrap.remove();}));authBox.append(wrap);input.focus();
-    }else if(event.type==='auth_done') {loginId=null;authBox.replaceChildren(el('p',d.can_chat?'账户已连接，模型已自动保存':accountState(d),'ai-status'));refresh().then(loadSettings).catch(fail);}
+    }else if(event.type==='auth_done') {requestedLogins.delete(loginId);loginId=null;authBox.replaceChildren(el('p',d.can_chat?'账户已连接，模型已自动保存':accountState(d),'ai-status'));refresh().then(loadSettings).catch(fail);}
     else if(event.type==='auth_prompt_cancelled'){authBox.replaceChildren(el('p','授权已取消，可以重新登录','ai-status'));}
-    else if(event.type==='error'){loginId=null;const message=typeof d==='string'?d:d.message||'登录失败，可重新登录';refresh().then(()=>{if(configForm?.dataset.profileId)editProfile(profiles.find(p=>p.id===configForm.dataset.profileId));authBox.append(el('p',message,'ai-status'));settingsStatus.textContent=message;}).catch(fail);}
+    else if(event.type==='error'){requestedLogins.delete(loginId);loginId=null;const message=typeof d==='string'?d:d.message||'登录失败，可重新登录';refresh().then(()=>{if(configForm?.dataset.profileId)editProfile(profiles.find(p=>p.id===configForm.dataset.profileId));authBox.append(el('p',message,'ai-status'));settingsStatus.textContent=message;}).catch(fail);}
   }
   function mountSettings() {
     const grid=document.querySelector('.settings-grid');if(!grid)return;
@@ -602,13 +608,18 @@
   function mount() {
     panel=el('aside',null,'ai-chat');panel.id='ai-chat';panel.hidden=true;panel.setAttribute('aria-label','AI 对话');
     const header=el('header',null,'ai-chat-header'),heading=el('h2','AI 烘焙助手');heading.id='ai-chat-title';const headerActions=el('div',null,'ai-actions');
-    headerActions.append(button('会话',()=>{$('ai-history').hidden=!$('ai-history').hidden;}),button('放大',()=>{panel.classList.toggle('ai-chat-expanded');headerActions.children[1].textContent=panel.classList.contains('ai-chat-expanded')?'收起':'放大';syncEditorConversation();}),button('关闭',hide));header.append(heading,headerActions);
-    const tools=el('div',null,'ai-chat-tools'),modelLine=el('div',null,'ai-model-line');profileSelect=el('select');profileSelect.id='ai-chat-profile';profileSelect.setAttribute('aria-label','当前 AI 账户');profileSelect.onchange=()=>{selectedProfile=profileSelect.value;updateSelect();setStatus('下一条消息使用所选账户，历史保留');const p=activeProfile();if(p&&!p.catalog?.length&&p.configured)rpc('models',{profile_id:p.id}).then(refresh).catch(fail);};
+    const historyButton=iconButton('会话','sidebar-simple',()=>toggleTray('ai-history',historyButton));historyButton.setAttribute('aria-controls','ai-history');historyButton.setAttribute('aria-expanded','false');
+    const moreButton=iconButton('更多对话选项','dots-three',()=>toggleTray('ai-chat-options',moreButton));moreButton.setAttribute('aria-controls','ai-chat-options');moreButton.setAttribute('aria-expanded','false');
+    headerActions.append(iconButton('新对话','note-pencil',async()=>{closeTrays();await newConversation();composer.focus();}),moreButton,iconButton('关闭','x',hide));header.append(historyButton,heading,headerActions);
+    const tools=el('section',null,'ai-chat-tools ai-tray');tools.id='ai-model-options';tools.hidden=true;tools.setAttribute('aria-label','模型与账户');tools.append(el('h3','模型与账户'));const modelLine=el('div',null,'ai-model-line');profileSelect=el('select');profileSelect.id='ai-chat-profile';profileSelect.setAttribute('aria-label','当前 AI 账户');profileSelect.onchange=()=>{selectedProfile=profileSelect.value;updateSelect();setStatus('下一条消息使用所选账户');const p=activeProfile();if(p&&!p.catalog?.length&&p.configured)rpc('models',{profile_id:p.id}).then(refresh).catch(fail);};
     modelSelect=el('select');modelSelect.id='ai-chat-model';modelSelect.setAttribute('aria-label','当前 AI 模型');modelSelect.onchange=()=>saveModel(activeProfile(),modelSelect.value).catch(fail);
-    modelLine.append(profileSelect,modelSelect);tools.append(modelLine,button('新对话',newConversation),button('账户设置',openAccountSettings));
-    const historyBox=el('section',null,'ai-chat-history');historyBox.id='ai-history';historyBox.hidden=true;
+    const profileLabel=el('label',null,'ai-field');profileLabel.append(el('span','账户'),profileSelect);const modelLabel=el('label',null,'ai-field');modelLabel.append(el('span','模型'),modelSelect);modelLine.append(profileLabel,modelLabel);tools.append(modelLine,button('管理 AI 账户',()=>{closeTrays();openAccountSettings();}));
+    const historyBox=el('section',null,'ai-chat-history ai-tray');historyBox.id='ai-history';historyBox.hidden=true;historyBox.setAttribute('aria-label','历史会话');historyBox.append(el('h3','历史会话'));
     const search=el('input');search.id='ai-history-search';search.type='search';search.placeholder='搜索会话';search.setAttribute('aria-label','搜索历史会话');search.oninput=renderHistory;
-    history=el('nav');history.setAttribute('aria-label','历史会话');historyBox.append(search,history,button('重命名当前会话',async()=>{if(!conversation)return;const title=prompt('会话名称',conversation.title||'');if(title?.trim()){conversation=await rpc('conversations.update',{id:conversation.id,revision:conversation.revision,title:title.trim()});await refresh();}}),button('删除当前会话',async()=>{if(!conversation||!confirm('删除当前会话及其附件？'))return;if(activeRun)await stop();await rpc('conversations.delete',{id:conversation.id});conversation=null;localStorage.removeItem(key('conversation'));await refresh();renderMessages();}));
+    history=el('nav');history.setAttribute('aria-label','历史会话列表');historyBox.append(search,history);
+    const more=el('section',null,'ai-chat-options ai-tray');more.id='ai-chat-options';more.hidden=true;more.setAttribute('aria-label','对话选项');more.append(el('h3','对话选项'));
+    const expand=button('放大对话',()=>{panel.classList.toggle('ai-chat-expanded');expand.textContent=panel.classList.contains('ai-chat-expanded')?'收起对话':'放大对话';closeTrays();syncEditorConversation();});
+    more.append(expand,button('账户设置',()=>{closeTrays();openAccountSettings();}),button('重命名会话',async()=>{closeTrays();if(!conversation)return;const title=prompt('会话名称',conversation.title||'');if(title?.trim()){conversation=await rpc('conversations.update',{id:conversation.id,revision:conversation.revision,title:title.trim()});await refresh();}}),button('删除会话',async()=>{if(!conversation||!await confirmAction('删除当前会话及其附件？'))return;if(activeRun)await stop();await rpc('conversations.delete',{id:conversation.id});conversation=null;localStorage.removeItem(key('conversation'));closeTrays();await refresh();renderMessages();},'danger'));
     access=el('section',null,'ai-chat-access');access.append(el('p','本机 AI 尚未连接'),button('连接 AI 账户',openAccountSettings,'primary'),button('重新连接',async()=>{await refresh();await loadSettings();}));
     const inline=el('section',null,'ai-inline-settings');inline.id='ai-inline-settings';inline.hidden=true;
     const clients=el('section',null,'ai-context-picker');clients.id='ai-clients';clients.hidden=true;
@@ -616,21 +627,23 @@
     info=el('p','正在连接 AI 服务…','ai-status');info.setAttribute('role','status');
     const picker=el('section',null,'ai-context-picker');picker.id='ai-context-picker';picker.hidden=true;
     const inputArea=el('div',null,'ai-composer'),queued=el('div',null,'ai-queued');queued.id='ai-queued';
-    const label=el('label',null,'ai-field');label.append(el('span','消息'));composer=el('textarea');composer.id='ai-prompt';composer.rows=3;composer.maxLength=16000;composer.placeholder='提出问题，或描述你希望调整的曲线';label.append(composer);
+    const label=el('label',null,'ai-field');label.append(el('span','消息'));composer=el('textarea');composer.id='ai-prompt';composer.rows=2;composer.maxLength=16000;composer.placeholder='向烘焙助手发送消息';label.append(composer);
     const input=el('input');input.type='file';input.multiple=true;input.accept='.kpro,.klog,image/png,image/jpeg,image/webp';input.hidden=true;input.onchange=()=>{attach(input.files).catch(fail);input.value='';};
-    const actions=el('div',null,'ai-input-actions');const sendButton=button('发送',()=>send(),'primary');sendButton.id='ai-send';const stopButton=button('停止',stop,'primary');stopButton.id='ai-stop';stopButton.disabled=true;stopButton.hidden=true;
-    const attachments=el('details',null,'ai-attachment-menu');attachments.append(el('summary','添加','ctrl-btn'));const attachmentChoices=el('div',null,'ai-attachment-choices');
-    attachmentChoices.append(button('文件或图片',()=>{attachments.open=false;input.click();}),button('曲线或记录',()=>{attachments.open=false;return selectBusiness();}),button('当前页面数据',async()=>{attachments.open=false;contextBinding=null;queuedContext=null;queuedContext=await currentContext();renderQueued();setStatus('已选入当前页面数据');}));attachments.append(attachmentChoices);actions.append(attachments,stopButton,sendButton);
-    inputArea.append(queued,picker,label,actions,input);
-    panel.append(header,tools,historyBox,access,inline,clients,messages,info,inputArea);
+    const actions=el('div',null,'ai-input-actions');const sendButton=iconButton('发送','arrow-up',()=>send());sendButton.classList.add('primary');sendButton.id='ai-send';const stopButton=iconButton('停止','stop',stop);stopButton.classList.add('primary');stopButton.id='ai-stop';stopButton.disabled=true;stopButton.hidden=true;
+    const attachments=el('details',null,'ai-attachment-menu');const add=el('summary',null,'ctrl-btn ai-icon-button');add.setAttribute('aria-label','添加附件或数据');add.title='添加附件或数据';add.append(el('i',null,'ph ph-plus'));attachments.append(add);const attachmentChoices=el('div',null,'ai-attachment-choices');
+    attachmentChoices.append(button('文件或图片',()=>{attachments.open=false;input.click();}),button('曲线或记录',()=>{attachments.open=false;return selectBusiness();}),button('当前页面数据',async()=>{attachments.open=false;contextBinding=null;queuedContext=null;queuedContext=await currentContext();renderQueued();setStatus('已选入当前页面数据');}));attachments.append(attachmentChoices);
+    const modelButton=button('',()=>toggleTray('ai-model-options',modelButton),'ai-model-picker');modelButton.id='ai-model-picker';modelButton.setAttribute('aria-label','选择模型与账户');modelButton.setAttribute('aria-controls','ai-model-options');modelButton.setAttribute('aria-expanded','false');const modelName=el('span','选择模型');modelName.id='ai-model-name';modelButton.append(modelName,el('i',null,'ph ph-caret-down'));actions.append(attachments,modelButton,stopButton,sendButton);
+    const inputShell=el('div',null,'ai-input-shell');inputShell.append(queued,picker,label,actions,input);inputArea.append(inputShell,info);
+    panel.append(header,tools,more,historyBox,access,inline,clients,messages,inputArea);
     const launch=$('ai-launcher')||button('AI 对话',()=>{});launch.id='ai-launcher';launch.classList.add('ai-launcher');launch.onclick=()=>{if(panel.hidden)show();else hide();};launch.setAttribute('aria-expanded','false');launch.setAttribute('aria-controls','ai-chat');
-    document.body.append(panel);if(!launch.parentElement)document.body.append(launch);
+    document.body.append(panel);if(!launch.parentElement){const topbar=document.querySelector('.header-right');if(topbar){launch.classList.add('ai-topbar-launcher');topbar.insertBefore(launch,topbar.children[1]||null);}else document.body.append(launch);}
     composer.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey&&!e.isComposing&&e.keyCode!==229){e.preventDefault();send().catch(fail);}});
     composer.addEventListener('paste',e=>{const files=[...(e.clipboardData?.files||[])];if(files.length){e.preventDefault();attach(files).catch(fail);}});
     panel.addEventListener('dragover',e=>{if(e.dataTransfer?.types.includes('Files')){e.preventDefault();panel.classList.add('ai-dragging');}});
     panel.addEventListener('dragleave',()=>panel.classList.remove('ai-dragging'));
     panel.addEventListener('drop',e=>{e.preventDefault();panel.classList.remove('ai-dragging');attach(e.dataTransfer.files).catch(fail);});
-    panel.addEventListener('keydown',e=>{if(e.key==='Escape'){hide();e.stopPropagation();}});
+    panel.addEventListener('keydown',e=>{if(e.key==='Escape'){const tray=panel.querySelector('.ai-tray:not([hidden])');if(tray){const trigger=panel.querySelector('[aria-controls="'+tray.id+'"]');closeTrays();trigger?.focus();}else hide();e.stopPropagation();}});
+    panel.addEventListener('click',e=>{if(!e.target.closest('.ai-tray,[aria-controls]'))closeTrays();});
     function fitViewport(){const zoom=Number.parseFloat(getComputedStyle(document.body).zoom)||1;panel.style.setProperty('--ai-view-width',(innerWidth/zoom)+'px');syncEditorConversation();}
     fitViewport();window.addEventListener('resize',fitViewport);new MutationObserver(fitViewport).observe(document.body,{attributes:true,attributeFilter:['style']});
     mountSettings();renderMessages();renderQueued();

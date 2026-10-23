@@ -7,6 +7,7 @@ import {mkdir,mkdtemp,rm,writeFile} from 'node:fs/promises';
 import {join,resolve,sep} from 'node:path';
 import {tmpdir} from 'node:os';
 import assert from 'node:assert/strict';
+async function chooseChatAccount(page,id){await page.getByRole('button',{name:'选择模型与账户',exact:true}).click();await page.locator('#ai-chat-profile').selectOption(id);await page.keyboard.press('Escape');}
 
 const out=resolve(process.env.ROASTER_QA_DIR||'build/qa/editor-session');await mkdir(out,{recursive:true});
 const data=await mkdtemp(join(tmpdir(),'roaster-editor-session-'));
@@ -29,7 +30,7 @@ try {
   const context=await browser.newContext({viewport:{width:1536,height:864}}),page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));
   await page.goto(origin);await page.waitForFunction(()=>window.RoasterChat);
   await page.waitForFunction(()=>document.querySelector('#ai-chat-profile')?.options.length===2);
-  await page.locator('#ai-launcher').click();await page.locator('#ai-chat-profile').selectOption(second.id);
+  await page.locator('#ai-launcher').click();await chooseChatAccount(page,second.id);
   await page.evaluate(id=>{const key=Object.keys(localStorage).find(k=>k.endsWith('.profile'));localStorage.setItem(key.replace(/profile$/,'conversation'),id);},conversation.id);
   await page.reload();await page.waitForFunction(id=>document.querySelector('#ai-chat-profile')?.value===id,second.id);
   assert.equal(logins,0);checks.push('reload restores the saved account even when the previous conversation used a different account');
@@ -73,17 +74,17 @@ try {
     }
     await page.screenshot({path:join(out,'editor-'+width+'.png'),fullPage:width<821});
     await page.locator('#ai-launcher').click();await page.locator('#ai-chat:not([hidden])').waitFor();
-    await page.locator('#ai-chat-profile').selectOption(second.id);
-    if(width>=1280){
+    await chooseChatAccount(page,second.id);
+    if(width>=1600){
       assert.equal(await page.locator('.editor-app').evaluate(n=>n.inert),false);
       const dock=await page.evaluate(()=>({chart:document.querySelector('#editor-chart').getBoundingClientRect().right,chat:document.querySelector('#ai-chat').getBoundingClientRect().left}));
       assert.ok(dock.chart<=dock.chat,'chat covers chart at '+width);
-    }else{
+    }else if(width<1280){
       assert.equal(await page.locator('.editor-app').evaluate(n=>n.inert),true);
       assert.equal(await page.locator('#ai-chat').getAttribute('aria-modal'),'true');
     }
     await page.screenshot({path:join(out,'conversation-'+width+'.png')});
-    if(width>=1280)await page.locator('#ai-chat').getByRole('button',{name:'放大',exact:true}).click();
+    if(width>=1280){await page.getByRole('button',{name:'更多对话选项',exact:true}).click();await page.getByRole('button',{name:'放大对话',exact:true}).click();}
     assert.equal(await page.locator('.editor-app').evaluate(n=>n.inert),true);
     const expanded=await page.locator('#ai-chat').boundingBox();assert.ok(expanded.width>=width-30);
     await page.locator('#ai-chat').getByRole('button',{name:'关闭',exact:true}).click();

@@ -1,6 +1,6 @@
 # RoasterDesktop
 
-当前版本 **0.6.2**，复用 `../roaster/static/` 的 Web 3.28。桌面通过 HTTP/WebSocket 连接设备后端，Rust 管理本机 AI 与独立原生文件引擎。
+当前版本 **0.6.2**，复用 `../roaster/static/` 的 Web 3.29。桌面通过 HTTP/WebSocket 连接设备后端，Rust 管理本机 AI 与独立原生文件引擎。
 
 日常调试优先双击根目录 **调试网页.cmd**，或运行 `npm run dev:web`；网页、API、WebSocket、离线工作台和本机 AI 会一起启动。原生窗口用 `npm run dev:sim`，无需安装。完整说明见 [免安装调试与打包](../docs/guides/debugging-and-packaging.md)。
 
@@ -50,6 +50,8 @@ npm run package:ai:arm64
 
 ```powershell
 npm run test:ai
+npm run test:instrument:ui
+npm run test:instrument:native
 npm run test:editor:session
 npm run test:ai:ui
 npm run test:ai:native-ui

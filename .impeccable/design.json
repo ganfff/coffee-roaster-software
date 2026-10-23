@@ -1,2985 +1,860 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-23T03:44:44.046Z",
+  "generatedAt": "2026-10-23T08:33:29.623Z",
   "title": "Design System: Ganf's 咖啡烘焙机",
   "extensions": {
     "colorMeta": {
+      "dark-danger": {
+        "role": "semantic",
+        "displayName": "石墨深色 · danger"
+      },
+      "dark-danger-hover": {
+        "role": "semantic",
+        "displayName": "石墨深色 · danger-hover"
+      },
+      "dark-danger-soft": {
+        "role": "semantic",
+        "displayName": "石墨深色 · danger-soft"
+      },
+      "dark-on-danger": {
+        "role": "semantic",
+        "displayName": "石墨深色 · on-danger"
+      },
+      "dark-status-online": {
+        "role": "semantic",
+        "displayName": "石墨深色 · status-online"
+      },
+      "dark-warning": {
+        "role": "semantic",
+        "displayName": "石墨深色 · warning"
+      },
+      "dark-phase-drying": {
+        "role": "semantic",
+        "displayName": "石墨深色 · phase-drying"
+      },
+      "dark-phase-maillard": {
+        "role": "semantic",
+        "displayName": "石墨深色 · phase-maillard"
+      },
+      "dark-phase-development": {
+        "role": "semantic",
+        "displayName": "石墨深色 · phase-development"
+      },
+      "dark-phase-cooling": {
+        "role": "semantic",
+        "displayName": "石墨深色 · phase-cooling"
+      },
+      "dark-chart-grid": {
+        "role": "semantic",
+        "displayName": "石墨深色 · chart-grid"
+      },
+      "dark-chart-tick": {
+        "role": "semantic",
+        "displayName": "石墨深色 · chart-tick"
+      },
+      "dark-chart-legend": {
+        "role": "semantic",
+        "displayName": "石墨深色 · chart-legend"
+      },
+      "dark-chart-temp": {
+        "role": "semantic",
+        "displayName": "石墨深色 · chart-temp"
+      },
+      "dark-chart-setpoint": {
+        "role": "semantic",
+        "displayName": "石墨深色 · chart-setpoint"
+      },
+      "dark-chart-target": {
+        "role": "semantic",
+        "displayName": "石墨深色 · chart-target"
+      },
+      "dark-chart-target-fill": {
+        "role": "semantic",
+        "displayName": "石墨深色 · chart-target-fill"
+      },
+      "dark-chart-ror": {
+        "role": "semantic",
+        "displayName": "石墨深色 · chart-ror"
+      },
+      "dark-chart-ror-fill": {
+        "role": "semantic",
+        "displayName": "石墨深色 · chart-ror-fill"
+      },
+      "dark-chart-ror-preview": {
+        "role": "semantic",
+        "displayName": "石墨深色 · chart-ror-preview"
+      },
+      "dark-chart-projection": {
+        "role": "semantic",
+        "displayName": "石墨深色 · chart-projection"
+      },
+      "dark-chart-y1-tick": {
+        "role": "semantic",
+        "displayName": "石墨深色 · chart-y1-tick"
+      },
+      "dark-chart-compare-a": {
+        "role": "semantic",
+        "displayName": "石墨深色 · chart-compare-a"
+      },
+      "dark-chart-compare-b": {
+        "role": "semantic",
+        "displayName": "石墨深色 · chart-compare-b"
+      },
+      "dark-chart-event-label-bg": {
+        "role": "semantic",
+        "displayName": "石墨深色 · chart-event-label-bg"
+      },
+      "dark-chart-tooltip-bg": {
+        "role": "semantic",
+        "displayName": "石墨深色 · chart-tooltip-bg"
+      },
+      "dark-chart-tooltip-border": {
+        "role": "semantic",
+        "displayName": "石墨深色 · chart-tooltip-border"
+      },
+      "dark-chart-tooltip-text": {
+        "role": "semantic",
+        "displayName": "石墨深色 · chart-tooltip-text"
+      },
+      "dark-event-charge": {
+        "role": "semantic",
+        "displayName": "石墨深色 · event-charge"
+      },
+      "dark-event-yellowing": {
+        "role": "semantic",
+        "displayName": "石墨深色 · event-yellowing"
+      },
+      "dark-event-first-crack": {
+        "role": "semantic",
+        "displayName": "石墨深色 · event-first-crack"
+      },
+      "dark-event-second-crack": {
+        "role": "semantic",
+        "displayName": "石墨深色 · event-second-crack"
+      },
+      "dark-event-drop": {
+        "role": "semantic",
+        "displayName": "石墨深色 · event-drop"
+      },
+      "dark-event-tp": {
+        "role": "semantic",
+        "displayName": "石墨深色 · event-tp"
+      },
+      "dark-delta-good": {
+        "role": "semantic",
+        "displayName": "石墨深色 · delta-good"
+      },
+      "dark-delta-warn": {
+        "role": "semantic",
+        "displayName": "石墨深色 · delta-warn"
+      },
+      "dark-delta-info": {
+        "role": "semantic",
+        "displayName": "石墨深色 · delta-info"
+      },
+      "dark-editor-curve": {
+        "role": "semantic",
+        "displayName": "石墨深色 · editor-curve"
+      },
+      "dark-editor-node": {
+        "role": "semantic",
+        "displayName": "石墨深色 · editor-node"
+      },
+      "dark-editor-node-hover": {
+        "role": "semantic",
+        "displayName": "石墨深色 · editor-node-hover"
+      },
       "dark-bg": {
         "role": "neutral",
-        "displayName": "深色 · bg",
-        "tonalRamp": [
-          "oklch(15% 0.0038 286.09)",
-          "oklch(26% 0.0038 286.09)",
-          "oklch(38% 0.0038 286.09)",
-          "oklch(49% 0.0038 286.09)",
-          "oklch(61% 0.0038 286.09)",
-          "oklch(72% 0.0038 286.09)",
-          "oklch(84% 0.0038 286.09)",
-          "oklch(95% 0.0038 286.09)"
-        ],
-        "value": "#101a2b"
+        "displayName": "石墨深色 · bg"
       },
       "dark-bg-elevated": {
         "role": "neutral",
-        "displayName": "深色 · bg-elevated",
-        "tonalRamp": [
-          "oklch(15% 0.0037 286.14)",
-          "oklch(26% 0.0037 286.14)",
-          "oklch(38% 0.0037 286.14)",
-          "oklch(49% 0.0037 286.14)",
-          "oklch(61% 0.0037 286.14)",
-          "oklch(72% 0.0037 286.14)",
-          "oklch(84% 0.0037 286.14)",
-          "oklch(95% 0.0037 286.14)"
-        ],
-        "value": "#17243a"
+        "displayName": "石墨深色 · bg-elevated"
       },
       "dark-surface": {
         "role": "neutral",
-        "displayName": "深色 · surface",
-        "tonalRamp": [
-          "oklch(15% 0.0036 286.18)",
-          "oklch(26% 0.0036 286.18)",
-          "oklch(38% 0.0036 286.18)",
-          "oklch(49% 0.0036 286.18)",
-          "oklch(61% 0.0036 286.18)",
-          "oklch(72% 0.0036 286.18)",
-          "oklch(84% 0.0036 286.18)",
-          "oklch(95% 0.0036 286.18)"
-        ],
-        "value": "#1d2c43"
+        "displayName": "石墨深色 · surface"
       },
       "dark-surface-2": {
         "role": "neutral",
-        "displayName": "深色 · surface-2",
-        "tonalRamp": [
-          "oklch(15% 0.0035 286.21)",
-          "oklch(26% 0.0035 286.21)",
-          "oklch(38% 0.0035 286.21)",
-          "oklch(49% 0.0035 286.21)",
-          "oklch(61% 0.0035 286.21)",
-          "oklch(72% 0.0035 286.21)",
-          "oklch(84% 0.0035 286.21)",
-          "oklch(95% 0.0035 286.21)"
-        ],
-        "value": "#263750"
+        "displayName": "石墨深色 · surface-2"
       },
       "dark-surface-3": {
         "role": "neutral",
-        "displayName": "深色 · surface-3",
-        "tonalRamp": [
-          "oklch(15% 0.0051 286.15)",
-          "oklch(26% 0.0051 286.15)",
-          "oklch(38% 0.0051 286.15)",
-          "oklch(49% 0.0051 286.15)",
-          "oklch(61% 0.0051 286.15)",
-          "oklch(72% 0.0051 286.15)",
-          "oklch(84% 0.0051 286.15)",
-          "oklch(95% 0.0051 286.15)"
-        ],
-        "value": "#30435f"
+        "displayName": "石墨深色 · surface-3"
       },
       "dark-canvas": {
         "role": "neutral",
-        "displayName": "深色 · canvas",
-        "tonalRamp": [
-          "oklch(15% 0.0037 286.14)",
-          "oklch(26% 0.0037 286.14)",
-          "oklch(38% 0.0037 286.14)",
-          "oklch(49% 0.0037 286.14)",
-          "oklch(61% 0.0037 286.14)",
-          "oklch(72% 0.0037 286.14)",
-          "oklch(84% 0.0037 286.14)",
-          "oklch(95% 0.0037 286.14)"
-        ],
-        "value": "#132137"
+        "displayName": "石墨深色 · canvas"
       },
       "dark-rail": {
         "role": "neutral",
-        "displayName": "深色 · rail",
-        "tonalRamp": [
-          "oklch(15% 0.0037 286.13)",
-          "oklch(26% 0.0037 286.13)",
-          "oklch(38% 0.0037 286.13)",
-          "oklch(49% 0.0037 286.13)",
-          "oklch(61% 0.0037 286.13)",
-          "oklch(72% 0.0037 286.13)",
-          "oklch(84% 0.0037 286.13)",
-          "oklch(95% 0.0037 286.13)"
-        ],
-        "value": "#142745"
+        "displayName": "石墨深色 · rail"
       },
       "dark-control-bg": {
         "role": "neutral",
-        "displayName": "深色 · control-bg",
-        "tonalRamp": [
-          "oklch(15% 0.0035 286.21)",
-          "oklch(26% 0.0035 286.21)",
-          "oklch(38% 0.0035 286.21)",
-          "oklch(49% 0.0035 286.21)",
-          "oklch(61% 0.0035 286.21)",
-          "oklch(72% 0.0035 286.21)",
-          "oklch(84% 0.0035 286.21)",
-          "oklch(95% 0.0035 286.21)"
-        ],
-        "value": "#263750"
-      },
-      "dark-fill": {
-        "role": "neutral",
-        "displayName": "深色 · fill",
-        "tonalRamp": [
-          "oklch(15% 0.0121 286.01 / 0.16)",
-          "oklch(26% 0.0121 286.01 / 0.16)",
-          "oklch(38% 0.0121 286.01 / 0.16)",
-          "oklch(49% 0.0121 286.01 / 0.16)",
-          "oklch(61% 0.0121 286.01 / 0.16)",
-          "oklch(72% 0.0121 286.01 / 0.16)",
-          "oklch(84% 0.0121 286.01 / 0.16)",
-          "oklch(95% 0.0121 286.01 / 0.16)"
-        ],
-        "value": "rgba(120, 120, 128, 0.16)"
-      },
-      "dark-fill-strong": {
-        "role": "neutral",
-        "displayName": "深色 · fill-strong",
-        "tonalRamp": [
-          "oklch(15% 0.0121 286.01 / 0.26)",
-          "oklch(26% 0.0121 286.01 / 0.26)",
-          "oklch(38% 0.0121 286.01 / 0.26)",
-          "oklch(49% 0.0121 286.01 / 0.26)",
-          "oklch(61% 0.0121 286.01 / 0.26)",
-          "oklch(72% 0.0121 286.01 / 0.26)",
-          "oklch(84% 0.0121 286.01 / 0.26)",
-          "oklch(95% 0.0121 286.01 / 0.26)"
-        ],
-        "value": "rgba(120, 120, 128, 0.26)"
-      },
-      "dark-border": {
-        "role": "neutral",
-        "displayName": "深色 · border",
-        "tonalRamp": [
-          "oklch(15% 0.0000 89.88 / 0.09)",
-          "oklch(26% 0.0000 89.88 / 0.09)",
-          "oklch(38% 0.0000 89.88 / 0.09)",
-          "oklch(49% 0.0000 89.88 / 0.09)",
-          "oklch(61% 0.0000 89.88 / 0.09)",
-          "oklch(72% 0.0000 89.88 / 0.09)",
-          "oklch(84% 0.0000 89.88 / 0.09)",
-          "oklch(95% 0.0000 89.88 / 0.09)"
-        ],
-        "value": "#6c84a3"
-      },
-      "dark-separator": {
-        "role": "neutral",
-        "displayName": "深色 · separator",
-        "tonalRamp": [
-          "oklch(15% 0.0000 89.88 / 0.06)",
-          "oklch(26% 0.0000 89.88 / 0.06)",
-          "oklch(38% 0.0000 89.88 / 0.06)",
-          "oklch(49% 0.0000 89.88 / 0.06)",
-          "oklch(61% 0.0000 89.88 / 0.06)",
-          "oklch(72% 0.0000 89.88 / 0.06)",
-          "oklch(84% 0.0000 89.88 / 0.06)",
-          "oklch(95% 0.0000 89.88 / 0.06)"
-        ],
-        "value": "#374d6b"
+        "displayName": "石墨深色 · control-bg"
       },
       "dark-text": {
         "role": "neutral",
-        "displayName": "深色 · text",
-        "tonalRamp": [
-          "oklch(15% 0.0027 286.35)",
-          "oklch(26% 0.0027 286.35)",
-          "oklch(38% 0.0027 286.35)",
-          "oklch(49% 0.0027 286.35)",
-          "oklch(61% 0.0027 286.35)",
-          "oklch(72% 0.0027 286.35)",
-          "oklch(84% 0.0027 286.35)",
-          "oklch(95% 0.0027 286.35)"
-        ],
-        "value": "#f1f6ff"
+        "displayName": "石墨深色 · text"
       },
       "dark-text-secondary": {
         "role": "neutral",
-        "displayName": "深色 · 说明与占位文字",
-        "tonalRamp": [
-          "oklch(15% 0.0084 286.21)",
-          "oklch(26% 0.0084 286.21)",
-          "oklch(38% 0.0084 286.21)",
-          "oklch(49% 0.0084 286.21)",
-          "oklch(61% 0.0084 286.21)",
-          "oklch(72% 0.0084 286.21)",
-          "oklch(84% 0.0084 286.21)",
-          "oklch(95% 0.0084 286.21)"
-        ],
-        "value": "#bdcde5"
+        "displayName": "石墨深色 · text-secondary"
       },
       "dark-text-tertiary": {
         "role": "neutral",
-        "displayName": "深色 · text-tertiary",
-        "tonalRamp": [
-          "oklch(15% 0.0099 286.16)",
-          "oklch(26% 0.0099 286.16)",
-          "oklch(38% 0.0099 286.16)",
-          "oklch(49% 0.0099 286.16)",
-          "oklch(61% 0.0099 286.16)",
-          "oklch(72% 0.0099 286.16)",
-          "oklch(84% 0.0099 286.16)",
-          "oklch(95% 0.0099 286.16)"
-        ],
-        "value": "#acbfdc"
+        "displayName": "石墨深色 · text-tertiary"
       },
       "dark-accent": {
         "role": "primary",
-        "displayName": "深色 · 强调色",
-        "tonalRamp": [
-          "oklch(15% 0.1160 261.33)",
-          "oklch(26% 0.1160 261.33)",
-          "oklch(38% 0.1160 261.33)",
-          "oklch(49% 0.1160 261.33)",
-          "oklch(61% 0.1160 261.33)",
-          "oklch(72% 0.1160 261.33)",
-          "oklch(84% 0.1160 261.33)",
-          "oklch(95% 0.1160 261.33)"
-        ],
-        "value": "#92bbff"
+        "displayName": "石墨深色 · accent"
       },
       "dark-accent-hover": {
         "role": "primary",
-        "displayName": "深色 · 强调色-hover",
-        "tonalRamp": [
-          "oklch(15% 0.0649 262.89)",
-          "oklch(26% 0.0649 262.89)",
-          "oklch(38% 0.0649 262.89)",
-          "oklch(49% 0.0649 262.89)",
-          "oklch(61% 0.0649 262.89)",
-          "oklch(72% 0.0649 262.89)",
-          "oklch(84% 0.0649 262.89)",
-          "oklch(95% 0.0649 262.89)"
-        ],
-        "value": "#b7d2ff"
+        "displayName": "石墨深色 · accent-hover"
       },
       "dark-accent-soft": {
         "role": "primary",
-        "displayName": "深色 · 强调色-soft",
-        "tonalRamp": [
-          "oklch(15% 0.1621 262.53 / 0.13)",
-          "oklch(26% 0.1621 262.53 / 0.13)",
-          "oklch(38% 0.1621 262.53 / 0.13)",
-          "oklch(49% 0.1621 262.53 / 0.13)",
-          "oklch(61% 0.1621 262.53 / 0.13)",
-          "oklch(72% 0.1621 262.53 / 0.13)",
-          "oklch(84% 0.1621 262.53 / 0.13)",
-          "oklch(95% 0.1621 262.53 / 0.13)"
-        ],
-        "value": "#2b4567"
+        "displayName": "石墨深色 · accent-soft"
       },
       "dark-on-accent": {
-        "role": "neutral",
-        "displayName": "深色 · on-强调色",
-        "tonalRamp": [
-          "oklch(15% 0.0000 0.00 / 0.85)",
-          "oklch(26% 0.0000 0.00 / 0.85)",
-          "oklch(38% 0.0000 0.00 / 0.85)",
-          "oklch(49% 0.0000 0.00 / 0.85)",
-          "oklch(61% 0.0000 0.00 / 0.85)",
-          "oklch(72% 0.0000 0.00 / 0.85)",
-          "oklch(84% 0.0000 0.00 / 0.85)",
-          "oklch(95% 0.0000 0.00 / 0.85)"
-        ],
-        "value": "#10213b"
+        "role": "primary",
+        "displayName": "石墨深色 · on-accent"
       },
-      "dark-danger": {
+      "dark-border": {
         "role": "neutral",
-        "displayName": "深色 · danger",
-        "tonalRamp": [
-          "oklch(15% 0.1528 22.83)",
-          "oklch(26% 0.1528 22.83)",
-          "oklch(38% 0.1528 22.83)",
-          "oklch(49% 0.1528 22.83)",
-          "oklch(61% 0.1528 22.83)",
-          "oklch(72% 0.1528 22.83)",
-          "oklch(84% 0.1528 22.83)",
-          "oklch(95% 0.1528 22.83)"
-        ],
-        "value": "#ff827f"
+        "displayName": "石墨深色 · border"
       },
-      "dark-danger-hover": {
+      "dark-separator": {
         "role": "neutral",
-        "displayName": "深色 · danger-hover",
-        "tonalRamp": [
-          "oklch(15% 0.1124 21.18)",
-          "oklch(26% 0.1124 21.18)",
-          "oklch(38% 0.1124 21.18)",
-          "oklch(49% 0.1124 21.18)",
-          "oklch(61% 0.1124 21.18)",
-          "oklch(72% 0.1124 21.18)",
-          "oklch(84% 0.1124 21.18)",
-          "oklch(95% 0.1124 21.18)"
-        ],
-        "value": "#ffa19f"
+        "displayName": "石墨深色 · separator"
       },
-      "dark-danger-soft": {
+      "dark-seg-thumb": {
         "role": "neutral",
-        "displayName": "深色 · danger-soft",
-        "tonalRamp": [
-          "oklch(15% 0.2236 28.29 / 0.13)",
-          "oklch(26% 0.2236 28.29 / 0.13)",
-          "oklch(38% 0.2236 28.29 / 0.13)",
-          "oklch(49% 0.2236 28.29 / 0.13)",
-          "oklch(61% 0.2236 28.29 / 0.13)",
-          "oklch(72% 0.2236 28.29 / 0.13)",
-          "oklch(84% 0.2236 28.29 / 0.13)",
-          "oklch(95% 0.2236 28.29 / 0.13)"
-        ],
-        "value": "rgba(255, 69, 58, 0.13)"
+        "displayName": "石墨深色 · seg-thumb"
       },
-      "dark-on-danger": {
+      "dark-fill": {
         "role": "neutral",
-        "displayName": "深色 · on-danger",
-        "tonalRamp": [
-          "oklch(15% 0.0038 286.09)",
-          "oklch(26% 0.0038 286.09)",
-          "oklch(38% 0.0038 286.09)",
-          "oklch(49% 0.0038 286.09)",
-          "oklch(61% 0.0038 286.09)",
-          "oklch(72% 0.0038 286.09)",
-          "oklch(84% 0.0038 286.09)",
-          "oklch(95% 0.0038 286.09)"
-        ],
-        "value": "#1c1c1e"
+        "displayName": "石墨深色 · fill"
       },
-      "dark-status-online": {
+      "dark-fill-strong": {
         "role": "neutral",
-        "displayName": "深色 · status-online",
-        "tonalRamp": [
-          "oklch(15% 0.1640 147.32)",
-          "oklch(26% 0.1640 147.32)",
-          "oklch(38% 0.1640 147.32)",
-          "oklch(49% 0.1640 147.32)",
-          "oklch(61% 0.1640 147.32)",
-          "oklch(72% 0.1640 147.32)",
-          "oklch(84% 0.1640 147.32)",
-          "oklch(95% 0.1640 147.32)"
-        ],
-        "value": "#55c469"
+        "displayName": "石墨深色 · fill-strong"
       },
-      "dark-warning": {
+      "dark-gray-soft": {
         "role": "neutral",
-        "displayName": "深色 · warning",
-        "tonalRamp": [
-          "oklch(15% 0.1711 67.22)",
-          "oklch(26% 0.1711 67.22)",
-          "oklch(38% 0.1711 67.22)",
-          "oklch(49% 0.1711 67.22)",
-          "oklch(61% 0.1711 67.22)",
-          "oklch(72% 0.1711 67.22)",
-          "oklch(84% 0.1711 67.22)",
-          "oklch(95% 0.1711 67.22)"
-        ],
-        "value": "#ff9f0a"
+        "displayName": "石墨深色 · gray-soft"
       },
-      "dark-phase-drying": {
+      "dark-info": {
         "role": "neutral",
-        "displayName": "深色 · phase-drying",
-        "tonalRamp": [
-          "oklch(15% 0.1880 259.81)",
-          "oklch(26% 0.1880 259.81)",
-          "oklch(38% 0.1880 259.81)",
-          "oklch(49% 0.1880 259.81)",
-          "oklch(61% 0.1880 259.81)",
-          "oklch(72% 0.1880 259.81)",
-          "oklch(84% 0.1880 259.81)",
-          "oklch(95% 0.1880 259.81)"
-        ],
-        "value": "#3b82f6"
+        "displayName": "石墨深色 · info"
       },
-      "dark-phase-maillard": {
+      "dark-info-hover": {
         "role": "neutral",
-        "displayName": "深色 · phase-maillard",
-        "tonalRamp": [
-          "oklch(15% 0.1647 70.08)",
-          "oklch(26% 0.1647 70.08)",
-          "oklch(38% 0.1647 70.08)",
-          "oklch(49% 0.1647 70.08)",
-          "oklch(61% 0.1647 70.08)",
-          "oklch(72% 0.1647 70.08)",
-          "oklch(84% 0.1647 70.08)",
-          "oklch(95% 0.1647 70.08)"
-        ],
-        "value": "#f59e0b"
+        "displayName": "石墨深色 · info-hover"
       },
-      "dark-phase-development": {
+      "dark-info-soft": {
         "role": "neutral",
-        "displayName": "深色 · phase-development",
-        "tonalRamp": [
-          "oklch(15% 0.2236 28.29)",
-          "oklch(26% 0.2236 28.29)",
-          "oklch(38% 0.2236 28.29)",
-          "oklch(49% 0.2236 28.29)",
-          "oklch(61% 0.2236 28.29)",
-          "oklch(72% 0.2236 28.29)",
-          "oklch(84% 0.2236 28.29)",
-          "oklch(95% 0.2236 28.29)"
-        ],
-        "value": "#ff453a"
+        "displayName": "石墨深色 · info-soft"
       },
-      "dark-phase-cooling": {
-        "role": "neutral",
-        "displayName": "深色 · phase-cooling",
-        "tonalRamp": [
-          "oklch(15% 0.0073 286.19)",
-          "oklch(26% 0.0073 286.19)",
-          "oklch(38% 0.0073 286.19)",
-          "oklch(49% 0.0073 286.19)",
-          "oklch(61% 0.0073 286.19)",
-          "oklch(72% 0.0073 286.19)",
-          "oklch(84% 0.0073 286.19)",
-          "oklch(95% 0.0073 286.19)"
-        ],
-        "value": "#8e8e93"
+      "light-danger": {
+        "role": "semantic",
+        "displayName": "暖白浅色 · danger"
       },
-      "dark-chart-grid": {
-        "role": "neutral",
-        "displayName": "深色 · chart-grid",
-        "tonalRamp": [
-          "oklch(15% 0.0000 89.88 / 0.06)",
-          "oklch(26% 0.0000 89.88 / 0.06)",
-          "oklch(38% 0.0000 89.88 / 0.06)",
-          "oklch(49% 0.0000 89.88 / 0.06)",
-          "oklch(61% 0.0000 89.88 / 0.06)",
-          "oklch(72% 0.0000 89.88 / 0.06)",
-          "oklch(84% 0.0000 89.88 / 0.06)",
-          "oklch(95% 0.0000 89.88 / 0.06)"
-        ],
-        "value": "#2a3c56"
+      "light-danger-hover": {
+        "role": "semantic",
+        "displayName": "暖白浅色 · danger-hover"
       },
-      "dark-chart-tick": {
-        "role": "neutral",
-        "displayName": "深色 · chart-tick",
-        "tonalRamp": [
-          "oklch(15% 0.0000 89.88)",
-          "oklch(26% 0.0000 89.88)",
-          "oklch(38% 0.0000 89.88)",
-          "oklch(49% 0.0000 89.88)",
-          "oklch(61% 0.0000 89.88)",
-          "oklch(72% 0.0000 89.88)",
-          "oklch(84% 0.0000 89.88)",
-          "oklch(95% 0.0000 89.88)"
-        ],
-        "value": "#bdcde5"
+      "light-danger-soft": {
+        "role": "semantic",
+        "displayName": "暖白浅色 · danger-soft"
       },
-      "dark-chart-legend": {
-        "role": "neutral",
-        "displayName": "深色 · chart-legend",
-        "tonalRamp": [
-          "oklch(15% 0.0000 89.88)",
-          "oklch(26% 0.0000 89.88)",
-          "oklch(38% 0.0000 89.88)",
-          "oklch(49% 0.0000 89.88)",
-          "oklch(61% 0.0000 89.88)",
-          "oklch(72% 0.0000 89.88)",
-          "oklch(84% 0.0000 89.88)",
-          "oklch(95% 0.0000 89.88)"
-        ],
-        "value": "#f1f6ff"
+      "light-on-danger": {
+        "role": "semantic",
+        "displayName": "暖白浅色 · on-danger"
       },
-      "dark-chart-temp": {
-        "role": "neutral",
-        "displayName": "深色 · 温度",
-        "tonalRamp": [
-          "oklch(15% 0.1216 57.44)",
-          "oklch(26% 0.1216 57.44)",
-          "oklch(38% 0.1216 57.44)",
-          "oklch(49% 0.1216 57.44)",
-          "oklch(61% 0.1216 57.44)",
-          "oklch(72% 0.1216 57.44)",
-          "oklch(84% 0.1216 57.44)",
-          "oklch(95% 0.1216 57.44)"
-        ],
-        "value": "#f2a366"
+      "light-status-online": {
+        "role": "semantic",
+        "displayName": "暖白浅色 · status-online"
       },
-      "dark-chart-setpoint": {
-        "role": "neutral",
-        "displayName": "深色 · chart-setpoint",
-        "tonalRamp": [
-          "oklch(15% 0.1657 255.39)",
-          "oklch(26% 0.1657 255.39)",
-          "oklch(38% 0.1657 255.39)",
-          "oklch(49% 0.1657 255.39)",
-          "oklch(61% 0.1657 255.39)",
-          "oklch(72% 0.1657 255.39)",
-          "oklch(84% 0.1657 255.39)",
-          "oklch(95% 0.1657 255.39)"
-        ],
-        "value": "#4d9cff"
+      "light-warning": {
+        "role": "semantic",
+        "displayName": "暖白浅色 · warning"
       },
-      "dark-chart-target": {
-        "role": "neutral",
-        "displayName": "深色 · chart-target",
-        "tonalRamp": [
-          "oklch(15% 0.0000 89.88)",
-          "oklch(26% 0.0000 89.88)",
-          "oklch(38% 0.0000 89.88)",
-          "oklch(49% 0.0000 89.88)",
-          "oklch(61% 0.0000 89.88)",
-          "oklch(72% 0.0000 89.88)",
-          "oklch(84% 0.0000 89.88)",
-          "oklch(95% 0.0000 89.88)"
-        ],
-        "value": "#9e9e9e"
+      "light-phase-drying": {
+        "role": "semantic",
+        "displayName": "暖白浅色 · phase-drying"
       },
-      "dark-chart-ror": {
-        "role": "neutral",
-        "displayName": "深色 · RoR",
-        "tonalRamp": [
-          "oklch(15% 0.1383 156.81)",
-          "oklch(26% 0.1383 156.81)",
-          "oklch(38% 0.1383 156.81)",
-          "oklch(49% 0.1383 156.81)",
-          "oklch(61% 0.1383 156.81)",
-          "oklch(72% 0.1383 156.81)",
-          "oklch(84% 0.1383 156.81)",
-          "oklch(95% 0.1383 156.81)"
-        ],
-        "value": "#45b97c"
+      "light-phase-maillard": {
+        "role": "semantic",
+        "displayName": "暖白浅色 · phase-maillard"
       },
-      "dark-chart-ror-preview": {
-        "role": "neutral",
-        "displayName": "深色 · RoR-preview",
-        "tonalRamp": [
-          "oklch(15% 0.1164 158.61)",
-          "oklch(26% 0.1164 158.61)",
-          "oklch(38% 0.1164 158.61)",
-          "oklch(49% 0.1164 158.61)",
-          "oklch(61% 0.1164 158.61)",
-          "oklch(72% 0.1164 158.61)",
-          "oklch(84% 0.1164 158.61)",
-          "oklch(95% 0.1164 158.61)"
-        ],
-        "value": "#7ad8a5"
+      "light-phase-development": {
+        "role": "semantic",
+        "displayName": "暖白浅色 · phase-development"
       },
-      "dark-chart-y1-tick": {
-        "role": "neutral",
-        "displayName": "深色 · chart-y1-tick",
-        "tonalRamp": [
-          "oklch(15% 0.1287 156.72)",
-          "oklch(26% 0.1287 156.72)",
-          "oklch(38% 0.1287 156.72)",
-          "oklch(49% 0.1287 156.72)",
-          "oklch(61% 0.1287 156.72)",
-          "oklch(72% 0.1287 156.72)",
-          "oklch(84% 0.1287 156.72)",
-          "oklch(95% 0.1287 156.72)"
-        ],
-        "value": "#62c98f"
+      "light-phase-cooling": {
+        "role": "semantic",
+        "displayName": "暖白浅色 · phase-cooling"
       },
-      "dark-chart-compare-a": {
-        "role": "neutral",
-        "displayName": "深色 · chart-compare-a",
-        "tonalRamp": [
-          "oklch(15% 0.1741 64.05)",
-          "oklch(26% 0.1741 64.05)",
-          "oklch(38% 0.1741 64.05)",
-          "oklch(49% 0.1741 64.05)",
-          "oklch(61% 0.1741 64.05)",
-          "oklch(72% 0.1741 64.05)",
-          "oklch(84% 0.1741 64.05)",
-          "oklch(95% 0.1741 64.05)"
-        ],
-        "value": "#ff9800"
+      "light-chart-grid": {
+        "role": "semantic",
+        "displayName": "暖白浅色 · chart-grid"
       },
-      "dark-chart-compare-b": {
-        "role": "neutral",
-        "displayName": "深色 · chart-compare-b",
-        "tonalRamp": [
-          "oklch(15% 0.2773 321.37)",
-          "oklch(26% 0.2773 321.37)",
-          "oklch(38% 0.2773 321.37)",
-          "oklch(49% 0.2773 321.37)",
-          "oklch(61% 0.2773 321.37)",
-          "oklch(72% 0.2773 321.37)",
-          "oklch(84% 0.2773 321.37)",
-          "oklch(95% 0.2773 321.37)"
-        ],
-        "value": "#e040fb"
+      "light-chart-tick": {
+        "role": "semantic",
+        "displayName": "暖白浅色 · chart-tick"
       },
-      "dark-event-charge": {
-        "role": "neutral",
-        "displayName": "深色 · event-charge",
-        "tonalRamp": [
-          "oklch(15% 0.1920 149.58)",
-          "oklch(26% 0.1920 149.58)",
-          "oklch(38% 0.1920 149.58)",
-          "oklch(49% 0.1920 149.58)",
-          "oklch(61% 0.1920 149.58)",
-          "oklch(72% 0.1920 149.58)",
-          "oklch(84% 0.1920 149.58)",
-          "oklch(95% 0.1920 149.58)"
-        ],
-        "value": "#22c55e"
+      "light-chart-legend": {
+        "role": "semantic",
+        "displayName": "暖白浅色 · chart-legend"
       },
-      "dark-event-yellowing": {
-        "role": "neutral",
-        "displayName": "深色 · event-yellowing",
-        "tonalRamp": [
-          "oklch(15% 0.1647 70.08)",
-          "oklch(26% 0.1647 70.08)",
-          "oklch(38% 0.1647 70.08)",
-          "oklch(49% 0.1647 70.08)",
-          "oklch(61% 0.1647 70.08)",
-          "oklch(72% 0.1647 70.08)",
-          "oklch(84% 0.1647 70.08)",
-          "oklch(95% 0.1647 70.08)"
-        ],
-        "value": "#f59e0b"
+      "light-chart-temp": {
+        "role": "semantic",
+        "displayName": "暖白浅色 · chart-temp"
       },
-      "dark-event-first-crack": {
-        "role": "neutral",
-        "displayName": "深色 · event-first-crack",
-        "tonalRamp": [
-          "oklch(15% 0.2078 25.33)",
-          "oklch(26% 0.2078 25.33)",
-          "oklch(38% 0.2078 25.33)",
-          "oklch(49% 0.2078 25.33)",
-          "oklch(61% 0.2078 25.33)",
-          "oklch(72% 0.2078 25.33)",
-          "oklch(84% 0.2078 25.33)",
-          "oklch(95% 0.2078 25.33)"
-        ],
-        "value": "#ef4444"
+      "light-chart-setpoint": {
+        "role": "semantic",
+        "displayName": "暖白浅色 · chart-setpoint"
       },
-      "dark-event-second-crack": {
-        "role": "neutral",
-        "displayName": "深色 · event-second-crack",
-        "tonalRamp": [
-          "oklch(15% 0.2325 303.90)",
-          "oklch(26% 0.2325 303.90)",
-          "oklch(38% 0.2325 303.90)",
-          "oklch(49% 0.2325 303.90)",
-          "oklch(61% 0.2325 303.90)",
-          "oklch(72% 0.2325 303.90)",
-          "oklch(84% 0.2325 303.90)",
-          "oklch(95% 0.2325 303.90)"
-        ],
-        "value": "#a855f7"
+      "light-chart-target": {
+        "role": "semantic",
+        "displayName": "暖白浅色 · chart-target"
       },
-      "dark-event-drop": {
-        "role": "neutral",
-        "displayName": "深色 · event-drop",
-        "tonalRamp": [
-          "oklch(15% 0.1880 259.81)",
-          "oklch(26% 0.1880 259.81)",
-          "oklch(38% 0.1880 259.81)",
-          "oklch(49% 0.1880 259.81)",
-          "oklch(61% 0.1880 259.81)",
-          "oklch(72% 0.1880 259.81)",
-          "oklch(84% 0.1880 259.81)",
-          "oklch(95% 0.1880 259.81)"
-        ],
-        "value": "#3b82f6"
+      "light-chart-target-fill": {
+        "role": "semantic",
+        "displayName": "暖白浅色 · chart-target-fill"
       },
-      "dark-event-tp": {
-        "role": "neutral",
-        "displayName": "深色 · event-tp",
-        "tonalRamp": [
-          "oklch(15% 0.1071 185.34)",
-          "oklch(26% 0.1071 185.34)",
-          "oklch(38% 0.1071 185.34)",
-          "oklch(49% 0.1071 185.34)",
-          "oklch(61% 0.1071 185.34)",
-          "oklch(72% 0.1071 185.34)",
-          "oklch(84% 0.1071 185.34)",
-          "oklch(95% 0.1071 185.34)"
-        ],
-        "value": "#26a69a"
+      "light-chart-ror": {
+        "role": "semantic",
+        "displayName": "暖白浅色 · chart-ror"
       },
-      "dark-editor-curve": {
-        "role": "neutral",
-        "displayName": "深色 · editor-curve",
-        "tonalRamp": [
-          "oklch(15% 0.0192 261.32)",
-          "oklch(26% 0.0192 261.32)",
-          "oklch(38% 0.0192 261.32)",
-          "oklch(49% 0.0192 261.32)",
-          "oklch(61% 0.0192 261.32)",
-          "oklch(72% 0.0192 261.32)",
-          "oklch(84% 0.0192 261.32)",
-          "oklch(95% 0.0192 261.32)"
-        ],
-        "value": "#9ca3af"
+      "light-chart-ror-fill": {
+        "role": "semantic",
+        "displayName": "暖白浅色 · chart-ror-fill"
       },
-      "dark-editor-node": {
-        "role": "neutral",
-        "displayName": "深色 · editor-node",
-        "tonalRamp": [
-          "oklch(15% 0.1647 70.08)",
-          "oklch(26% 0.1647 70.08)",
-          "oklch(38% 0.1647 70.08)",
-          "oklch(49% 0.1647 70.08)",
-          "oklch(61% 0.1647 70.08)",
-          "oklch(72% 0.1647 70.08)",
-          "oklch(84% 0.1647 70.08)",
-          "oklch(95% 0.1647 70.08)"
-        ],
-        "value": "#f59e0b"
+      "light-chart-ror-preview": {
+        "role": "semantic",
+        "displayName": "暖白浅色 · chart-ror-preview"
+      },
+      "light-chart-projection": {
+        "role": "semantic",
+        "displayName": "暖白浅色 · chart-projection"
+      },
+      "light-chart-y1-tick": {
+        "role": "semantic",
+        "displayName": "暖白浅色 · chart-y1-tick"
+      },
+      "light-chart-compare-a": {
+        "role": "semantic",
+        "displayName": "暖白浅色 · chart-compare-a"
+      },
+      "light-chart-compare-b": {
+        "role": "semantic",
+        "displayName": "暖白浅色 · chart-compare-b"
+      },
+      "light-chart-event-label-bg": {
+        "role": "semantic",
+        "displayName": "暖白浅色 · chart-event-label-bg"
+      },
+      "light-chart-tooltip-bg": {
+        "role": "semantic",
+        "displayName": "暖白浅色 · chart-tooltip-bg"
+      },
+      "light-chart-tooltip-border": {
+        "role": "semantic",
+        "displayName": "暖白浅色 · chart-tooltip-border"
+      },
+      "light-chart-tooltip-text": {
+        "role": "semantic",
+        "displayName": "暖白浅色 · chart-tooltip-text"
+      },
+      "light-event-charge": {
+        "role": "semantic",
+        "displayName": "暖白浅色 · event-charge"
+      },
+      "light-event-yellowing": {
+        "role": "semantic",
+        "displayName": "暖白浅色 · event-yellowing"
+      },
+      "light-event-first-crack": {
+        "role": "semantic",
+        "displayName": "暖白浅色 · event-first-crack"
+      },
+      "light-event-second-crack": {
+        "role": "semantic",
+        "displayName": "暖白浅色 · event-second-crack"
+      },
+      "light-event-drop": {
+        "role": "semantic",
+        "displayName": "暖白浅色 · event-drop"
+      },
+      "light-event-tp": {
+        "role": "semantic",
+        "displayName": "暖白浅色 · event-tp"
+      },
+      "light-delta-good": {
+        "role": "semantic",
+        "displayName": "暖白浅色 · delta-good"
+      },
+      "light-delta-warn": {
+        "role": "semantic",
+        "displayName": "暖白浅色 · delta-warn"
+      },
+      "light-delta-info": {
+        "role": "semantic",
+        "displayName": "暖白浅色 · delta-info"
+      },
+      "light-editor-curve": {
+        "role": "semantic",
+        "displayName": "暖白浅色 · editor-curve"
+      },
+      "light-editor-node": {
+        "role": "semantic",
+        "displayName": "暖白浅色 · editor-node"
+      },
+      "light-editor-node-hover": {
+        "role": "semantic",
+        "displayName": "暖白浅色 · editor-node-hover"
       },
       "light-bg": {
         "role": "neutral",
-        "displayName": "浅色 · bg",
-        "tonalRamp": [
-          "oklch(15% 0.0027 286.35)",
-          "oklch(26% 0.0027 286.35)",
-          "oklch(38% 0.0027 286.35)",
-          "oklch(49% 0.0027 286.35)",
-          "oklch(61% 0.0027 286.35)",
-          "oklch(72% 0.0027 286.35)",
-          "oklch(84% 0.0027 286.35)",
-          "oklch(95% 0.0027 286.35)"
-        ],
-        "value": "#eaf0fa"
+        "displayName": "暖白浅色 · bg"
       },
       "light-bg-elevated": {
         "role": "neutral",
-        "displayName": "浅色 · bg-elevated",
-        "tonalRamp": [
-          "oklch(15% 0.0000 89.88)",
-          "oklch(26% 0.0000 89.88)",
-          "oklch(38% 0.0000 89.88)",
-          "oklch(49% 0.0000 89.88)",
-          "oklch(61% 0.0000 89.88)",
-          "oklch(72% 0.0000 89.88)",
-          "oklch(84% 0.0000 89.88)",
-          "oklch(95% 0.0000 89.88)"
-        ],
-        "value": "#f4f7fd"
+        "displayName": "暖白浅色 · bg-elevated"
       },
       "light-surface": {
         "role": "neutral",
-        "displayName": "浅色 · surface",
-        "tonalRamp": [
-          "oklch(15% 0.0000 89.88)",
-          "oklch(26% 0.0000 89.88)",
-          "oklch(38% 0.0000 89.88)",
-          "oklch(49% 0.0000 89.88)",
-          "oklch(61% 0.0000 89.88)",
-          "oklch(72% 0.0000 89.88)",
-          "oklch(84% 0.0000 89.88)",
-          "oklch(95% 0.0000 89.88)"
-        ],
-        "value": "#ffffff"
+        "displayName": "暖白浅色 · surface"
       },
       "light-surface-2": {
         "role": "neutral",
-        "displayName": "浅色 · surface-2",
-        "tonalRamp": [
-          "oklch(15% 0.0000 89.88)",
-          "oklch(26% 0.0000 89.88)",
-          "oklch(38% 0.0000 89.88)",
-          "oklch(49% 0.0000 89.88)",
-          "oklch(61% 0.0000 89.88)",
-          "oklch(72% 0.0000 89.88)",
-          "oklch(84% 0.0000 89.88)",
-          "oklch(95% 0.0000 89.88)"
-        ],
-        "value": "#f3f6fc"
+        "displayName": "暖白浅色 · surface-2"
       },
       "light-surface-3": {
         "role": "neutral",
-        "displayName": "浅色 · surface-3",
-        "tonalRamp": [
-          "oklch(15% 0.0054 286.30)",
-          "oklch(26% 0.0054 286.30)",
-          "oklch(38% 0.0054 286.30)",
-          "oklch(49% 0.0054 286.30)",
-          "oklch(61% 0.0054 286.30)",
-          "oklch(72% 0.0054 286.30)",
-          "oklch(84% 0.0054 286.30)",
-          "oklch(95% 0.0054 286.30)"
-        ],
-        "value": "#dce5f3"
+        "displayName": "暖白浅色 · surface-3"
       },
       "light-canvas": {
         "role": "neutral",
-        "displayName": "浅色 · canvas",
-        "tonalRamp": [
-          "oklch(15% 0.0000 89.88)",
-          "oklch(26% 0.0000 89.88)",
-          "oklch(38% 0.0000 89.88)",
-          "oklch(49% 0.0000 89.88)",
-          "oklch(61% 0.0000 89.88)",
-          "oklch(72% 0.0000 89.88)",
-          "oklch(84% 0.0000 89.88)",
-          "oklch(95% 0.0000 89.88)"
-        ],
-        "value": "#fcfdff"
+        "displayName": "暖白浅色 · canvas"
       },
       "light-rail": {
         "role": "neutral",
-        "displayName": "浅色 · rail",
-        "tonalRamp": [
-          "oklch(15% 0.0026 286.35)",
-          "oklch(26% 0.0026 286.35)",
-          "oklch(38% 0.0026 286.35)",
-          "oklch(49% 0.0026 286.35)",
-          "oklch(61% 0.0026 286.35)",
-          "oklch(72% 0.0026 286.35)",
-          "oklch(84% 0.0026 286.35)",
-          "oklch(95% 0.0026 286.35)"
-        ],
-        "value": "#d9e5f7"
+        "displayName": "暖白浅色 · rail"
       },
       "light-control-bg": {
         "role": "neutral",
-        "displayName": "浅色 · control-bg",
-        "tonalRamp": [
-          "oklch(15% 0.0040 286.32)",
-          "oklch(26% 0.0040 286.32)",
-          "oklch(38% 0.0040 286.32)",
-          "oklch(49% 0.0040 286.32)",
-          "oklch(61% 0.0040 286.32)",
-          "oklch(72% 0.0040 286.32)",
-          "oklch(84% 0.0040 286.32)",
-          "oklch(95% 0.0040 286.32)"
-        ],
-        "value": "#e7edf7"
-      },
-      "light-fill": {
-        "role": "neutral",
-        "displayName": "浅色 · fill",
-        "tonalRamp": [
-          "oklch(15% 0.0121 286.01 / 0.12)",
-          "oklch(26% 0.0121 286.01 / 0.12)",
-          "oklch(38% 0.0121 286.01 / 0.12)",
-          "oklch(49% 0.0121 286.01 / 0.12)",
-          "oklch(61% 0.0121 286.01 / 0.12)",
-          "oklch(72% 0.0121 286.01 / 0.12)",
-          "oklch(84% 0.0121 286.01 / 0.12)",
-          "oklch(95% 0.0121 286.01 / 0.12)"
-        ],
-        "value": "rgba(120, 120, 128, 0.12)"
-      },
-      "light-fill-strong": {
-        "role": "neutral",
-        "displayName": "浅色 · fill-strong",
-        "tonalRamp": [
-          "oklch(15% 0.0121 286.01 / 0.2)",
-          "oklch(26% 0.0121 286.01 / 0.2)",
-          "oklch(38% 0.0121 286.01 / 0.2)",
-          "oklch(49% 0.0121 286.01 / 0.2)",
-          "oklch(61% 0.0121 286.01 / 0.2)",
-          "oklch(72% 0.0121 286.01 / 0.2)",
-          "oklch(84% 0.0121 286.01 / 0.2)",
-          "oklch(95% 0.0121 286.01 / 0.2)"
-        ],
-        "value": "rgba(120, 120, 128, 0.2)"
-      },
-      "light-border": {
-        "role": "neutral",
-        "displayName": "浅色 · border",
-        "tonalRamp": [
-          "oklch(15% 0.0000 0.00 / 0.08)",
-          "oklch(26% 0.0000 0.00 / 0.08)",
-          "oklch(38% 0.0000 0.00 / 0.08)",
-          "oklch(49% 0.0000 0.00 / 0.08)",
-          "oklch(61% 0.0000 0.00 / 0.08)",
-          "oklch(72% 0.0000 0.00 / 0.08)",
-          "oklch(84% 0.0000 0.00 / 0.08)",
-          "oklch(95% 0.0000 0.00 / 0.08)"
-        ],
-        "value": "#667c99"
-      },
-      "light-separator": {
-        "role": "neutral",
-        "displayName": "浅色 · separator",
-        "tonalRamp": [
-          "oklch(15% 0.0000 0.00 / 0.06)",
-          "oklch(26% 0.0000 0.00 / 0.06)",
-          "oklch(38% 0.0000 0.00 / 0.06)",
-          "oklch(49% 0.0000 0.00 / 0.06)",
-          "oklch(61% 0.0000 0.00 / 0.06)",
-          "oklch(72% 0.0000 0.00 / 0.06)",
-          "oklch(84% 0.0000 0.00 / 0.06)",
-          "oklch(95% 0.0000 0.00 / 0.06)"
-        ],
-        "value": "#c6d2e4"
+        "displayName": "暖白浅色 · control-bg"
       },
       "light-text": {
         "role": "neutral",
-        "displayName": "浅色 · text",
-        "tonalRamp": [
-          "oklch(15% 0.0038 286.10)",
-          "oklch(26% 0.0038 286.10)",
-          "oklch(38% 0.0038 286.10)",
-          "oklch(49% 0.0038 286.10)",
-          "oklch(61% 0.0038 286.10)",
-          "oklch(72% 0.0038 286.10)",
-          "oklch(84% 0.0038 286.10)",
-          "oklch(95% 0.0038 286.10)"
-        ],
-        "value": "#14243c"
+        "displayName": "暖白浅色 · text"
       },
       "light-text-secondary": {
         "role": "neutral",
-        "displayName": "浅色 · 说明与占位文字",
-        "tonalRamp": [
-          "oklch(15% 0.0097 286.00)",
-          "oklch(26% 0.0097 286.00)",
-          "oklch(38% 0.0097 286.00)",
-          "oklch(49% 0.0097 286.00)",
-          "oklch(61% 0.0097 286.00)",
-          "oklch(72% 0.0097 286.00)",
-          "oklch(84% 0.0097 286.00)",
-          "oklch(95% 0.0097 286.00)"
-        ],
-        "value": "#435873"
+        "displayName": "暖白浅色 · text-secondary"
       },
       "light-text-tertiary": {
         "role": "neutral",
-        "displayName": "浅色 · text-tertiary",
-        "tonalRamp": [
-          "oklch(15% 0.0110 285.99)",
-          "oklch(26% 0.0110 285.99)",
-          "oklch(38% 0.0110 285.99)",
-          "oklch(49% 0.0110 285.99)",
-          "oklch(61% 0.0110 285.99)",
-          "oklch(72% 0.0110 285.99)",
-          "oklch(84% 0.0110 285.99)",
-          "oklch(95% 0.0110 285.99)"
-        ],
-        "value": "#4e6380"
+        "displayName": "暖白浅色 · text-tertiary"
       },
       "light-accent": {
         "role": "primary",
-        "displayName": "浅色 · 强调色",
-        "tonalRamp": [
-          "oklch(15% 0.1923 259.53)",
-          "oklch(26% 0.1923 259.53)",
-          "oklch(38% 0.1923 259.53)",
-          "oklch(49% 0.1923 259.53)",
-          "oklch(61% 0.1923 259.53)",
-          "oklch(72% 0.1923 259.53)",
-          "oklch(84% 0.1923 259.53)",
-          "oklch(95% 0.1923 259.53)"
-        ],
-        "value": "#175fc3"
+        "displayName": "暖白浅色 · accent"
       },
       "light-accent-hover": {
         "role": "primary",
-        "displayName": "浅色 · 强调色-hover",
-        "tonalRamp": [
-          "oklch(15% 0.1804 262.97)",
-          "oklch(26% 0.1804 262.97)",
-          "oklch(38% 0.1804 262.97)",
-          "oklch(49% 0.1804 262.97)",
-          "oklch(61% 0.1804 262.97)",
-          "oklch(72% 0.1804 262.97)",
-          "oklch(84% 0.1804 262.97)",
-          "oklch(95% 0.1804 262.97)"
-        ],
-        "value": "#124b9d"
+        "displayName": "暖白浅色 · accent-hover"
       },
       "light-accent-soft": {
         "role": "primary",
-        "displayName": "浅色 · 强调色-soft",
-        "tonalRamp": [
-          "oklch(15% 0.1621 262.53 / 0.13)",
-          "oklch(26% 0.1621 262.53 / 0.13)",
-          "oklch(38% 0.1621 262.53 / 0.13)",
-          "oklch(49% 0.1621 262.53 / 0.13)",
-          "oklch(61% 0.1621 262.53 / 0.13)",
-          "oklch(72% 0.1621 262.53 / 0.13)",
-          "oklch(84% 0.1621 262.53 / 0.13)",
-          "oklch(95% 0.1621 262.53 / 0.13)"
-        ],
-        "value": "#d5e4fb"
+        "displayName": "暖白浅色 · accent-soft"
       },
       "light-on-accent": {
-        "role": "neutral",
-        "displayName": "浅色 · on-强调色",
-        "tonalRamp": [
-          "oklch(15% 0.0000 89.88)",
-          "oklch(26% 0.0000 89.88)",
-          "oklch(38% 0.0000 89.88)",
-          "oklch(49% 0.0000 89.88)",
-          "oklch(61% 0.0000 89.88)",
-          "oklch(72% 0.0000 89.88)",
-          "oklch(84% 0.0000 89.88)",
-          "oklch(95% 0.0000 89.88)"
-        ],
-        "value": "#ffffff"
-      },
-      "light-danger": {
-        "role": "neutral",
-        "displayName": "浅色 · danger",
-        "tonalRamp": [
-          "oklch(15% 0.1841 22.99)",
-          "oklch(26% 0.1841 22.99)",
-          "oklch(38% 0.1841 22.99)",
-          "oklch(49% 0.1841 22.99)",
-          "oklch(61% 0.1841 22.99)",
-          "oklch(72% 0.1841 22.99)",
-          "oklch(84% 0.1841 22.99)",
-          "oklch(95% 0.1841 22.99)"
-        ],
-        "value": "#bd2833"
-      },
-      "light-danger-hover": {
-        "role": "neutral",
-        "displayName": "浅色 · danger-hover",
-        "tonalRamp": [
-          "oklch(15% 0.1685 22.22)",
-          "oklch(26% 0.1685 22.22)",
-          "oklch(38% 0.1685 22.22)",
-          "oklch(49% 0.1685 22.22)",
-          "oklch(61% 0.1685 22.22)",
-          "oklch(72% 0.1685 22.22)",
-          "oklch(84% 0.1685 22.22)",
-          "oklch(95% 0.1685 22.22)"
-        ],
-        "value": "#9f1727"
-      },
-      "light-danger-soft": {
-        "role": "neutral",
-        "displayName": "浅色 · danger-soft",
-        "tonalRamp": [
-          "oklch(15% 0.2321 28.66 / 0.1)",
-          "oklch(26% 0.2321 28.66 / 0.1)",
-          "oklch(38% 0.2321 28.66 / 0.1)",
-          "oklch(49% 0.2321 28.66 / 0.1)",
-          "oklch(61% 0.2321 28.66 / 0.1)",
-          "oklch(72% 0.2321 28.66 / 0.1)",
-          "oklch(84% 0.2321 28.66 / 0.1)",
-          "oklch(95% 0.2321 28.66 / 0.1)"
-        ],
-        "value": "rgba(255, 59, 48, 0.1)"
-      },
-      "light-on-danger": {
-        "role": "neutral",
-        "displayName": "浅色 · on-danger",
-        "tonalRamp": [
-          "oklch(15% 0.0000 89.88)",
-          "oklch(26% 0.0000 89.88)",
-          "oklch(38% 0.0000 89.88)",
-          "oklch(49% 0.0000 89.88)",
-          "oklch(61% 0.0000 89.88)",
-          "oklch(72% 0.0000 89.88)",
-          "oklch(84% 0.0000 89.88)",
-          "oklch(95% 0.0000 89.88)"
-        ],
-        "value": "#ffffff"
-      },
-      "light-status-online": {
-        "role": "neutral",
-        "displayName": "浅色 · status-online",
-        "tonalRamp": [
-          "oklch(15% 0.1527 147.88)",
-          "oklch(26% 0.1527 147.88)",
-          "oklch(38% 0.1527 147.88)",
-          "oklch(49% 0.1527 147.88)",
-          "oklch(61% 0.1527 147.88)",
-          "oklch(72% 0.1527 147.88)",
-          "oklch(84% 0.1527 147.88)",
-          "oklch(95% 0.1527 147.88)"
-        ],
-        "value": "#45ad5b"
-      },
-      "light-warning": {
-        "role": "neutral",
-        "displayName": "浅色 · warning",
-        "tonalRamp": [
-          "oklch(15% 0.1618 62.68)",
-          "oklch(26% 0.1618 62.68)",
-          "oklch(38% 0.1618 62.68)",
-          "oklch(49% 0.1618 62.68)",
-          "oklch(61% 0.1618 62.68)",
-          "oklch(72% 0.1618 62.68)",
-          "oklch(84% 0.1618 62.68)",
-          "oklch(95% 0.1618 62.68)"
-        ],
-        "value": "#e88808"
-      },
-      "light-phase-drying": {
-        "role": "neutral",
-        "displayName": "浅色 · phase-drying",
-        "tonalRamp": [
-          "oklch(15% 0.2177 257.42)",
-          "oklch(26% 0.2177 257.42)",
-          "oklch(38% 0.2177 257.42)",
-          "oklch(49% 0.2177 257.42)",
-          "oklch(61% 0.2177 257.42)",
-          "oklch(72% 0.2177 257.42)",
-          "oklch(84% 0.2177 257.42)",
-          "oklch(95% 0.2177 257.42)"
-        ],
-        "value": "#007aff"
-      },
-      "light-phase-maillard": {
-        "role": "neutral",
-        "displayName": "浅色 · phase-maillard",
-        "tonalRamp": [
-          "oklch(15% 0.1455 49.00)",
-          "oklch(26% 0.1455 49.00)",
-          "oklch(38% 0.1455 49.00)",
-          "oklch(49% 0.1455 49.00)",
-          "oklch(61% 0.1455 49.00)",
-          "oklch(72% 0.1455 49.00)",
-          "oklch(84% 0.1455 49.00)",
-          "oklch(95% 0.1455 49.00)"
-        ],
-        "value": "#b45309"
-      },
-      "light-phase-development": {
-        "role": "neutral",
-        "displayName": "浅色 · phase-development",
-        "tonalRamp": [
-          "oklch(15% 0.2321 28.66)",
-          "oklch(26% 0.2321 28.66)",
-          "oklch(38% 0.2321 28.66)",
-          "oklch(49% 0.2321 28.66)",
-          "oklch(61% 0.2321 28.66)",
-          "oklch(72% 0.2321 28.66)",
-          "oklch(84% 0.2321 28.66)",
-          "oklch(95% 0.2321 28.66)"
-        ],
-        "value": "#ff3b30"
-      },
-      "light-phase-cooling": {
-        "role": "neutral",
-        "displayName": "浅色 · phase-cooling",
-        "tonalRamp": [
-          "oklch(15% 0.0073 286.19)",
-          "oklch(26% 0.0073 286.19)",
-          "oklch(38% 0.0073 286.19)",
-          "oklch(49% 0.0073 286.19)",
-          "oklch(61% 0.0073 286.19)",
-          "oklch(72% 0.0073 286.19)",
-          "oklch(84% 0.0073 286.19)",
-          "oklch(95% 0.0073 286.19)"
-        ],
-        "value": "#8e8e93"
-      },
-      "light-chart-grid": {
-        "role": "neutral",
-        "displayName": "浅色 · chart-grid",
-        "tonalRamp": [
-          "oklch(15% 0.0000 0.00 / 0.06)",
-          "oklch(26% 0.0000 0.00 / 0.06)",
-          "oklch(38% 0.0000 0.00 / 0.06)",
-          "oklch(49% 0.0000 0.00 / 0.06)",
-          "oklch(61% 0.0000 0.00 / 0.06)",
-          "oklch(72% 0.0000 0.00 / 0.06)",
-          "oklch(84% 0.0000 0.00 / 0.06)",
-          "oklch(95% 0.0000 0.00 / 0.06)"
-        ],
-        "value": "#dbe3ef"
-      },
-      "light-chart-tick": {
-        "role": "neutral",
-        "displayName": "浅色 · chart-tick",
-        "tonalRamp": [
-          "oklch(15% 0.0077 286.14)",
-          "oklch(26% 0.0077 286.14)",
-          "oklch(38% 0.0077 286.14)",
-          "oklch(49% 0.0077 286.14)",
-          "oklch(61% 0.0077 286.14)",
-          "oklch(72% 0.0077 286.14)",
-          "oklch(84% 0.0077 286.14)",
-          "oklch(95% 0.0077 286.14)"
-        ],
-        "value": "#435873"
-      },
-      "light-chart-legend": {
-        "role": "neutral",
-        "displayName": "浅色 · chart-legend",
-        "tonalRamp": [
-          "oklch(15% 0.0034 286.22)",
-          "oklch(26% 0.0034 286.22)",
-          "oklch(38% 0.0034 286.22)",
-          "oklch(49% 0.0034 286.22)",
-          "oklch(61% 0.0034 286.22)",
-          "oklch(72% 0.0034 286.22)",
-          "oklch(84% 0.0034 286.22)",
-          "oklch(95% 0.0034 286.22)"
-        ],
-        "value": "#14243c"
-      },
-      "light-chart-temp": {
-        "role": "neutral",
-        "displayName": "浅色 · 温度",
-        "tonalRamp": [
-          "oklch(15% 0.1253 48.07)",
-          "oklch(26% 0.1253 48.07)",
-          "oklch(38% 0.1253 48.07)",
-          "oklch(49% 0.1253 48.07)",
-          "oklch(61% 0.1253 48.07)",
-          "oklch(72% 0.1253 48.07)",
-          "oklch(84% 0.1253 48.07)",
-          "oklch(95% 0.1253 48.07)"
-        ],
-        "value": "#9c4a16"
-      },
-      "light-chart-setpoint": {
-        "role": "neutral",
-        "displayName": "浅色 · chart-setpoint",
-        "tonalRamp": [
-          "oklch(15% 0.1929 257.11)",
-          "oklch(26% 0.1929 257.11)",
-          "oklch(38% 0.1929 257.11)",
-          "oklch(49% 0.1929 257.11)",
-          "oklch(61% 0.1929 257.11)",
-          "oklch(72% 0.1929 257.11)",
-          "oklch(84% 0.1929 257.11)",
-          "oklch(95% 0.1929 257.11)"
-        ],
-        "value": "#1473e6"
-      },
-      "light-chart-target": {
-        "role": "neutral",
-        "displayName": "浅色 · chart-target",
-        "tonalRamp": [
-          "oklch(15% 0.0073 286.19)",
-          "oklch(26% 0.0073 286.19)",
-          "oklch(38% 0.0073 286.19)",
-          "oklch(49% 0.0073 286.19)",
-          "oklch(61% 0.0073 286.19)",
-          "oklch(72% 0.0073 286.19)",
-          "oklch(84% 0.0073 286.19)",
-          "oklch(95% 0.0073 286.19)"
-        ],
-        "value": "#8e8e93"
-      },
-      "light-chart-ror": {
-        "role": "neutral",
-        "displayName": "浅色 · RoR",
-        "tonalRamp": [
-          "oklch(15% 0.1035 155.76)",
-          "oklch(26% 0.1035 155.76)",
-          "oklch(38% 0.1035 155.76)",
-          "oklch(49% 0.1035 155.76)",
-          "oklch(61% 0.1035 155.76)",
-          "oklch(72% 0.1035 155.76)",
-          "oklch(84% 0.1035 155.76)",
-          "oklch(95% 0.1035 155.76)"
-        ],
-        "value": "#247449"
-      },
-      "light-chart-ror-preview": {
-        "role": "neutral",
-        "displayName": "浅色 · RoR-preview",
-        "tonalRamp": [
-          "oklch(15% 0.1018 158.93)",
-          "oklch(26% 0.1018 158.93)",
-          "oklch(38% 0.1018 158.93)",
-          "oklch(49% 0.1018 158.93)",
-          "oklch(61% 0.1018 158.93)",
-          "oklch(72% 0.1018 158.93)",
-          "oklch(84% 0.1018 158.93)",
-          "oklch(95% 0.1018 158.93)"
-        ],
-        "value": "#69b98e"
-      },
-      "light-chart-y1-tick": {
-        "role": "neutral",
-        "displayName": "浅色 · chart-y1-tick",
-        "tonalRamp": [
-          "oklch(15% 0.1330 155.34)",
-          "oklch(26% 0.1330 155.34)",
-          "oklch(38% 0.1330 155.34)",
-          "oklch(49% 0.1330 155.34)",
-          "oklch(61% 0.1330 155.34)",
-          "oklch(72% 0.1330 155.34)",
-          "oklch(84% 0.1330 155.34)",
-          "oklch(95% 0.1330 155.34)"
-        ],
-        "value": "#2f9d62"
-      },
-      "light-chart-compare-a": {
-        "role": "neutral",
-        "displayName": "浅色 · chart-compare-a",
-        "tonalRamp": [
-          "oklch(15% 0.1847 48.15)",
-          "oklch(26% 0.1847 48.15)",
-          "oklch(38% 0.1847 48.15)",
-          "oklch(49% 0.1847 48.15)",
-          "oklch(61% 0.1847 48.15)",
-          "oklch(72% 0.1847 48.15)",
-          "oklch(84% 0.1847 48.15)",
-          "oklch(95% 0.1847 48.15)"
-        ],
-        "value": "#ef6c00"
-      },
-      "light-chart-compare-b": {
-        "role": "neutral",
-        "displayName": "浅色 · chart-compare-b",
-        "tonalRamp": [
-          "oklch(15% 0.2569 322.90)",
-          "oklch(26% 0.2569 322.90)",
-          "oklch(38% 0.2569 322.90)",
-          "oklch(49% 0.2569 322.90)",
-          "oklch(61% 0.2569 322.90)",
-          "oklch(72% 0.2569 322.90)",
-          "oklch(84% 0.2569 322.90)",
-          "oklch(95% 0.2569 322.90)"
-        ],
-        "value": "#c026d3"
-      },
-      "light-event-charge": {
-        "role": "neutral",
-        "displayName": "浅色 · event-charge",
-        "tonalRamp": [
-          "oklch(15% 0.1699 149.21)",
-          "oklch(26% 0.1699 149.21)",
-          "oklch(38% 0.1699 149.21)",
-          "oklch(49% 0.1699 149.21)",
-          "oklch(61% 0.1699 149.21)",
-          "oklch(72% 0.1699 149.21)",
-          "oklch(84% 0.1699 149.21)",
-          "oklch(95% 0.1699 149.21)"
-        ],
-        "value": "#16a34a"
-      },
-      "light-event-yellowing": {
-        "role": "neutral",
-        "displayName": "浅色 · event-yellowing",
-        "tonalRamp": [
-          "oklch(15% 0.1574 58.32)",
-          "oklch(26% 0.1574 58.32)",
-          "oklch(38% 0.1574 58.32)",
-          "oklch(49% 0.1574 58.32)",
-          "oklch(61% 0.1574 58.32)",
-          "oklch(72% 0.1574 58.32)",
-          "oklch(84% 0.1574 58.32)",
-          "oklch(95% 0.1574 58.32)"
-        ],
-        "value": "#d97706"
-      },
-      "light-event-first-crack": {
-        "role": "neutral",
-        "displayName": "浅色 · event-first-crack",
-        "tonalRamp": [
-          "oklch(15% 0.2152 27.33)",
-          "oklch(26% 0.2152 27.33)",
-          "oklch(38% 0.2152 27.33)",
-          "oklch(49% 0.2152 27.33)",
-          "oklch(61% 0.2152 27.33)",
-          "oklch(72% 0.2152 27.33)",
-          "oklch(84% 0.2152 27.33)",
-          "oklch(95% 0.2152 27.33)"
-        ],
-        "value": "#dc2626"
-      },
-      "light-event-second-crack": {
-        "role": "neutral",
-        "displayName": "浅色 · event-second-crack",
-        "tonalRamp": [
-          "oklch(15% 0.2525 302.32)",
-          "oklch(26% 0.2525 302.32)",
-          "oklch(38% 0.2525 302.32)",
-          "oklch(49% 0.2525 302.32)",
-          "oklch(61% 0.2525 302.32)",
-          "oklch(72% 0.2525 302.32)",
-          "oklch(84% 0.2525 302.32)",
-          "oklch(95% 0.2525 302.32)"
-        ],
-        "value": "#9333ea"
-      },
-      "light-event-drop": {
-        "role": "neutral",
-        "displayName": "浅色 · event-drop",
-        "tonalRamp": [
-          "oklch(15% 0.2152 262.88)",
-          "oklch(26% 0.2152 262.88)",
-          "oklch(38% 0.2152 262.88)",
-          "oklch(49% 0.2152 262.88)",
-          "oklch(61% 0.2152 262.88)",
-          "oklch(72% 0.2152 262.88)",
-          "oklch(84% 0.2152 262.88)",
-          "oklch(95% 0.2152 262.88)"
-        ],
-        "value": "#2563eb"
-      },
-      "light-event-tp": {
-        "role": "neutral",
-        "displayName": "浅色 · event-tp",
-        "tonalRamp": [
-          "oklch(15% 0.1038 184.70)",
-          "oklch(26% 0.1038 184.70)",
-          "oklch(38% 0.1038 184.70)",
-          "oklch(49% 0.1038 184.70)",
-          "oklch(61% 0.1038 184.70)",
-          "oklch(72% 0.1038 184.70)",
-          "oklch(84% 0.1038 184.70)",
-          "oklch(95% 0.1038 184.70)"
-        ],
-        "value": "#0d9488"
-      },
-      "light-editor-curve": {
-        "role": "neutral",
-        "displayName": "浅色 · editor-curve",
-        "tonalRamp": [
-          "oklch(15% 0.0234 264.36)",
-          "oklch(26% 0.0234 264.36)",
-          "oklch(38% 0.0234 264.36)",
-          "oklch(49% 0.0234 264.36)",
-          "oklch(61% 0.0234 264.36)",
-          "oklch(72% 0.0234 264.36)",
-          "oklch(84% 0.0234 264.36)",
-          "oklch(95% 0.0234 264.36)"
-        ],
-        "value": "#6b7280"
-      },
-      "light-editor-node": {
-        "role": "neutral",
-        "displayName": "浅色 · editor-node",
-        "tonalRamp": [
-          "oklch(15% 0.1574 58.32)",
-          "oklch(26% 0.1574 58.32)",
-          "oklch(38% 0.1574 58.32)",
-          "oklch(49% 0.1574 58.32)",
-          "oklch(61% 0.1574 58.32)",
-          "oklch(72% 0.1574 58.32)",
-          "oklch(84% 0.1574 58.32)",
-          "oklch(95% 0.1574 58.32)"
-        ],
-        "value": "#d97706"
-      },
-      "sage-dark-accent": {
         "role": "primary",
-        "displayName": "鼠尾草绿 · dark-强调色",
-        "value": "#b1d98b"
+        "displayName": "暖白浅色 · on-accent"
       },
-      "sage-dark-accent-hover": {
-        "role": "primary",
-        "displayName": "鼠尾草绿 · dark-强调色-hover",
-        "value": "#cbeaa6"
-      },
-      "sage-dark-accent-soft": {
-        "role": "primary",
-        "displayName": "鼠尾草绿 · dark-强调色-soft",
-        "value": "#374d2b"
-      },
-      "sage-dark-bg": {
+      "light-border": {
         "role": "neutral",
-        "displayName": "鼠尾草绿 · dark-bg",
-        "value": "#182019"
+        "displayName": "暖白浅色 · border"
       },
-      "sage-dark-surface": {
+      "light-separator": {
         "role": "neutral",
-        "displayName": "鼠尾草绿 · dark-surface",
-        "value": "#28372a"
-      },
-      "sage-dark-rail": {
-        "role": "neutral",
-        "displayName": "鼠尾草绿 · dark-rail",
-        "value": "#202e1b"
-      },
-      "sage-dark-canvas": {
-        "role": "neutral",
-        "displayName": "鼠尾草绿 · dark-canvas",
-        "value": "#202d21"
-      },
-      "sage-dark-control-bg": {
-        "role": "neutral",
-        "displayName": "鼠尾草绿 · dark-control-bg",
-        "value": "#344836"
-      },
-      "sage-dark-on-accent": {
-        "role": "neutral",
-        "displayName": "鼠尾草绿 · dark-on-强调色",
-        "value": "#182512"
-      },
-      "sage-light-accent": {
-        "role": "primary",
-        "displayName": "鼠尾草绿 · light-强调色",
-        "value": "#426126"
-      },
-      "sage-light-accent-hover": {
-        "role": "primary",
-        "displayName": "鼠尾草绿 · light-强调色-hover",
-        "value": "#30491a"
-      },
-      "sage-light-accent-soft": {
-        "role": "primary",
-        "displayName": "鼠尾草绿 · light-强调色-soft",
-        "value": "#d0e2b7"
-      },
-      "sage-light-bg": {
-        "role": "neutral",
-        "displayName": "鼠尾草绿 · light-bg",
-        "value": "#e8eddc"
-      },
-      "sage-light-surface": {
-        "role": "neutral",
-        "displayName": "鼠尾草绿 · light-surface",
-        "value": "#f8faef"
-      },
-      "sage-light-rail": {
-        "role": "neutral",
-        "displayName": "鼠尾草绿 · light-rail",
-        "value": "#d3dec2"
-      },
-      "sage-light-canvas": {
-        "role": "neutral",
-        "displayName": "鼠尾草绿 · light-canvas",
-        "value": "#fbfcf6"
-      },
-      "sage-light-control-bg": {
-        "role": "neutral",
-        "displayName": "鼠尾草绿 · light-control-bg",
-        "value": "#e0e8d1"
-      },
-      "sage-light-on-accent": {
-        "role": "neutral",
-        "displayName": "鼠尾草绿 · light-on-强调色",
-        "value": "#ffffff"
-      },
-      "sand-dark-accent": {
-        "role": "primary",
-        "displayName": "暖沙色 · dark-强调色",
-        "value": "#efbd78"
-      },
-      "sand-dark-accent-hover": {
-        "role": "primary",
-        "displayName": "暖沙色 · dark-强调色-hover",
-        "value": "#ffdbab"
-      },
-      "sand-dark-accent-soft": {
-        "role": "primary",
-        "displayName": "暖沙色 · dark-强调色-soft",
-        "value": "#5a4023"
-      },
-      "sand-dark-bg": {
-        "role": "neutral",
-        "displayName": "暖沙色 · dark-bg",
-        "value": "#261b12"
-      },
-      "sand-dark-surface": {
-        "role": "neutral",
-        "displayName": "暖沙色 · dark-surface",
-        "value": "#3c2c1f"
-      },
-      "sand-dark-rail": {
-        "role": "neutral",
-        "displayName": "暖沙色 · dark-rail",
-        "value": "#342218"
-      },
-      "sand-dark-canvas": {
-        "role": "neutral",
-        "displayName": "暖沙色 · dark-canvas",
-        "value": "#2e2118"
-      },
-      "sand-dark-control-bg": {
-        "role": "neutral",
-        "displayName": "暖沙色 · dark-control-bg",
-        "value": "#4c3828"
-      },
-      "sand-dark-on-accent": {
-        "role": "neutral",
-        "displayName": "暖沙色 · dark-on-强调色",
-        "value": "#30200f"
-      },
-      "sand-light-accent": {
-        "role": "primary",
-        "displayName": "暖沙色 · light-强调色",
-        "value": "#805022"
-      },
-      "sand-light-accent-hover": {
-        "role": "primary",
-        "displayName": "暖沙色 · light-强调色-hover",
-        "value": "#673d17"
-      },
-      "sand-light-accent-soft": {
-        "role": "primary",
-        "displayName": "暖沙色 · light-强调色-soft",
-        "value": "#edd2a7"
-      },
-      "sand-light-bg": {
-        "role": "neutral",
-        "displayName": "暖沙色 · light-bg",
-        "value": "#f2e7d2"
-      },
-      "sand-light-surface": {
-        "role": "neutral",
-        "displayName": "暖沙色 · light-surface",
-        "value": "#fffaf0"
-      },
-      "sand-light-rail": {
-        "role": "neutral",
-        "displayName": "暖沙色 · light-rail",
-        "value": "#e6d3b0"
-      },
-      "sand-light-canvas": {
-        "role": "neutral",
-        "displayName": "暖沙色 · light-canvas",
-        "value": "#fffdf5"
-      },
-      "sand-light-control-bg": {
-        "role": "neutral",
-        "displayName": "暖沙色 · light-control-bg",
-        "value": "#efdfc2"
-      },
-      "sand-light-on-accent": {
-        "role": "neutral",
-        "displayName": "暖沙色 · light-on-强调色",
-        "value": "#ffffff"
-      },
-      "classic-dark-bg": {
-        "displayName": "classic-dark-bg",
-        "value": "#101a2b"
-      },
-      "classic-dark-bg-elevated": {
-        "displayName": "classic-dark-bg-elevated",
-        "value": "#17243a"
-      },
-      "classic-dark-surface": {
-        "displayName": "classic-dark-surface",
-        "value": "#1d2c43"
-      },
-      "classic-dark-surface-2": {
-        "displayName": "classic-dark-surface-2",
-        "value": "#263750"
-      },
-      "classic-dark-surface-3": {
-        "displayName": "classic-dark-surface-3",
-        "value": "#30435f"
-      },
-      "classic-dark-canvas": {
-        "displayName": "classic-dark-canvas",
-        "value": "#132137"
-      },
-      "classic-dark-rail": {
-        "displayName": "classic-dark-rail",
-        "value": "#142745"
-      },
-      "classic-dark-control-bg": {
-        "displayName": "classic-dark-control-bg",
-        "value": "#263750"
-      },
-      "classic-dark-text": {
-        "displayName": "classic-dark-text",
-        "value": "#f1f6ff"
-      },
-      "classic-dark-text-secondary": {
-        "displayName": "classic-dark-text-secondary",
-        "value": "#bdcde5"
-      },
-      "classic-dark-text-tertiary": {
-        "displayName": "classic-dark-text-tertiary",
-        "value": "#acbfdc"
-      },
-      "classic-dark-accent": {
-        "displayName": "classic-dark-accent",
-        "value": "#92bbff"
-      },
-      "classic-dark-accent-hover": {
-        "displayName": "classic-dark-accent-hover",
-        "value": "#b7d2ff"
-      },
-      "classic-dark-accent-soft": {
-        "displayName": "classic-dark-accent-soft",
-        "value": "#2b4567"
-      },
-      "classic-dark-on-accent": {
-        "displayName": "classic-dark-on-accent",
-        "value": "#10213b"
-      },
-      "classic-dark-border": {
-        "displayName": "classic-dark-border",
-        "value": "#6c84a3"
-      },
-      "classic-dark-separator": {
-        "displayName": "classic-dark-separator",
-        "value": "#374d6b"
-      },
-      "classic-dark-chart-grid": {
-        "displayName": "classic-dark-chart-grid",
-        "value": "#2a3c56"
-      },
-      "classic-dark-chart-tick": {
-        "displayName": "classic-dark-chart-tick",
-        "value": "#bdcde5"
-      },
-      "classic-dark-chart-legend": {
-        "displayName": "classic-dark-chart-legend",
-        "value": "#f1f6ff"
-      },
-      "classic-dark-seg-thumb": {
-        "displayName": "classic-dark-seg-thumb",
-        "value": "#435d81"
-      },
-      "dark-seg-thumb": {
-        "displayName": "dark-seg-thumb",
-        "value": "#435d81"
-      },
-      "classic-light-bg": {
-        "displayName": "classic-light-bg",
-        "value": "#eaf0fa"
-      },
-      "classic-light-bg-elevated": {
-        "displayName": "classic-light-bg-elevated",
-        "value": "#f4f7fd"
-      },
-      "classic-light-surface": {
-        "displayName": "classic-light-surface",
-        "value": "#ffffff"
-      },
-      "classic-light-surface-2": {
-        "displayName": "classic-light-surface-2",
-        "value": "#f3f6fc"
-      },
-      "classic-light-surface-3": {
-        "displayName": "classic-light-surface-3",
-        "value": "#dce5f3"
-      },
-      "classic-light-canvas": {
-        "displayName": "classic-light-canvas",
-        "value": "#fcfdff"
-      },
-      "classic-light-rail": {
-        "displayName": "classic-light-rail",
-        "value": "#d9e5f7"
-      },
-      "classic-light-control-bg": {
-        "displayName": "classic-light-control-bg",
-        "value": "#e7edf7"
-      },
-      "classic-light-text": {
-        "displayName": "classic-light-text",
-        "value": "#14243c"
-      },
-      "classic-light-text-secondary": {
-        "displayName": "classic-light-text-secondary",
-        "value": "#435873"
-      },
-      "classic-light-text-tertiary": {
-        "displayName": "classic-light-text-tertiary",
-        "value": "#4e6380"
-      },
-      "classic-light-accent": {
-        "displayName": "classic-light-accent",
-        "value": "#175fc3"
-      },
-      "classic-light-accent-hover": {
-        "displayName": "classic-light-accent-hover",
-        "value": "#124b9d"
-      },
-      "classic-light-accent-soft": {
-        "displayName": "classic-light-accent-soft",
-        "value": "#d5e4fb"
-      },
-      "classic-light-on-accent": {
-        "displayName": "classic-light-on-accent",
-        "value": "#ffffff"
-      },
-      "classic-light-border": {
-        "displayName": "classic-light-border",
-        "value": "#667c99"
-      },
-      "classic-light-separator": {
-        "displayName": "classic-light-separator",
-        "value": "#c6d2e4"
-      },
-      "classic-light-chart-grid": {
-        "displayName": "classic-light-chart-grid",
-        "value": "#dbe3ef"
-      },
-      "classic-light-chart-tick": {
-        "displayName": "classic-light-chart-tick",
-        "value": "#435873"
-      },
-      "classic-light-chart-legend": {
-        "displayName": "classic-light-chart-legend",
-        "value": "#14243c"
-      },
-      "classic-light-seg-thumb": {
-        "displayName": "classic-light-seg-thumb",
-        "value": "#ffffff"
+        "displayName": "暖白浅色 · separator"
       },
       "light-seg-thumb": {
-        "displayName": "light-seg-thumb",
-        "value": "#ffffff"
-      },
-      "sage-dark-bg-elevated": {
-        "displayName": "sage-dark-bg-elevated",
-        "value": "#202b20"
-      },
-      "sage-dark-surface-2": {
-        "displayName": "sage-dark-surface-2",
-        "value": "#344836"
-      },
-      "sage-dark-surface-3": {
-        "displayName": "sage-dark-surface-3",
-        "value": "#40563c"
-      },
-      "sage-dark-text": {
-        "displayName": "sage-dark-text",
-        "value": "#eff9ed"
-      },
-      "sage-dark-text-secondary": {
-        "displayName": "sage-dark-text-secondary",
-        "value": "#c2d4ba"
-      },
-      "sage-dark-text-tertiary": {
-        "displayName": "sage-dark-text-tertiary",
-        "value": "#b4cbab"
-      },
-      "sage-dark-border": {
-        "displayName": "sage-dark-border",
-        "value": "#829775"
-      },
-      "sage-dark-separator": {
-        "displayName": "sage-dark-separator",
-        "value": "#44573b"
-      },
-      "sage-dark-chart-grid": {
-        "displayName": "sage-dark-chart-grid",
-        "value": "#35462f"
-      },
-      "sage-dark-chart-tick": {
-        "displayName": "sage-dark-chart-tick",
-        "value": "#c2d4ba"
-      },
-      "sage-dark-chart-legend": {
-        "displayName": "sage-dark-chart-legend",
-        "value": "#eff9ed"
-      },
-      "sage-dark-seg-thumb": {
-        "displayName": "sage-dark-seg-thumb",
-        "value": "#526f47"
-      },
-      "sage-light-bg-elevated": {
-        "displayName": "sage-light-bg-elevated",
-        "value": "#f2f5e7"
-      },
-      "sage-light-surface-2": {
-        "displayName": "sage-light-surface-2",
-        "value": "#f0f4e6"
-      },
-      "sage-light-surface-3": {
-        "displayName": "sage-light-surface-3",
-        "value": "#d9e3c7"
-      },
-      "sage-light-text": {
-        "displayName": "sage-light-text",
-        "value": "#24321c"
-      },
-      "sage-light-text-secondary": {
-        "displayName": "sage-light-text-secondary",
-        "value": "#4a5b38"
-      },
-      "sage-light-text-tertiary": {
-        "displayName": "sage-light-text-tertiary",
-        "value": "#52623e"
-      },
-      "sage-light-border": {
-        "displayName": "sage-light-border",
-        "value": "#6c7c57"
-      },
-      "sage-light-separator": {
-        "displayName": "sage-light-separator",
-        "value": "#c5d0b1"
-      },
-      "sage-light-chart-grid": {
-        "displayName": "sage-light-chart-grid",
-        "value": "#dce4cf"
-      },
-      "sage-light-chart-tick": {
-        "displayName": "sage-light-chart-tick",
-        "value": "#4a5b38"
-      },
-      "sage-light-chart-legend": {
-        "displayName": "sage-light-chart-legend",
-        "value": "#24321c"
-      },
-      "sage-light-seg-thumb": {
-        "displayName": "sage-light-seg-thumb",
-        "value": "#f8faef"
-      },
-      "sand-dark-bg-elevated": {
-        "displayName": "sand-dark-bg-elevated",
-        "value": "#302319"
-      },
-      "sand-dark-surface-2": {
-        "displayName": "sand-dark-surface-2",
-        "value": "#483526"
-      },
-      "sand-dark-surface-3": {
-        "displayName": "sand-dark-surface-3",
-        "value": "#57412e"
-      },
-      "sand-dark-text": {
-        "displayName": "sand-dark-text",
-        "value": "#fff4e0"
-      },
-      "sand-dark-text-secondary": {
-        "displayName": "sand-dark-text-secondary",
-        "value": "#e0c6a4"
-      },
-      "sand-dark-text-tertiary": {
-        "displayName": "sand-dark-text-tertiary",
-        "value": "#d1b390"
-      },
-      "sand-dark-border": {
-        "displayName": "sand-dark-border",
-        "value": "#a68b68"
-      },
-      "sand-dark-separator": {
-        "displayName": "sand-dark-separator",
-        "value": "#614b33"
-      },
-      "sand-dark-chart-grid": {
-        "displayName": "sand-dark-chart-grid",
-        "value": "#4a3927"
-      },
-      "sand-dark-chart-tick": {
-        "displayName": "sand-dark-chart-tick",
-        "value": "#e0c6a4"
-      },
-      "sand-dark-chart-legend": {
-        "displayName": "sand-dark-chart-legend",
-        "value": "#fff4e0"
-      },
-      "sand-dark-seg-thumb": {
-        "displayName": "sand-dark-seg-thumb",
-        "value": "#6d5339"
-      },
-      "sand-light-bg-elevated": {
-        "displayName": "sand-light-bg-elevated",
-        "value": "#fcf5e6"
-      },
-      "sand-light-surface-2": {
-        "displayName": "sand-light-surface-2",
-        "value": "#f9efd9"
-      },
-      "sand-light-surface-3": {
-        "displayName": "sand-light-surface-3",
-        "value": "#e8d7b8"
-      },
-      "sand-light-text": {
-        "displayName": "sand-light-text",
-        "value": "#382718"
-      },
-      "sand-light-text-secondary": {
-        "displayName": "sand-light-text-secondary",
-        "value": "#695239"
-      },
-      "sand-light-text-tertiary": {
-        "displayName": "sand-light-text-tertiary",
-        "value": "#70583e"
-      },
-      "sand-light-border": {
-        "displayName": "sand-light-border",
-        "value": "#94764e"
-      },
-      "sand-light-separator": {
-        "displayName": "sand-light-separator",
-        "value": "#d4bf9b"
-      },
-      "sand-light-chart-grid": {
-        "displayName": "sand-light-chart-grid",
-        "value": "#e6d9bf"
-      },
-      "sand-light-chart-tick": {
-        "displayName": "sand-light-chart-tick",
-        "value": "#695239"
-      },
-      "sand-light-chart-legend": {
-        "displayName": "sand-light-chart-legend",
-        "value": "#382718"
-      },
-      "sand-light-seg-thumb": {
-        "displayName": "sand-light-seg-thumb",
-        "value": "#fffaf0"
-      },
-      "ocean-dark-bg": {
-        "displayName": "ocean-dark-bg",
-        "value": "#091d27"
-      },
-      "ocean-dark-bg-elevated": {
-        "displayName": "ocean-dark-bg-elevated",
-        "value": "#0d2935"
-      },
-      "ocean-dark-surface": {
-        "displayName": "ocean-dark-surface",
-        "value": "#113441"
-      },
-      "ocean-dark-surface-2": {
-        "displayName": "ocean-dark-surface-2",
-        "value": "#194451"
-      },
-      "ocean-dark-surface-3": {
-        "displayName": "ocean-dark-surface-3",
-        "value": "#225563"
-      },
-      "ocean-dark-canvas": {
-        "displayName": "ocean-dark-canvas",
-        "value": "#0a2732"
-      },
-      "ocean-dark-rail": {
-        "displayName": "ocean-dark-rail",
-        "value": "#082e40"
-      },
-      "ocean-dark-control-bg": {
-        "displayName": "ocean-dark-control-bg",
-        "value": "#194451"
-      },
-      "ocean-dark-text": {
-        "displayName": "ocean-dark-text",
-        "value": "#e4fbff"
-      },
-      "ocean-dark-text-secondary": {
-        "displayName": "ocean-dark-text-secondary",
-        "value": "#aad5df"
-      },
-      "ocean-dark-text-tertiary": {
-        "displayName": "ocean-dark-text-tertiary",
-        "value": "#9bc8d3"
-      },
-      "ocean-dark-accent": {
-        "displayName": "ocean-dark-accent",
-        "value": "#6dded8"
-      },
-      "ocean-dark-accent-hover": {
-        "displayName": "ocean-dark-accent-hover",
-        "value": "#a6f5ee"
-      },
-      "ocean-dark-accent-soft": {
-        "displayName": "ocean-dark-accent-soft",
-        "value": "#1d4e53"
-      },
-      "ocean-dark-on-accent": {
-        "displayName": "ocean-dark-on-accent",
-        "value": "#07302e"
-      },
-      "ocean-dark-border": {
-        "displayName": "ocean-dark-border",
-        "value": "#709eac"
-      },
-      "ocean-dark-separator": {
-        "displayName": "ocean-dark-separator",
-        "value": "#2b5a68"
-      },
-      "ocean-dark-chart-grid": {
-        "displayName": "ocean-dark-chart-grid",
-        "value": "#1d4655"
-      },
-      "ocean-dark-chart-tick": {
-        "displayName": "ocean-dark-chart-tick",
-        "value": "#aad5df"
-      },
-      "ocean-dark-chart-legend": {
-        "displayName": "ocean-dark-chart-legend",
-        "value": "#e4fbff"
-      },
-      "ocean-dark-seg-thumb": {
-        "displayName": "ocean-dark-seg-thumb",
-        "value": "#356674"
-      },
-      "ocean-light-bg": {
-        "displayName": "ocean-light-bg",
-        "value": "#dfedf2"
-      },
-      "ocean-light-bg-elevated": {
-        "displayName": "ocean-light-bg-elevated",
-        "value": "#f0f8fa"
-      },
-      "ocean-light-surface": {
-        "displayName": "ocean-light-surface",
-        "value": "#f7fdff"
-      },
-      "ocean-light-surface-2": {
-        "displayName": "ocean-light-surface-2",
-        "value": "#eaf5f7"
-      },
-      "ocean-light-surface-3": {
-        "displayName": "ocean-light-surface-3",
-        "value": "#cce2e8"
-      },
-      "ocean-light-canvas": {
-        "displayName": "ocean-light-canvas",
-        "value": "#ffffff"
-      },
-      "ocean-light-rail": {
-        "displayName": "ocean-light-rail",
-        "value": "#bad7e2"
-      },
-      "ocean-light-control-bg": {
-        "displayName": "ocean-light-control-bg",
-        "value": "#d9ebf0"
-      },
-      "ocean-light-text": {
-        "displayName": "ocean-light-text",
-        "value": "#12333f"
-      },
-      "ocean-light-text-secondary": {
-        "displayName": "ocean-light-text-secondary",
-        "value": "#365e6b"
-      },
-      "ocean-light-text-tertiary": {
-        "displayName": "ocean-light-text-tertiary",
-        "value": "#365d69"
-      },
-      "ocean-light-accent": {
-        "displayName": "ocean-light-accent",
-        "value": "#006b70"
-      },
-      "ocean-light-accent-hover": {
-        "displayName": "ocean-light-accent-hover",
-        "value": "#005459"
-      },
-      "ocean-light-accent-soft": {
-        "displayName": "ocean-light-accent-soft",
-        "value": "#b9e4e3"
-      },
-      "ocean-light-on-accent": {
-        "displayName": "ocean-light-on-accent",
-        "value": "#ffffff"
-      },
-      "ocean-light-border": {
-        "displayName": "ocean-light-border",
-        "value": "#527f8e"
-      },
-      "ocean-light-separator": {
-        "displayName": "ocean-light-separator",
-        "value": "#afcdd6"
-      },
-      "ocean-light-chart-grid": {
-        "displayName": "ocean-light-chart-grid",
-        "value": "#d2e5eb"
-      },
-      "ocean-light-chart-tick": {
-        "displayName": "ocean-light-chart-tick",
-        "value": "#365e6b"
-      },
-      "ocean-light-chart-legend": {
-        "displayName": "ocean-light-chart-legend",
-        "value": "#12333f"
-      },
-      "ocean-light-seg-thumb": {
-        "displayName": "ocean-light-seg-thumb",
-        "value": "#f7fdff"
-      },
-      "plum-dark-bg": {
-        "displayName": "plum-dark-bg",
-        "value": "#25192d"
-      },
-      "plum-dark-bg-elevated": {
-        "displayName": "plum-dark-bg-elevated",
-        "value": "#302138"
-      },
-      "plum-dark-surface": {
-        "displayName": "plum-dark-surface",
-        "value": "#3b2946"
-      },
-      "plum-dark-surface-2": {
-        "displayName": "plum-dark-surface-2",
-        "value": "#493353"
-      },
-      "plum-dark-surface-3": {
-        "displayName": "plum-dark-surface-3",
-        "value": "#573f61"
-      },
-      "plum-dark-canvas": {
-        "displayName": "plum-dark-canvas",
-        "value": "#2c1e35"
-      },
-      "plum-dark-rail": {
-        "displayName": "plum-dark-rail",
-        "value": "#321e40"
-      },
-      "plum-dark-control-bg": {
-        "displayName": "plum-dark-control-bg",
-        "value": "#493353"
-      },
-      "plum-dark-text": {
-        "displayName": "plum-dark-text",
-        "value": "#fff0ff"
-      },
-      "plum-dark-text-secondary": {
-        "displayName": "plum-dark-text-secondary",
-        "value": "#dcc2e2"
-      },
-      "plum-dark-text-tertiary": {
-        "displayName": "plum-dark-text-tertiary",
-        "value": "#ceb1d7"
-      },
-      "plum-dark-accent": {
-        "displayName": "plum-dark-accent",
-        "value": "#e3a8e8"
-      },
-      "plum-dark-accent-hover": {
-        "displayName": "plum-dark-accent-hover",
-        "value": "#f2ccf6"
-      },
-      "plum-dark-accent-soft": {
-        "displayName": "plum-dark-accent-soft",
-        "value": "#5a3765"
-      },
-      "plum-dark-on-accent": {
-        "displayName": "plum-dark-on-accent",
-        "value": "#351d3c"
-      },
-      "plum-dark-border": {
-        "displayName": "plum-dark-border",
-        "value": "#ac8ab9"
-      },
-      "plum-dark-separator": {
-        "displayName": "plum-dark-separator",
-        "value": "#61466c"
-      },
-      "plum-dark-chart-grid": {
-        "displayName": "plum-dark-chart-grid",
-        "value": "#4d3659"
-      },
-      "plum-dark-chart-tick": {
-        "displayName": "plum-dark-chart-tick",
-        "value": "#dcc2e2"
-      },
-      "plum-dark-chart-legend": {
-        "displayName": "plum-dark-chart-legend",
-        "value": "#fff0ff"
-      },
-      "plum-dark-seg-thumb": {
-        "displayName": "plum-dark-seg-thumb",
-        "value": "#74517f"
-      },
-      "plum-light-bg": {
-        "displayName": "plum-light-bg",
-        "value": "#eee4f0"
-      },
-      "plum-light-bg-elevated": {
-        "displayName": "plum-light-bg-elevated",
-        "value": "#f8f1fa"
-      },
-      "plum-light-surface": {
-        "displayName": "plum-light-surface",
-        "value": "#fffaff"
-      },
-      "plum-light-surface-2": {
-        "displayName": "plum-light-surface-2",
-        "value": "#f5eaf7"
-      },
-      "plum-light-surface-3": {
-        "displayName": "plum-light-surface-3",
-        "value": "#e4d0e8"
-      },
-      "plum-light-canvas": {
-        "displayName": "plum-light-canvas",
-        "value": "#fffbff"
-      },
-      "plum-light-rail": {
-        "displayName": "plum-light-rail",
-        "value": "#dec7e4"
-      },
-      "plum-light-control-bg": {
-        "displayName": "plum-light-control-bg",
-        "value": "#ebdcef"
-      },
-      "plum-light-text": {
-        "displayName": "plum-light-text",
-        "value": "#3c2444"
-      },
-      "plum-light-text-secondary": {
-        "displayName": "plum-light-text-secondary",
-        "value": "#684d71"
-      },
-      "plum-light-text-tertiary": {
-        "displayName": "plum-light-text-tertiary",
-        "value": "#674a71"
-      },
-      "plum-light-accent": {
-        "displayName": "plum-light-accent",
-        "value": "#85418e"
-      },
-      "plum-light-accent-hover": {
-        "displayName": "plum-light-accent-hover",
-        "value": "#6c3074"
-      },
-      "plum-light-accent-soft": {
-        "displayName": "plum-light-accent-soft",
-        "value": "#e9c9ed"
-      },
-      "plum-light-on-accent": {
-        "displayName": "plum-light-on-accent",
-        "value": "#ffffff"
-      },
-      "plum-light-border": {
-        "displayName": "plum-light-border",
-        "value": "#8b6795"
-      },
-      "plum-light-separator": {
-        "displayName": "plum-light-separator",
-        "value": "#d5bddc"
-      },
-      "plum-light-chart-grid": {
-        "displayName": "plum-light-chart-grid",
-        "value": "#e8d9ec"
-      },
-      "plum-light-chart-tick": {
-        "displayName": "plum-light-chart-tick",
-        "value": "#684d71"
-      },
-      "plum-light-chart-legend": {
-        "displayName": "plum-light-chart-legend",
-        "value": "#3c2444"
-      },
-      "plum-light-seg-thumb": {
-        "displayName": "plum-light-seg-thumb",
-        "value": "#fffaff"
-      },
-      "graphite-dark-bg": {
-        "displayName": "graphite-dark-bg",
-        "value": "#090909"
-      },
-      "graphite-dark-bg-elevated": {
-        "displayName": "graphite-dark-bg-elevated",
-        "value": "#151515"
-      },
-      "graphite-dark-surface": {
-        "displayName": "graphite-dark-surface",
-        "value": "#202020"
-      },
-      "graphite-dark-surface-2": {
-        "displayName": "graphite-dark-surface-2",
-        "value": "#303030"
-      },
-      "graphite-dark-surface-3": {
-        "displayName": "graphite-dark-surface-3",
-        "value": "#404040"
-      },
-      "graphite-dark-canvas": {
-        "displayName": "graphite-dark-canvas",
-        "value": "#111111"
-      },
-      "graphite-dark-rail": {
-        "displayName": "graphite-dark-rail",
-        "value": "#000000"
-      },
-      "graphite-dark-control-bg": {
-        "displayName": "graphite-dark-control-bg",
-        "value": "#303030"
-      },
-      "graphite-dark-text": {
-        "displayName": "graphite-dark-text",
-        "value": "#ffffff"
-      },
-      "graphite-dark-text-secondary": {
-        "displayName": "graphite-dark-text-secondary",
-        "value": "#dedede"
-      },
-      "graphite-dark-text-tertiary": {
-        "displayName": "graphite-dark-text-tertiary",
-        "value": "#c6c6c6"
-      },
-      "graphite-dark-accent": {
-        "displayName": "graphite-dark-accent",
-        "value": "#ffffff"
-      },
-      "graphite-dark-accent-hover": {
-        "displayName": "graphite-dark-accent-hover",
-        "value": "#dddddd"
-      },
-      "graphite-dark-accent-soft": {
-        "displayName": "graphite-dark-accent-soft",
-        "value": "#3e3e3e"
-      },
-      "graphite-dark-on-accent": {
-        "displayName": "graphite-dark-on-accent",
-        "value": "#101010"
-      },
-      "graphite-dark-border": {
-        "displayName": "graphite-dark-border",
-        "value": "#9a9a9a"
-      },
-      "graphite-dark-separator": {
-        "displayName": "graphite-dark-separator",
-        "value": "#555555"
-      },
-      "graphite-dark-chart-grid": {
-        "displayName": "graphite-dark-chart-grid",
-        "value": "#3e3e3e"
-      },
-      "graphite-dark-chart-tick": {
-        "displayName": "graphite-dark-chart-tick",
-        "value": "#dedede"
-      },
-      "graphite-dark-chart-legend": {
-        "displayName": "graphite-dark-chart-legend",
-        "value": "#ffffff"
-      },
-      "graphite-dark-seg-thumb": {
-        "displayName": "graphite-dark-seg-thumb",
-        "value": "#5f5f5f"
-      },
-      "graphite-light-bg": {
-        "displayName": "graphite-light-bg",
-        "value": "#e6e6e6"
-      },
-      "graphite-light-bg-elevated": {
-        "displayName": "graphite-light-bg-elevated",
-        "value": "#f5f5f5"
-      },
-      "graphite-light-surface": {
-        "displayName": "graphite-light-surface",
-        "value": "#ffffff"
-      },
-      "graphite-light-surface-2": {
-        "displayName": "graphite-light-surface-2",
-        "value": "#f4f4f4"
-      },
-      "graphite-light-surface-3": {
-        "displayName": "graphite-light-surface-3",
-        "value": "#d6d6d6"
-      },
-      "graphite-light-canvas": {
-        "displayName": "graphite-light-canvas",
-        "value": "#ffffff"
-      },
-      "graphite-light-rail": {
-        "displayName": "graphite-light-rail",
-        "value": "#cccccc"
-      },
-      "graphite-light-control-bg": {
-        "displayName": "graphite-light-control-bg",
-        "value": "#e5e5e5"
-      },
-      "graphite-light-text": {
-        "displayName": "graphite-light-text",
-        "value": "#101010"
-      },
-      "graphite-light-text-secondary": {
-        "displayName": "graphite-light-text-secondary",
-        "value": "#393939"
-      },
-      "graphite-light-text-tertiary": {
-        "displayName": "graphite-light-text-tertiary",
-        "value": "#484848"
-      },
-      "graphite-light-accent": {
-        "displayName": "graphite-light-accent",
-        "value": "#191919"
-      },
-      "graphite-light-accent-hover": {
-        "displayName": "graphite-light-accent-hover",
-        "value": "#383838"
-      },
-      "graphite-light-accent-soft": {
-        "displayName": "graphite-light-accent-soft",
-        "value": "#cecece"
-      },
-      "graphite-light-on-accent": {
-        "displayName": "graphite-light-on-accent",
-        "value": "#ffffff"
-      },
-      "graphite-light-border": {
-        "displayName": "graphite-light-border",
-        "value": "#686868"
-      },
-      "graphite-light-separator": {
-        "displayName": "graphite-light-separator",
-        "value": "#adadad"
-      },
-      "graphite-light-chart-grid": {
-        "displayName": "graphite-light-chart-grid",
-        "value": "#d0d0d0"
-      },
-      "graphite-light-chart-tick": {
-        "displayName": "graphite-light-chart-tick",
-        "value": "#393939"
-      },
-      "graphite-light-chart-legend": {
-        "displayName": "graphite-light-chart-legend",
-        "value": "#101010"
-      },
-      "graphite-light-seg-thumb": {
-        "displayName": "graphite-light-seg-thumb",
-        "value": "#ffffff"
+        "role": "neutral",
+        "displayName": "暖白浅色 · seg-thumb"
+      },
+      "light-fill": {
+        "role": "neutral",
+        "displayName": "暖白浅色 · fill"
+      },
+      "light-fill-strong": {
+        "role": "neutral",
+        "displayName": "暖白浅色 · fill-strong"
+      },
+      "light-gray-soft": {
+        "role": "neutral",
+        "displayName": "暖白浅色 · gray-soft"
+      },
+      "light-info": {
+        "role": "neutral",
+        "displayName": "暖白浅色 · info"
+      },
+      "light-info-hover": {
+        "role": "neutral",
+        "displayName": "暖白浅色 · info-hover"
+      },
+      "light-info-soft": {
+        "role": "neutral",
+        "displayName": "暖白浅色 · info-soft"
       }
     },
     "typographyMeta": {
       "display": {
         "displayName": "display",
-        "purpose": "主要实时读数。"
+        "purpose": "主要实时读数"
       },
-      "display-docked": {
-        "displayName": "display-docked",
-        "purpose": "主要实时读数。"
+      "delta": {
+        "displayName": "delta",
+        "purpose": "偏差读数"
+      },
+      "display-compact": {
+        "displayName": "display-compact",
+        "purpose": "紧凑桌面和宽屏停靠"
+      },
+      "delta-compact": {
+        "displayName": "delta-compact",
+        "purpose": "紧凑偏差"
+      },
+      "display-mobile": {
+        "displayName": "display-mobile",
+        "purpose": "移动窄屏读数"
       },
       "headline": {
         "displayName": "headline",
-        "purpose": "当前任务界面的复用文字层级。"
+        "purpose": "管理标题"
       },
       "title": {
         "displayName": "title",
-        "purpose": "当前任务界面的复用文字层级。"
+        "purpose": "图表与分组"
+      },
+      "chat-title": {
+        "displayName": "chat-title",
+        "purpose": "简约聊天标题"
+      },
+      "welcome": {
+        "displayName": "welcome",
+        "purpose": "欢迎标题"
+      },
+      "welcome-mobile": {
+        "displayName": "welcome-mobile",
+        "purpose": "手机欢迎标题"
       },
       "body": {
         "displayName": "body",
-        "purpose": "当前任务界面的复用文字层级。"
+        "purpose": "普通正文"
       },
       "reading": {
         "displayName": "reading",
-        "purpose": "AI 正文与主要输入。"
+        "purpose": "聊天阅读正文"
+      },
+      "input-reading": {
+        "displayName": "input-reading",
+        "purpose": "AI输入"
       },
       "label": {
         "displayName": "label",
-        "purpose": "单位、图例与辅助元数据。"
+        "purpose": "导航、图例、事件与署名"
+      },
+      "legacy-annotation": {
+        "displayName": "legacy-annotation",
+        "purpose": "既有局部辅助标注，不作为正文或关键操作尺寸"
       },
       "button": {
         "displayName": "button",
-        "purpose": "当前任务界面的复用文字层级。"
+        "purpose": "标准控件"
       },
       "number": {
         "displayName": "number",
-        "purpose": "时间与测量数据的等宽数字特性。"
+        "purpose": "等宽数字特性"
       }
     },
     "shadows": [
       {
-        "name": "dark-shadow-card",
+        "name": "key-shadow",
+        "value": "0 1px 0 var(--border), 0 3px 5px var(--key-shade), inset 0 1px 0 var(--key-highlight)",
+        "purpose": "标准可操作控件的有限下沿、软阴影和细顶光。"
+      },
+      {
+        "name": "key-highlight-dark",
+        "value": "color-mix(in srgb, var(--text) 12%, transparent)",
+        "purpose": "深色细顶光。"
+      },
+      {
+        "name": "key-highlight-light",
+        "value": "color-mix(in srgb, var(--surface) 92%, transparent)",
+        "purpose": "浅色细顶光。"
+      },
+      {
+        "name": "key-shade-dark",
+        "value": "color-mix(in srgb, var(--bg) 74%, transparent)",
+        "purpose": "深色控件软阴影。"
+      },
+      {
+        "name": "key-shade-light",
+        "value": "color-mix(in srgb, var(--text) 10%, transparent)",
+        "purpose": "浅色控件软阴影。"
+      },
+      {
+        "name": "key-pressed",
+        "value": "inset 0 2px 3px var(--key-shade), 0 1px 0 var(--key-highlight)",
+        "purpose": "按下收拢深度。"
+      },
+      {
+        "name": "composer-inset",
+        "value": "inset 0 1px 3px var(--key-shade)",
+        "purpose": "单一内嵌输入区。"
+      },
+      {
+        "name": "emergency-edge",
+        "value": "inset 0 1px 0 var(--key-highlight), 0 2px 3px var(--key-shade)",
+        "purpose": "急停另有3px下边界；不推广为内容卡片阴影。"
+      },
+      {
+        "name": "shadow-card-dark",
         "value": "0 1px 2px rgba(0, 0, 0, 0.22), 0 12px 30px rgba(0, 0, 0, 0.2)",
-        "purpose": "少量独立控件；常规内容卡片保持平面。"
+        "purpose": "有限独立控件；常规内容面保持平面。"
       },
       {
-        "name": "dark-shadow-pop",
+        "name": "shadow-pop-dark",
         "value": "0 24px 70px rgba(0, 0, 0, 0.48)",
-        "purpose": "独立浮层、菜单与历史面板。"
+        "purpose": "菜单、历史与抽屉浮层。"
       },
       {
-        "name": "dark-shadow-inset-top",
-        "value": "inset 0 1px 0 rgba(255, 255, 255, 0.05)",
-        "purpose": "现有面层内缘高光。"
-      },
-      {
-        "name": "dark-shadow-thumb",
+        "name": "shadow-thumb-dark",
         "value": "0 1px 3px rgba(0, 0, 0, 0.5), 0 0 0 0.5px rgba(0, 0, 0, 0.2)",
-        "purpose": "分段选择的当前项。"
+        "purpose": "分段选择器。"
       },
       {
-        "name": "light-shadow-card",
+        "name": "shadow-card-light",
         "value": "0 1px 2px rgba(52, 45, 36, 0.04), 0 10px 30px rgba(52, 45, 36, 0.06)",
-        "purpose": "少量独立控件；常规内容卡片保持平面。"
+        "purpose": "有限独立控件；常规内容面保持平面。"
       },
       {
-        "name": "light-shadow-pop",
+        "name": "shadow-pop-light",
         "value": "0 24px 70px rgba(52, 45, 36, 0.18)",
-        "purpose": "独立浮层、菜单与历史面板。"
+        "purpose": "菜单、历史与抽屉浮层。"
       },
       {
-        "name": "light-shadow-inset-top",
-        "value": "inset 0 1px 0 rgba(255, 255, 255, 0.7)",
-        "purpose": "现有面层内缘高光。"
-      },
-      {
-        "name": "light-shadow-thumb",
+        "name": "shadow-thumb-light",
         "value": "0 1px 3px rgba(0, 0, 0, 0.18), 0 0 0 0.5px rgba(0, 0, 0, 0.04)",
-        "purpose": "分段选择的当前项。"
+        "purpose": "分段选择器。"
       }
     ],
     "motion": [
       {
         "name": "ease-apple",
         "value": "cubic-bezier(0.32, 0.72, 0, 1)",
-        "purpose": "现有面板与轻量位移动效。"
+        "purpose": "空间状态变化。"
       },
       {
         "name": "ease-apple-fast",
         "value": "cubic-bezier(0.4, 0, 0.2, 1)",
-        "purpose": "短时状态与主题颜色反馈。"
+        "purpose": "控件反馈。"
+      },
+      {
+        "name": "tactile-control",
+        "value": "120ms",
+        "purpose": "标准控件反馈。"
+      },
+      {
+        "name": "press-travel",
+        "value": "translateY(1px)",
+        "purpose": "标准按钮和事件按钮。"
+      },
+      {
+        "name": "emergency-press",
+        "value": "scale(.97)",
+        "purpose": "当前急停局部实现，不作为通用规则。"
       },
       {
         "name": "duration-fast",
         "value": "160ms",
-        "purpose": "按下与短状态反馈。"
+        "purpose": "既有短反馈。"
       },
       {
         "name": "duration-med",
         "value": "240ms",
-        "purpose": "已有次级过渡与主题颜色时长。"
+        "purpose": "主题颜色过渡。"
       },
       {
-        "name": "theme-class-lifetime",
+        "name": "theme-window",
         "value": "280ms",
-        "purpose": "theme.js 移除临时 theme-animating 类；减少动效时跳过。"
+        "purpose": "仅主动主题切换，减少动效时跳过。"
       },
       {
         "name": "reduced-motion",
         "value": "prefers-reduced-motion: reduce",
-        "purpose": "atlas.css 关闭动画与过渡，保留即时状态反馈。"
+        "purpose": "取消非必要过渡，状态即时更新。"
       }
     ],
     "breakpoints": [
       {
-        "name": "chat-dock-min",
-        "value": "1280px"
+        "name": "drawer",
+        "value": "min-width: 1280px",
+        "purpose": "520px普通抽屉。"
       },
       {
-        "name": "accounts-stack-max",
-        "value": "1100px"
+        "name": "docked",
+        "value": "min-width: 1600px",
+        "purpose": "未放大聊天预留544px。"
       },
       {
-        "name": "workspace-stack-max",
-        "value": "1023px"
+        "name": "navigation",
+        "value": "max-width: 1023px",
+        "purpose": "横向主导航。"
       },
       {
-        "name": "settings-stack-max",
-        "value": "700px"
+        "name": "mobile",
+        "value": "max-width: 600px",
+        "purpose": "两列读数、三列事件。"
       },
       {
-        "name": "chat-landscape-max-height",
-        "value": "480px"
+        "name": "landscape",
+        "value": "max-height: 480px and min-width: 600px",
+        "purpose": "阅读和输入左右分区。"
       },
       {
-        "name": "chat-landscape-min-width",
-        "value": "600px"
+        "name": "workspace-stack",
+        "value": "container workspace max-width: 840px",
+        "purpose": "按实际工作区与UI缩放堆叠。"
+      },
+      {
+        "name": "workspace-narrow",
+        "value": "container workspace max-width: 540px",
+        "purpose": "两列读数、三列事件。"
+      },
+      {
+        "name": "workspace-short",
+        "value": "container workspace max-height: 540px",
+        "purpose": "桌面曲线最小380px并滚动。"
       }
     ],
-    "palettes": {
-      "classic": {
-        "dark": {
-          "bg": "#101a2b",
-          "bg-elevated": "#17243a",
-          "surface": "#1d2c43",
-          "surface-2": "#263750",
-          "surface-3": "#30435f",
-          "canvas": "#132137",
-          "rail": "#142745",
-          "control-bg": "#263750",
-          "text": "#f1f6ff",
-          "text-secondary": "#bdcde5",
-          "text-tertiary": "#acbfdc",
-          "accent": "#92bbff",
-          "accent-hover": "#b7d2ff",
-          "accent-soft": "#2b4567",
-          "on-accent": "#10213b",
-          "border": "#6c84a3",
-          "separator": "#374d6b",
-          "chart-grid": "#2a3c56",
-          "chart-tick": "#bdcde5",
-          "chart-legend": "#f1f6ff",
-          "seg-thumb": "#435d81"
-        },
-        "light": {
-          "bg": "#eaf0fa",
-          "bg-elevated": "#f4f7fd",
-          "surface": "#ffffff",
-          "surface-2": "#f3f6fc",
-          "surface-3": "#dce5f3",
-          "canvas": "#fcfdff",
-          "rail": "#d9e5f7",
-          "control-bg": "#e7edf7",
-          "text": "#14243c",
-          "text-secondary": "#435873",
-          "text-tertiary": "#4e6380",
-          "accent": "#175fc3",
-          "accent-hover": "#124b9d",
-          "accent-soft": "#d5e4fb",
-          "on-accent": "#ffffff",
-          "border": "#667c99",
-          "separator": "#c6d2e4",
-          "chart-grid": "#dbe3ef",
-          "chart-tick": "#435873",
-          "chart-legend": "#14243c",
-          "seg-thumb": "#ffffff"
-        }
-      },
-      "sage": {
-        "dark": {
-          "bg": "#182019",
-          "bg-elevated": "#202b20",
-          "surface": "#28372a",
-          "surface-2": "#344836",
-          "surface-3": "#40563c",
-          "canvas": "#202d21",
-          "rail": "#202e1b",
-          "control-bg": "#344836",
-          "text": "#eff9ed",
-          "text-secondary": "#c2d4ba",
-          "text-tertiary": "#b4cbab",
-          "accent": "#b1d98b",
-          "accent-hover": "#cbeaa6",
-          "accent-soft": "#374d2b",
-          "on-accent": "#182512",
-          "border": "#829775",
-          "separator": "#44573b",
-          "chart-grid": "#35462f",
-          "chart-tick": "#c2d4ba",
-          "chart-legend": "#eff9ed",
-          "seg-thumb": "#526f47"
-        },
-        "light": {
-          "bg": "#e8eddc",
-          "bg-elevated": "#f2f5e7",
-          "surface": "#f8faef",
-          "surface-2": "#f0f4e6",
-          "surface-3": "#d9e3c7",
-          "canvas": "#fbfcf6",
-          "rail": "#d3dec2",
-          "control-bg": "#e0e8d1",
-          "text": "#24321c",
-          "text-secondary": "#4a5b38",
-          "text-tertiary": "#52623e",
-          "accent": "#426126",
-          "accent-hover": "#30491a",
-          "accent-soft": "#d0e2b7",
-          "on-accent": "#ffffff",
-          "border": "#6c7c57",
-          "separator": "#c5d0b1",
-          "chart-grid": "#dce4cf",
-          "chart-tick": "#4a5b38",
-          "chart-legend": "#24321c",
-          "seg-thumb": "#f8faef"
-        }
-      },
-      "sand": {
-        "dark": {
-          "bg": "#261b12",
-          "bg-elevated": "#302319",
-          "surface": "#3c2c1f",
-          "surface-2": "#483526",
-          "surface-3": "#57412e",
-          "canvas": "#2e2118",
-          "rail": "#342218",
-          "control-bg": "#4c3828",
-          "text": "#fff4e0",
-          "text-secondary": "#e0c6a4",
-          "text-tertiary": "#d1b390",
-          "accent": "#efbd78",
-          "accent-hover": "#ffdbab",
-          "accent-soft": "#5a4023",
-          "on-accent": "#30200f",
-          "border": "#a68b68",
-          "separator": "#614b33",
-          "chart-grid": "#4a3927",
-          "chart-tick": "#e0c6a4",
-          "chart-legend": "#fff4e0",
-          "seg-thumb": "#6d5339"
-        },
-        "light": {
-          "bg": "#f2e7d2",
-          "bg-elevated": "#fcf5e6",
-          "surface": "#fffaf0",
-          "surface-2": "#f9efd9",
-          "surface-3": "#e8d7b8",
-          "canvas": "#fffdf5",
-          "rail": "#e6d3b0",
-          "control-bg": "#efdfc2",
-          "text": "#382718",
-          "text-secondary": "#695239",
-          "text-tertiary": "#70583e",
-          "accent": "#805022",
-          "accent-hover": "#673d17",
-          "accent-soft": "#edd2a7",
-          "on-accent": "#ffffff",
-          "border": "#94764e",
-          "separator": "#d4bf9b",
-          "chart-grid": "#e6d9bf",
-          "chart-tick": "#695239",
-          "chart-legend": "#382718",
-          "seg-thumb": "#fffaf0"
-        }
-      },
-      "ocean": {
-        "dark": {
-          "bg": "#091d27",
-          "bg-elevated": "#0d2935",
-          "surface": "#113441",
-          "surface-2": "#194451",
-          "surface-3": "#225563",
-          "canvas": "#0a2732",
-          "rail": "#082e40",
-          "control-bg": "#194451",
-          "text": "#e4fbff",
-          "text-secondary": "#aad5df",
-          "text-tertiary": "#9bc8d3",
-          "accent": "#6dded8",
-          "accent-hover": "#a6f5ee",
-          "accent-soft": "#1d4e53",
-          "on-accent": "#07302e",
-          "border": "#709eac",
-          "separator": "#2b5a68",
-          "chart-grid": "#1d4655",
-          "chart-tick": "#aad5df",
-          "chart-legend": "#e4fbff",
-          "seg-thumb": "#356674"
-        },
-        "light": {
-          "bg": "#dfedf2",
-          "bg-elevated": "#f0f8fa",
-          "surface": "#f7fdff",
-          "surface-2": "#eaf5f7",
-          "surface-3": "#cce2e8",
-          "canvas": "#ffffff",
-          "rail": "#bad7e2",
-          "control-bg": "#d9ebf0",
-          "text": "#12333f",
-          "text-secondary": "#365e6b",
-          "text-tertiary": "#365d69",
-          "accent": "#006b70",
-          "accent-hover": "#005459",
-          "accent-soft": "#b9e4e3",
-          "on-accent": "#ffffff",
-          "border": "#527f8e",
-          "separator": "#afcdd6",
-          "chart-grid": "#d2e5eb",
-          "chart-tick": "#365e6b",
-          "chart-legend": "#12333f",
-          "seg-thumb": "#f7fdff"
-        }
-      },
-      "plum": {
-        "dark": {
-          "bg": "#25192d",
-          "bg-elevated": "#302138",
-          "surface": "#3b2946",
-          "surface-2": "#493353",
-          "surface-3": "#573f61",
-          "canvas": "#2c1e35",
-          "rail": "#321e40",
-          "control-bg": "#493353",
-          "text": "#fff0ff",
-          "text-secondary": "#dcc2e2",
-          "text-tertiary": "#ceb1d7",
-          "accent": "#e3a8e8",
-          "accent-hover": "#f2ccf6",
-          "accent-soft": "#5a3765",
-          "on-accent": "#351d3c",
-          "border": "#ac8ab9",
-          "separator": "#61466c",
-          "chart-grid": "#4d3659",
-          "chart-tick": "#dcc2e2",
-          "chart-legend": "#fff0ff",
-          "seg-thumb": "#74517f"
-        },
-        "light": {
-          "bg": "#eee4f0",
-          "bg-elevated": "#f8f1fa",
-          "surface": "#fffaff",
-          "surface-2": "#f5eaf7",
-          "surface-3": "#e4d0e8",
-          "canvas": "#fffbff",
-          "rail": "#dec7e4",
-          "control-bg": "#ebdcef",
-          "text": "#3c2444",
-          "text-secondary": "#684d71",
-          "text-tertiary": "#674a71",
-          "accent": "#85418e",
-          "accent-hover": "#6c3074",
-          "accent-soft": "#e9c9ed",
-          "on-accent": "#ffffff",
-          "border": "#8b6795",
-          "separator": "#d5bddc",
-          "chart-grid": "#e8d9ec",
-          "chart-tick": "#684d71",
-          "chart-legend": "#3c2444",
-          "seg-thumb": "#fffaff"
-        }
-      },
-      "graphite": {
-        "dark": {
-          "bg": "#090909",
-          "bg-elevated": "#151515",
-          "surface": "#202020",
-          "surface-2": "#303030",
-          "surface-3": "#404040",
-          "canvas": "#111111",
-          "rail": "#000000",
-          "control-bg": "#303030",
-          "text": "#ffffff",
-          "text-secondary": "#dedede",
-          "text-tertiary": "#c6c6c6",
-          "accent": "#ffffff",
-          "accent-hover": "#dddddd",
-          "accent-soft": "#3e3e3e",
-          "on-accent": "#101010",
-          "border": "#9a9a9a",
-          "separator": "#555555",
-          "chart-grid": "#3e3e3e",
-          "chart-tick": "#dedede",
-          "chart-legend": "#ffffff",
-          "seg-thumb": "#5f5f5f"
-        },
-        "light": {
-          "bg": "#e6e6e6",
-          "bg-elevated": "#f5f5f5",
-          "surface": "#ffffff",
-          "surface-2": "#f4f4f4",
-          "surface-3": "#d6d6d6",
-          "canvas": "#ffffff",
-          "rail": "#cccccc",
-          "control-bg": "#e5e5e5",
-          "text": "#101010",
-          "text-secondary": "#393939",
-          "text-tertiary": "#484848",
-          "accent": "#191919",
-          "accent-hover": "#383838",
-          "accent-soft": "#cecece",
-          "on-accent": "#ffffff",
-          "border": "#686868",
-          "separator": "#adadad",
-          "chart-grid": "#d0d0d0",
-          "chart-tick": "#393939",
-          "chart-legend": "#101010",
-          "seg-thumb": "#ffffff"
-        }
-      }
+    "paletteSource": {
+      "path": "desktop/tools/theme-palettes.mjs",
+      "generated": "roaster/static/css/theme.css",
+      "default": "graphite",
+      "modes": [
+        "dark",
+        "light",
+        "auto"
+      ],
+      "palettes": [
+        "classic",
+        "sage",
+        "sand",
+        "ocean",
+        "plum",
+        "graphite"
+      ],
+      "migration": "roaster.appearance.3.29：仅一次把缺省或classic迁移到graphite，保留其他配色选择。"
+    },
+    "sourceOrder": [
+      "roaster/static/css/theme.css",
+      "roaster/static/css/style.css or editor.css",
+      "roaster/static/css/ai.css",
+      "roaster/static/css/atlas.css",
+      "roaster/static/css/instrument.css"
+    ],
+    "geometry": {
+      "scope": "主应用；编辑器保留自己的画布与模态几何",
+      "navigation": "92px",
+      "header": "64px",
+      "footer": "64px",
+      "roastColumn": "296px",
+      "compactRoastColumn": "272px",
+      "drawer": "520px",
+      "dockReservation": "544px",
+      "readingMeasure": "72ch",
+      "landscape": "阅读、上下文及移除、输入、发送与安全入口保持可达"
     },
     "localAI": {
-      "ownership": "Desktop accounts and conversations always stay on this computer",
-      "browser": "OS default browser via ai_open_external; explicit retry and URL copy",
-      "spacing": "32px account/detail gap; 16px fields/actions; flat disclosures",
-      "verification": "docs/qa/local-ai-v3.27/ui-report.json"
-    }
+      "ownership": "账户和会话保存在本机",
+      "restore": "保存账户与会话自动恢复，启动不打开授权页面",
+      "browser": "仅本页明确发起且匹配已知登录标识的请求可以自动打开系统默认浏览器；恢复中的授权提供继续按钮",
+      "controls": "头部：历史、新对话、更多、关闭；输入区：附件、模型/账户菜单、发送/停止",
+      "safety": "proposal-only；预览、采用草稿、保存、应用保持明确步骤"
+    },
+    "evidence": {
+      "source": "3.29 final shared cascade",
+      "direction": ".impeccable/surfaces/roaster-static-index-html.md",
+      "seed": "3329047aed8ff09d",
+      "native": [
+        "desktop/build/qa/instrument-v3.29/native/native-roast.png",
+        "desktop/build/qa/instrument-v3.29/native/native-chat.png",
+        "desktop/build/qa/instrument-v3.29/native/native-chat-dark.png",
+        "desktop/build/qa/instrument-v3.29/native/native-expanded.png"
+      ],
+      "limits": "界面截图不等同于真实订阅授权或硬件验证；本轮无新增栅格资产。"
+    },
+    "notCanonized": "旧蓝底、纯黑白石墨、364px聊天、聊天22px与急停12px圆角、通用缩放按压和头部常驻账户模型选择器属于过期记录，已协调。原始检测告警不构成新增令牌依据。"
   },
   "components": [
     {
       "name": "主要动作",
       "kind": "button",
       "refersTo": "button-primary",
-      "description": "当前配色主动作，深浅外观继承运行时语义变量。",
-      "html": "<button class=\"ds-button ds-primary\" type=\"button\">开始对话</button>",
-      "css": ".ds-button{min-width:44px;min-height:44px;padding:0 14px;border:1px solid var(--border,rgba(255,255,255,.09));border-radius:var(--radius-sm,10px);font-family:var(--font-ui,sans-serif);font-size:14px;font-weight:620;cursor:pointer;transition:background var(--duration-fast,160ms) var(--ease-apple-fast,cubic-bezier(.4,0,.2,1)),transform var(--duration-fast,160ms) var(--ease-apple-fast,cubic-bezier(.4,0,.2,1))}.ds-button:focus-visible{outline:2px solid var(--accent,#8bb5ff);outline-offset:3px}.ds-button:active:not(:disabled){transform:scale(.98)}.ds-button:disabled{opacity:.42;cursor:not-allowed}@media(prefers-reduced-motion:reduce){.ds-button{transition:none}}.ds-primary{background:var(--accent,#8bb5ff);color:var(--on-accent,rgba(0,0,0,.85));border-color:transparent}.ds-primary:hover:not(:disabled){background:var(--accent-hover,#bdd4ff)}"
+      "description": "有限下沿、细顶光与短按压行程，颜色继承当前语义变量。",
+      "html": "<button class=\"ds-button ds-primary\" type=\"button\">开始烘焙</button>",
+      "css": ".ds-button{--ds-shade:var(--key-shade,color-mix(in srgb,var(--bg,#1b1c1e) 74%,transparent));--ds-light:var(--key-highlight,color-mix(in srgb,var(--text,#edeeec) 12%,transparent));min-width:44px;min-height:44px;padding:0 14px;border:1px solid var(--separator,#3b3d41);border-radius:10px;background:linear-gradient(180deg,var(--surface,#252628),var(--surface-2,#2c2d30));color:var(--text,#edeeec);font-family:var(--font-ui,-apple-system,BlinkMacSystemFont,\"Segoe UI\",\"Microsoft YaHei\",sans-serif);font-size:14px;font-weight:620;cursor:pointer;box-shadow:var(--key-shadow,0 1px 0 var(--border,#82858a),0 3px 5px var(--ds-shade),inset 0 1px 0 var(--ds-light));transition:transform 120ms var(--ease-apple-fast,cubic-bezier(.4,0,.2,1)),box-shadow 120ms var(--ease-apple-fast,cubic-bezier(.4,0,.2,1)),background-color 120ms var(--ease-apple-fast,cubic-bezier(.4,0,.2,1))}.ds-button:hover:not(:disabled){background:var(--surface,#252628);border-color:var(--border,#82858a)}.ds-button:focus-visible{outline:2px solid var(--accent,#92b5f6);outline-offset:3px}.ds-button:active:not(:disabled){transform:translateY(1px);box-shadow:inset 0 2px 3px var(--ds-shade),0 1px 0 var(--ds-light)}.ds-button:disabled{opacity:.42;box-shadow:none;transform:none;cursor:not-allowed}@media(prefers-reduced-motion:reduce){.ds-button{transition:none}}.ds-primary{background:linear-gradient(180deg,color-mix(in srgb,var(--accent,#92b5f6) 88%,var(--surface,#252628)),var(--accent,#92b5f6));border-color:color-mix(in srgb,var(--accent,#92b5f6) 75%,var(--text,#edeeec));color:var(--on-accent,#14233d)}.ds-primary:hover:not(:disabled){background:var(--accent-hover,#b9cffa)}"
     },
     {
       "name": "次要动作",
       "kind": "button",
       "refersTo": "button-secondary",
-      "description": "平面中性动作，保持可读文字和可见键盘焦点。",
+      "description": "有限下沿、细顶光与短按压行程，颜色继承当前语义变量。",
       "html": "<button class=\"ds-button ds-secondary\" type=\"button\">比较曲线</button>",
-      "css": ".ds-button{min-width:44px;min-height:44px;padding:0 14px;border:1px solid var(--border,rgba(255,255,255,.09));border-radius:var(--radius-sm,10px);font-family:var(--font-ui,sans-serif);font-size:14px;font-weight:620;cursor:pointer;transition:background var(--duration-fast,160ms) var(--ease-apple-fast,cubic-bezier(.4,0,.2,1)),transform var(--duration-fast,160ms) var(--ease-apple-fast,cubic-bezier(.4,0,.2,1))}.ds-button:focus-visible{outline:2px solid var(--accent,#8bb5ff);outline-offset:3px}.ds-button:active:not(:disabled){transform:scale(.98)}.ds-button:disabled{opacity:.42;cursor:not-allowed}@media(prefers-reduced-motion:reduce){.ds-button{transition:none}}.ds-secondary{background:var(--surface-2,#363638);color:var(--text-secondary,#bdbdc3)}.ds-secondary:hover:not(:disabled){background:var(--fill,rgba(120,120,128,.16));color:var(--text,#f5f5f7)}"
+      "css": ".ds-button{--ds-shade:var(--key-shade,color-mix(in srgb,var(--bg,#1b1c1e) 74%,transparent));--ds-light:var(--key-highlight,color-mix(in srgb,var(--text,#edeeec) 12%,transparent));min-width:44px;min-height:44px;padding:0 14px;border:1px solid var(--separator,#3b3d41);border-radius:10px;background:linear-gradient(180deg,var(--surface,#252628),var(--surface-2,#2c2d30));color:var(--text,#edeeec);font-family:var(--font-ui,-apple-system,BlinkMacSystemFont,\"Segoe UI\",\"Microsoft YaHei\",sans-serif);font-size:14px;font-weight:620;cursor:pointer;box-shadow:var(--key-shadow,0 1px 0 var(--border,#82858a),0 3px 5px var(--ds-shade),inset 0 1px 0 var(--ds-light));transition:transform 120ms var(--ease-apple-fast,cubic-bezier(.4,0,.2,1)),box-shadow 120ms var(--ease-apple-fast,cubic-bezier(.4,0,.2,1)),background-color 120ms var(--ease-apple-fast,cubic-bezier(.4,0,.2,1))}.ds-button:hover:not(:disabled){background:var(--surface,#252628);border-color:var(--border,#82858a)}.ds-button:focus-visible{outline:2px solid var(--accent,#92b5f6);outline-offset:3px}.ds-button:active:not(:disabled){transform:translateY(1px);box-shadow:inset 0 2px 3px var(--ds-shade),0 1px 0 var(--ds-light)}.ds-button:disabled{opacity:.42;box-shadow:none;transform:none;cursor:not-allowed}@media(prefers-reduced-motion:reduce){.ds-button{transition:none}}"
     },
     {
       "name": "危险次动作",
       "kind": "button",
       "refersTo": "button-danger",
-      "description": "删除等需明确采用的危险动作，区别于全局急停。",
+      "description": "有限下沿、细顶光与短按压行程，颜色继承当前语义变量。",
       "html": "<button class=\"ds-button ds-danger\" type=\"button\">移除账户</button>",
-      "css": ".ds-button{min-width:44px;min-height:44px;padding:0 14px;border:1px solid var(--border,rgba(255,255,255,.09));border-radius:var(--radius-sm,10px);font-family:var(--font-ui,sans-serif);font-size:14px;font-weight:620;cursor:pointer;transition:background var(--duration-fast,160ms) var(--ease-apple-fast,cubic-bezier(.4,0,.2,1)),transform var(--duration-fast,160ms) var(--ease-apple-fast,cubic-bezier(.4,0,.2,1))}.ds-button:focus-visible{outline:2px solid var(--accent,#8bb5ff);outline-offset:3px}.ds-button:active:not(:disabled){transform:scale(.98)}.ds-button:disabled{opacity:.42;cursor:not-allowed}@media(prefers-reduced-motion:reduce){.ds-button{transition:none}}.ds-danger{background:var(--danger-soft,rgba(255,69,58,.13));color:var(--danger,#ff827f);border-color:transparent}.ds-danger:hover:not(:disabled){background:var(--fill,rgba(120,120,128,.16));color:var(--text,#f5f5f7)}"
+      "css": ".ds-button{--ds-shade:var(--key-shade,color-mix(in srgb,var(--bg,#1b1c1e) 74%,transparent));--ds-light:var(--key-highlight,color-mix(in srgb,var(--text,#edeeec) 12%,transparent));min-width:44px;min-height:44px;padding:0 14px;border:1px solid var(--separator,#3b3d41);border-radius:10px;background:linear-gradient(180deg,var(--surface,#252628),var(--surface-2,#2c2d30));color:var(--text,#edeeec);font-family:var(--font-ui,-apple-system,BlinkMacSystemFont,\"Segoe UI\",\"Microsoft YaHei\",sans-serif);font-size:14px;font-weight:620;cursor:pointer;box-shadow:var(--key-shadow,0 1px 0 var(--border,#82858a),0 3px 5px var(--ds-shade),inset 0 1px 0 var(--ds-light));transition:transform 120ms var(--ease-apple-fast,cubic-bezier(.4,0,.2,1)),box-shadow 120ms var(--ease-apple-fast,cubic-bezier(.4,0,.2,1)),background-color 120ms var(--ease-apple-fast,cubic-bezier(.4,0,.2,1))}.ds-button:hover:not(:disabled){background:var(--surface,#252628);border-color:var(--border,#82858a)}.ds-button:focus-visible{outline:2px solid var(--accent,#92b5f6);outline-offset:3px}.ds-button:active:not(:disabled){transform:translateY(1px);box-shadow:inset 0 2px 3px var(--ds-shade),0 1px 0 var(--ds-light)}.ds-button:disabled{opacity:.42;box-shadow:none;transform:none;cursor:not-allowed}@media(prefers-reduced-motion:reduce){.ds-button{transition:none}}.ds-danger{background:var(--danger-soft,rgba(255,69,58,.13));color:var(--danger,#ff827f);border-color:transparent}"
     },
     {
       "name": "AI 输入",
       "kind": "input",
       "refersTo": "field-ai",
-      "description": "标签14px、输入16px；占位文字继承text-secondary且不透明。",
+      "description": "标签14px、输入16px、8px字段圆角，占位读取当前说明文字色。",
       "html": "<label class=\"ds-field\">消息<input class=\"ds-input\" placeholder=\"描述本次烘焙问题\"></label>",
-      "css": ".ds-field{display:grid;gap:6px;font-family:var(--font-ui,sans-serif);font-size:14px;color:var(--text-secondary,#bdbdc3)}.ds-input{min-height:44px;padding:10px;border:1px solid var(--border,rgba(255,255,255,.09));border-radius:8px;background:var(--control-bg,#363638);color:var(--text,#f5f5f7);font-family:inherit;font-size:16px}.ds-input::placeholder{color:var(--text-secondary,#bdbdc3);opacity:1}.ds-input:focus-visible{outline:2px solid var(--accent,#8bb5ff);outline-offset:2px}"
+      "css": ".ds-field{display:grid;gap:6px;font-family:var(--font-ui,sans-serif);font-size:14px;color:var(--text-secondary,#c2c3c0)}.ds-input{min-height:44px;padding:10px;border:1px solid var(--border,#82858a);border-radius:8px;background:var(--control-bg,#2c2d30);color:var(--text,#edeeec);font-family:inherit;font-size:16px}.ds-input::placeholder{color:var(--text-secondary,#c2c3c0);opacity:1}.ds-input:focus-visible{outline:2px solid var(--accent,#92b5f6);outline-offset:2px}"
     },
     {
       "name": "当前导航",
       "kind": "nav",
       "refersTo": "nav-active",
-      "description": "桌面纵向当前任务；移动端按实际导航布局转为横向。",
+      "description": "中性当前任务面、13px文字与强调色图标，72px桌面高度。",
       "html": "<nav aria-label=\"工作区\"><button class=\"ds-nav\" aria-current=\"page\" type=\"button\"><svg width=\"22\" height=\"22\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" aria-hidden=\"true\"><path d=\"M4 20V4M4 20h16M7 16l4-6 4 3 5-8\"/></svg>烘焙控制</button></nav>",
-      "css": ".ds-nav{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;width:76px;min-height:68px;padding:8px 0;border:0;border-radius:var(--radius-sm,10px);background:var(--accent-soft,rgba(70,120,220,.13));color:var(--accent,#8bb5ff);font-family:var(--font-ui,sans-serif);font-size:14px;cursor:pointer}.ds-nav:hover{color:var(--text,#f5f5f7)}.ds-nav:focus-visible{outline:2px solid var(--accent,#8bb5ff);outline-offset:3px}.ds-nav:active{transform:scale(.98)}"
+      "css": ".ds-button{--ds-shade:var(--key-shade,color-mix(in srgb,var(--bg,#1b1c1e) 74%,transparent));--ds-light:var(--key-highlight,color-mix(in srgb,var(--text,#edeeec) 12%,transparent));min-width:44px;min-height:44px;padding:0 14px;border:1px solid var(--separator,#3b3d41);border-radius:10px;background:linear-gradient(180deg,var(--surface,#252628),var(--surface-2,#2c2d30));color:var(--text,#edeeec);font-family:var(--font-ui,-apple-system,BlinkMacSystemFont,\"Segoe UI\",\"Microsoft YaHei\",sans-serif);font-size:14px;font-weight:620;cursor:pointer;box-shadow:var(--key-shadow,0 1px 0 var(--border,#82858a),0 3px 5px var(--ds-shade),inset 0 1px 0 var(--ds-light));transition:transform 120ms var(--ease-apple-fast,cubic-bezier(.4,0,.2,1)),box-shadow 120ms var(--ease-apple-fast,cubic-bezier(.4,0,.2,1)),background-color 120ms var(--ease-apple-fast,cubic-bezier(.4,0,.2,1))}.ds-button:hover:not(:disabled){background:var(--surface,#252628);border-color:var(--border,#82858a)}.ds-button:focus-visible{outline:2px solid var(--accent,#92b5f6);outline-offset:3px}.ds-button:active:not(:disabled){transform:translateY(1px);box-shadow:inset 0 2px 3px var(--ds-shade),0 1px 0 var(--ds-light)}.ds-button:disabled{opacity:.42;box-shadow:none;transform:none;cursor:not-allowed}@media(prefers-reduced-motion:reduce){.ds-button{transition:none}}.ds-nav{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;width:76px;min-height:72px;padding:8px 0;border:0;border-radius:10px;background:var(--surface,#252628);color:var(--text,#edeeec);font-family:var(--font-ui,sans-serif);font-size:13px;cursor:pointer;box-shadow:var(--key-shadow,0 1px 0 var(--border,#82858a),0 3px 5px rgba(0,0,0,.15))}.ds-nav svg{color:var(--accent,#92b5f6)}.ds-nav:hover{background:var(--surface-2,#2c2d30)}.ds-nav:focus-visible{outline:2px solid var(--accent,#92b5f6);outline-offset:3px}.ds-nav:active{transform:translateY(1px)}"
     },
     {
       "name": "只读烘焙状态",
       "kind": "chip",
       "refersTo": "state-roasting",
-      "description": "24px只读徽章，不继承为可点击上下文的命中高度。",
+      "description": "只读语义状态pill，不作为可点击上下文尺寸。",
       "html": "<span class=\"ds-state\">烘焙中</span>",
-      "css": ".ds-state{display:inline-flex;align-items:center;justify-content:center;min-height:24px;padding:0 9px;border-radius:var(--radius-pill,999px);background:var(--accent-soft,rgba(70,120,220,.13));color:var(--accent,#8bb5ff);font-family:var(--font-ui,sans-serif);font-size:12px;font-weight:680}"
+      "css": ".ds-state{display:inline-flex;align-items:center;justify-content:center;min-height:24px;padding:7px 10px;border:1px solid var(--separator,#3b3d41);border-radius:var(--radius-pill,999px);background:var(--accent-soft,#303e55);color:var(--accent,#92b5f6);font-family:var(--font-ui,sans-serif);font-size:14px;font-weight:680;line-height:1.5}"
     },
     {
       "name": "设置分组",
@@ -2987,60 +862,66 @@
       "refersTo": "card-settings",
       "description": "平面圆角内容组；当前设置使用16px圆角和24px内边距。",
       "html": "<section class=\"ds-card\"><h3>外观</h3><p>浅色 / 深色 / 跟随系统</p></section>",
-      "css": ".ds-card{padding:24px;border:0;border-radius:var(--radius-lg,16px);background:var(--surface,#2c2c2e);color:var(--text,#f5f5f7);font-family:var(--font-ui,sans-serif);box-shadow:none}.ds-card h3{margin:0 0 12px;font-size:16px}.ds-card p{margin:0;font-size:14px;color:var(--text-secondary,#bdbdc3)}"
+      "css": ".ds-card{padding:24px;border:0;border-radius:var(--radius-lg,16px);background:var(--surface,#252628);color:var(--text,#edeeec);font-family:var(--font-ui,sans-serif);box-shadow:none}.ds-card h3{margin:0 0 12px;font-size:16px}.ds-card p{margin:0;font-size:14px;color:var(--text-secondary,#c2c3c0)}"
     },
     {
       "name": "温度读数",
       "kind": "custom",
-      "description": "只读测量；温度单位暖橙与图表同源，主数字使用正文色和等宽数字特性。",
+      "description": "主要读数34px/550，标签与单位14px，保留等宽数字和温度语义。",
       "html": "<div class=\"ds-readout\"><span>温度 PV</span><strong>168.6 <small>°C</small></strong><span>实时测量</span></div>",
-      "css": ".ds-readout{padding:8px 16px;border-left:1px solid var(--separator,rgba(255,255,255,.06));font-family:var(--font-ui,sans-serif);color:var(--text,#f5f5f7)}.ds-readout span{display:block;font-size:12px;color:var(--text-secondary,#bdbdc3)}.ds-readout span:first-child{font-size:14px}.ds-readout strong{display:block;margin-top:8px;color:var(--text,#f5f5f7);font-family:var(--font-mono,sans-serif);font-size:36px;font-weight:600;line-height:1.15;letter-spacing:-.055em;font-variant-numeric:tabular-nums;font-feature-settings:\"tnum\"}.ds-readout small{font-size:12px;letter-spacing:normal;color:var(--chart-temp,#f2a366)}"
+      "css": ".ds-readout{padding:8px 16px;border-left:1px solid var(--separator,#3b3d41);font-family:var(--font-ui,sans-serif);color:var(--text,#edeeec)}.ds-readout span{display:block;font-size:14px;color:var(--text-secondary,#c2c3c0)}.ds-readout span:first-child{font-size:14px}.ds-readout strong{display:block;margin-top:8px;color:var(--text,#edeeec);font-family:var(--font-mono,sans-serif);font-size:34px;font-weight:550;line-height:1.15;letter-spacing:-.025em;font-variant-numeric:tabular-nums;font-feature-settings:\"tnum\"}.ds-readout small{font-size:14px;letter-spacing:normal;color:var(--chart-temp,#f2a366)}"
     },
     {
       "name": "急停外观",
       "kind": "button",
       "refersTo": "emergency-stop",
-      "description": "仅显示实际安全入口外观，无任何硬件控制或事件。",
+      "description": "10px圆角、3px实体下沿与现有局部按压缩放；无硬件事件。",
       "html": "<button class=\"ds-estop\" type=\"button\">E-STOP</button>",
-      "css": ".ds-estop{min-width:178px;height:44px;display:inline-flex;align-items:center;justify-content:center;border:0;border-radius:12px;background:var(--danger,#ff827f);color:var(--on-danger,#1c1c1e);font-family:var(--font-ui,sans-serif);font-size:15px;font-weight:750;letter-spacing:.06em;cursor:pointer;box-shadow:var(--shadow-card,0 1px 2px rgba(0,0,0,.22));transition:transform var(--duration-fast,160ms) var(--ease-apple-fast,cubic-bezier(.4,0,.2,1))}.ds-estop:hover{opacity:.96}.ds-estop:focus-visible{outline:2px solid var(--accent,#8bb5ff);outline-offset:3px}.ds-estop:active{transform:scale(.97)}@media(prefers-reduced-motion:reduce){.ds-estop{transition:none}}"
+      "css": ".ds-estop{min-width:178px;height:44px;display:inline-flex;align-items:center;justify-content:center;border:0;border-bottom:3px solid color-mix(in srgb,var(--danger,#ff827f) 65%,var(--text,#edeeec));border-radius:10px;background:var(--danger,#ff827f);color:var(--on-danger,#1c1c1e);font-family:var(--font-ui,sans-serif);font-size:15px;font-weight:750;letter-spacing:.06em;cursor:pointer;box-shadow:inset 0 1px 0 var(--key-highlight,rgba(255,255,255,.12)),0 2px 3px var(--key-shade,rgba(0,0,0,.15));transition:transform var(--duration-fast,160ms) var(--ease-apple-fast,cubic-bezier(.4,0,.2,1))}.ds-estop:hover{opacity:.96}.ds-estop:focus-visible{outline:2px solid var(--accent,#92b5f6);outline-offset:3px}.ds-estop:active{transform:scale(.97)}@media(prefers-reduced-motion:reduce){.ds-estop{transition:none}}"
     },
     {
-      "name": "统一聊天窗口",
+      "name": "简约聊天",
       "kind": "custom",
       "refersTo": "chat-shell",
-      "description": "宽屏圆角停靠面板，账户与模型、正文和输入保持同一界面。",
-      "html": "<section class=\"ds-chat\" aria-label=\"AI 对话\"><header>AI 对话</header><div class=\"ds-chat-models\">当前账户 · 当前模型</div><div class=\"ds-chat-message\">根据本次记录查看温度与 RoR 的变化。</div><label class=\"ds-chat-composer\">消息<textarea placeholder=\"输入消息\"></textarea></label></section>",
-      "css": ".ds-chat{width:364px;max-width:100%;overflow:hidden;border:1px solid var(--border,rgba(255,255,255,.09));border-radius:var(--radius-xl,22px);background:var(--surface-2,#363638);color:var(--text,#f5f5f7);font-family:var(--font-ui,sans-serif)}.ds-chat header{padding:16px;background:var(--bg-elevated,#242426);font-size:18px;font-weight:650;border-bottom:1px solid var(--separator,rgba(255,255,255,.06))}.ds-chat-models{padding:12px 16px;font-size:14px;color:var(--text-secondary,#bdbdc3)}.ds-chat-message{padding:16px;font-size:16px;line-height:1.65}.ds-chat-composer{display:grid;gap:6px;padding:16px;font-size:14px;color:var(--text-secondary,#bdbdc3)}.ds-chat textarea{min-height:72px;padding:10px;border:1px solid var(--border,rgba(255,255,255,.09));border-radius:var(--radius-md,14px);background:var(--control-bg,#363638);color:var(--text,#f5f5f7);font-family:inherit;font-size:16px}.ds-chat textarea::placeholder{color:var(--text-secondary,#bdbdc3);opacity:1}.ds-chat textarea:focus-visible{outline:2px solid var(--accent,#8bb5ff);outline-offset:-3px}"
+      "description": "520px抽屉与一个内嵌输入区，模型和账户由输入区展开。",
+      "html": "<section class=\"ds-chat\" aria-label=\"AI 对话\"><header><button type=\"button\" aria-label=\"会话\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" aria-hidden=\"true\"><path d=\"M4 4h16v16H4zM9 4v16\"/></svg></button><h2>AI 烘焙助手</h2><button type=\"button\" aria-label=\"新对话\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" aria-hidden=\"true\"><path d=\"M4 7v13h13M9 12l9-9 3 3-9 9-4 1z\"/></svg></button><button type=\"button\" aria-label=\"更多对话选项\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" aria-hidden=\"true\"><circle cx=\"5\" cy=\"12\" r=\"1\"/><circle cx=\"12\" cy=\"12\" r=\"1\"/><circle cx=\"19\" cy=\"12\" r=\"1\"/></svg></button><button type=\"button\" aria-label=\"关闭\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" aria-hidden=\"true\"><path d=\"M6 6l12 12M18 6 6 18\"/></svg></button></header><div class=\"ds-messages\"><div class=\"ds-user\">请查看这次烘焙的温度变化。</div><span>烘焙助手</span><p>可以结合温度、RoR 与事件记录分析，再由你决定是否采用建议。</p></div><div class=\"ds-composer\"><div class=\"ds-input-shell\"><textarea aria-label=\"消息\" placeholder=\"向烘焙助手发送消息\"></textarea><div class=\"ds-input-actions\"><button type=\"button\" aria-label=\"添加附件或数据\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" aria-hidden=\"true\"><path d=\"M12 5v14M5 12h14\"/></svg></button><details class=\"ds-model\"><summary>当前模型</summary><label>账户<select><option>本机账户</option></select></label><label>模型<select><option>当前模型</option></select></label></details><button class=\"ds-send\" type=\"button\" aria-label=\"发送\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" aria-hidden=\"true\"><path d=\"m6 11 6-6 6 6M12 5v14\"/></svg></button></div></div></div></section>",
+      "css": ".ds-chat{width:520px;max-width:100%;overflow:hidden;border:1px solid var(--separator,#3b3d41);border-radius:16px;background:var(--surface,#252628);color:var(--text,#edeeec);font-family:var(--font-ui,-apple-system,BlinkMacSystemFont,\"Segoe UI\",sans-serif);line-height:1.5}.ds-chat header{display:flex;align-items:center;gap:10px;min-height:68px;padding:0 16px;border-bottom:1px solid var(--separator,#3b3d41)}.ds-chat h2{flex:1;margin:0;font-size:15px;font-weight:600;white-space:nowrap}.ds-chat button{display:inline-flex;align-items:center;justify-content:center;min-width:44px;min-height:44px;padding:0;border:0;border-radius:10px;background:transparent;color:var(--text-secondary,#c2c3c0);cursor:pointer}.ds-chat button:hover,.ds-model summary:hover{background:var(--fill,#35363a);color:var(--text,#edeeec)}.ds-chat button:focus-visible,.ds-chat textarea:focus-visible,.ds-model summary:focus-visible,.ds-model select:focus-visible{outline:2px solid var(--accent,#92b5f6);outline-offset:-3px}.ds-chat button:active{transform:translateY(1px)}.ds-messages{padding:24px 28px 12px;font-size:16px;line-height:1.8}.ds-user{width:fit-content;max-width:85%;margin:0 0 28px auto;padding:12px 18px;background:var(--surface-2,#2c2d30);border-radius:16px 16px 4px 16px}.ds-messages span{font-size:13px;font-weight:500;color:var(--text-secondary,#c2c3c0)}.ds-messages p{margin:8px 0 16px}.ds-composer{padding:12px 20px 20px}.ds-input-shell{padding:12px;border:1px solid var(--separator,#3b3d41);border-radius:16px;background:var(--surface-2,#2c2d30);box-shadow:inset 0 1px 3px var(--key-shade,rgba(0,0,0,.15))}.ds-chat textarea{width:100%;min-height:64px;max-height:144px;padding:8px;border:0;border-radius:8px;background:transparent;color:inherit;font:16px/1.6 var(--font-ui,sans-serif);resize:vertical}.ds-chat textarea::placeholder{color:var(--text-secondary,#c2c3c0);opacity:1}.ds-input-actions{display:flex;align-items:center;gap:6px;margin-top:8px}.ds-model{flex:1;font-size:14px;color:var(--text-secondary,#c2c3c0)}.ds-model summary{min-height:44px;align-content:center;padding:0 8px;list-style:none;cursor:pointer}.ds-model label{display:grid;gap:6px;padding:8px;font-size:14px}.ds-model select{min-height:44px;padding:10px 12px;border:1px solid var(--border,#82858a);border-radius:10px;background:var(--control-bg,#2c2d30);color:var(--text,#edeeec)}.ds-chat .ds-send{border-radius:50%;background:var(--text,#edeeec);color:var(--surface,#252628);box-shadow:var(--key-shadow,0 1px 0 var(--border,#82858a),0 3px 5px rgba(0,0,0,.15))}.ds-chat .ds-send:hover{background:var(--text-secondary,#c2c3c0)}"
     }
   ],
   "narrative": {
     "northStar": "安静的烘焙工作区 · Quiet Roasting Workspace",
-    "overview": "接近 macOS 的日常工作界面：中性背景、柔和圆角与清楚的分组让操作者快速识别任务。强调色只帮助识别选择与主要动作，数据曲线与安全状态保留各自语义；读数、曲线和下一步操作保持直接可见。\n\n经典蓝、林间绿、暖沙色、深海青、暮紫与石墨共享同一布局和控件语言，各自支持深色、浅色与跟随系统。系统字体、等宽数字、平面内容分区和有限浮层阴影形成熟悉而克制的秩序。\n\n本规范从当前共享 Web 前端提取，覆盖浏览器、树莓派 kiosk 与 Tauri。frontmatter 记录实际复用令牌；运行时以 theme.css 的最终级联、各入口最后加载的 atlas.css 及现有组件样式为准。本次已批准的视觉替换以本规范为新基准，历史风味研究图谱截图与旧侧车不再规定当前视觉方向。",
+    "overview": "石墨灰与暖白构成日常烘焙工作区，克制的蓝色标识重要动作、当前选择与键盘焦点。系统字体、稳定读数和清楚的任务分组让操作者先读曲线，再识别下一步。可操作按钮以细顶光、下沿和短按压行程呈现实体感；内容面保持平面。\n\nAI 对话沿用用户确认的 Codex 简约方向：阅读区与一个内嵌输入区主导界面，常用动作直接可达，账户、模型、历史和低频选项按需展开。专业功能完整保留，通过任务组和折叠详情逐步呈现。\n\n本规范从当前共享 Web 前端提取，覆盖浏览器、树莓派 kiosk 与 Tauri。配色以 desktop/tools/theme-palettes.mjs 及其生成的 theme.css 最终区块为源；布局和控件以两入口在 atlas.css 之后加载的 instrument.css 最终级联为准（缓存版本 3.29）。frontmatter 的 dark / light 记录默认石墨配色，其余配色使用各自前缀。已确认方向见 .impeccable/surfaces/roaster-static-index-html.md（Operate，code-led，seed:3329047aed8ff09d）。",
     "keyCharacteristics": [
-      "中性背景与圆角分组，经典蓝、林间绿、暖沙色各有深浅外观。",
-      "同一任务集中呈现，常用操作可见，低频参数在明确分组内展开。",
-      "图表与 DOM 共用语义令牌，等宽数字稳定呈现实时读数。",
-      "离线资源、触控目标、可见焦点、减少动效和急停优先层次属于基础体验。"
+      "石墨灰、暖白与少量蓝色重点；六套完整配色共享同一结构。",
+      "实体按钮与平面内容面分工明确，常用操作可见，复杂能力分组展开。",
+      "曲线占主区域，读数使用等宽数字特性，图表和 DOM 共用语义颜色。",
+      "简约聊天保留模型、账户、附件、上下文、历史与发送 / 停止能力。",
+      "离线资源、可见焦点、减少动效及急停优先层次属于基础体验。"
     ],
     "rules": [
       {
         "name": "One Accent",
-        "body": "一个工作区只使用当前配色的一组强调色来表示选择与主动作；温度、RoR、阶段、事件和危险状态继续使用专用语义令牌。",
+        "body": "一个工作区使用当前配色的一组强调色表示重要动作与选择；曲线、阶段、事件和危险状态保留各自语义。",
         "section": "colors"
       },
       {
         "name": "Shared Semantic Color",
-        "body": "读数、图例与 canvas 对同一数据使用同一语义；外观或配色变化后从 CSS 变量重新取色，并用无动画更新图表。",
+        "body": "读数、图例与 canvas 对同一数据读取同一语义令牌；切换外观后重新取色，并以无动画方式更新图表。",
         "section": "colors"
       },
       {
         "name": "Stable Measurement",
-        "body": "数值使用数字字体栈与 tabular-nums，单位、轴标和数据角色持续可辨，不以发光或字号跳动强调实时变化。",
+        "body": "数值使用数字字体栈和等宽数字特性，单位、坐标轴与数据角色持续可辨；实时变化不以发光或字号跳动表达。",
         "section": "typography"
       },
       {
+        "name": "Tactile Action",
+        "body": "深度帮助识别可操作控件；内容面保持平面，标准按钮按压采用短距离位移。",
+        "section": "elevation"
+      },
+      {
         "name": "Safety Above Workspace",
-        "body": "普通弹窗、聊天与图表全屏位于急停底栏之下，故障层位于其上；窄屏和横屏始终保留安全入口的可达性。",
+        "body": "普通弹窗、聊天与图表全屏位于急停底栏之下，故障层位于其上；窄屏与横屏保留安全入口。",
         "section": "elevation"
       },
       {
@@ -3050,20 +931,24 @@
       }
     ],
     "dos": [
-      "**Do** 使用 theme.css 的语义变量，并在六种配色的深浅外观中核对 DOM、图表、输入占位文字和可见焦点。",
-      "**Do** 保持正文与控件（14–16px）、辅助文字至少（12px）、交互命中区域至少（44px），并让读数使用等宽数字。",
-      "**Do** 以圆角分组和中性面层建立层次，将主要动作与当前选择交给单一强调色。",
-      "**Do** 在四个设置任务组内组织现有能力，账户和模型的持久化结果需有直接反馈。",
-      "**Do** 在窄屏和横屏保留聊天正文、已选上下文、输入操作与急停；内容过长时允许滚动或换行。",
-      "**Do** 区分浏览器、安全模拟器、原生窗口与真实订阅或硬件证据。"
+      "**Do** 以生成的 theme.css 语义变量和最后加载的 instrument.css 为当前实现依据，核对六种配色的深浅外观。",
+      "**Do** 使用石墨灰与暖白作为默认面层，把蓝色用于重要动作、选择与焦点。",
+      "**Do** 让标准可操作按钮保留细顶光、柔和阴影与（1px）按压行程，内容面保持平面。",
+      "**Do** 保持（16px）聊天阅读正文、（14px）控件与可读元数据，按实际工作区宽高响应 UI 缩放。",
+      "**Do** 通过任务组、命名菜单与折叠详情呈现复杂功能，保留模型、账户、附件、历史和上下文能力。",
+      "**Do** 在窄屏与横屏保留阅读、已选上下文及移除、输入、发送 / 停止与急停入口。",
+      "**Do** 恢复本机保存的账户和会话，只让本页明确发起的已知登录自动打开授权页面。",
+      "**Do** 区分源代码、浏览器、安全模拟器、原生窗口、真实订阅与硬件证据。"
     ],
     "donts": [
-      "**Don't** 用当前强调色改写温度、RoR、阶段、事件或危险状态的颜色含义。",
+      "**Don't** 把默认石墨配色改回大面积蓝底、纯黑白高对比或全屏单一强调色。",
+      "**Don't** 用当前强调色重定义温度、RoR、阶段、事件或危险状态。",
+      "**Don't** 把所有元数据写成（14px），或把所有组件强制成同一圆角；遵循用途和实际实现。",
+      "**Don't** 为聊天常驻头部增加账户与模型选择器，或把低频功能重新铺成永久工具栏。",
       "**Don't** 将预览、采用草稿、保存或切换账户等同于应用当前执行曲线。",
-      "**Don't** 用聊天、普通模态或图表全屏遮住急停，或把故障信息降成装饰提示。",
-      "**Don't** 引入联网字体、图标 CDN、backdrop-filter 或大面积模糊。",
-      "**Don't** 对高频读数、canvas 更新或拖动启用常驻颜色过渡；减少动效时保留即时状态反馈。",
-      "**Don't** 将旧蓝色侧车告警、历史截图或尚未完成的真实账户授权写成当前视觉要求或验证结论。"
+      "**Don't** 用聊天、普通模态或图表全屏遮住急停，或降低故障信息的优先级。",
+      "**Don't** 引入联网字体、图标 CDN、backdrop-filter、大面积模糊或内容卡片的硬偏移阴影。",
+      "**Don't** 将历史截图、旧检测告警或未完成的真实授权写成当前视觉要求或验证结论。"
     ]
   }
 }

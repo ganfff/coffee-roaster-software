@@ -4,7 +4,7 @@
  const $=s=>document.querySelector(s);
  window.RoasterUI={confirm:message=>new Promise(resolve=>{const previous=document.activeElement;const overlay=document.createElement('div');overlay.className='atlas-confirm';const box=document.createElement('section');box.className='atlas-confirm-box';box.setAttribute('role','dialog');box.setAttribute('aria-label','确认操作');const text=document.createElement('p');text.textContent=message;box.append(text);const finish=value=>{overlay.remove();previous?.focus();resolve(value);};const actions=document.createElement('div');actions.className='actions';for(const [label,value] of [['取消',false],['确认',true]]){const b=document.createElement('button');b.className='ctrl-btn'+(value?' primary':'');b.textContent=label;b.onclick=()=>finish(value);actions.append(b);}box.append(actions);overlay.append(box);document.body.append(overlay);actions.firstChild.focus();overlay.onkeydown=e=>{if(e.key==='Escape')finish(false);};})};
  if(window.Chart)Chart.defaults.font.size=12;
- const summary=$('#event-temps-bar');if(summary)$('.command-scroll')?.append(summary);
+ const summary=$('#event-temps-bar');if(summary){const details=document.createElement('details');details.className='command-disclosure event-details';const label=document.createElement('summary');label.textContent='事件详情';details.append(label,summary);$('.command-scroll')?.append(details);}
  const title=$('#workspace-title');
  document.querySelectorAll('.tab-btn').forEach(b=>b.addEventListener('click',()=>{if(title)title.textContent=b.textContent.trim();}));
  const cards=$('#profile-cards');

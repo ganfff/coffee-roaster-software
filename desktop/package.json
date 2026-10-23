@@ -18,6 +18,8 @@
     "check:themes": "node tools/theme-palettes.mjs --check",
     "test:local-ai:ui": "node tools/test-local-ai-ui.mjs",
     "test:editor:session": "node tools/test-editor-session-ui.mjs",
+    "test:instrument:ui": "node tools/test-instrument-ui.mjs",
+    "test:instrument:native": "node tools/test-instrument-native.mjs",
     "build": "tauri build",
     "build:debug": "tauri build --debug",
     "test:workbench:native-ui": "node ../roaster/tests/test_workbench_native_ui.mjs",

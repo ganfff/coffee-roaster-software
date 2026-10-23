@@ -1,6 +1,6 @@
 # Ganf's 咖啡烘焙机
 
-当前交付：**桌面 0.6.2 / Web 3.28**。包含烘焙控制、曲线与记录、原生 `.kpro/.klog` 工作台，以及本机 AI 对话与六套完整主题。
+当前源码与免安装预览：**桌面 0.6.2 / Web 3.29**。包含烘焙控制、曲线与记录、原生 `.kpro/.klog` 工作台，以及本机 AI 对话与六套完整主题。当前界面采用石墨灰与暖白、实体按钮和分级对话菜单，已登录账户恢复时不会打开授权网页。
 
 | 目录 | 内容 | 入口 |
 | --- | --- | --- |
@@ -29,4 +29,4 @@ Set-Location ..
 
 Windows 只做源码、前端、模拟器和打包验证；不要启动真实串口、GPIO 或加热控制。设备操作只在已明确授权的目标设备上执行。AI 仅分析和提出候选，不控制设备。
 
-更新记录集中在 [UPDATE_LOG](roaster/UPDATE_LOG.md)，当前验证在 [v3.28 QA](docs/qa/editor-session-v3.28.md)，整理记录在 [项目清理记录](docs/maintenance/2026-10-22-workspace-cleanup.md)。Flutter 历史实现位于独立分支 `feature/flutter-app`，不混入当前目录。
+更新记录集中在 [UPDATE_LOG](roaster/UPDATE_LOG.md)，当前验证在 [v3.29 QA](docs/qa/instrument-v3.29.md)，整理记录在 [项目清理记录](docs/maintenance/2026-10-22-workspace-cleanup.md)。Flutter 历史实现位于独立分支 `feature/flutter-app`，不混入当前目录。

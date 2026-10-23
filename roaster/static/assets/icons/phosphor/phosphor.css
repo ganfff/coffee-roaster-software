@@ -40,6 +40,9 @@
 .ph.ph-arrow-left:before {
   content: "\e058";
 }
+.ph.ph-arrow-up:before {
+  content: "\e08e";
+}
 .ph.ph-arrows-clockwise:before {
   content: "\e094";
 }
@@ -82,6 +85,9 @@
 .ph.ph-coffee-bean:before {
   content: "\e1c0";
 }
+.ph.ph-copy:before {
+  content: "\e1ca";
+}
 .ph.ph-corners-out:before {
   content: "\e1d0";
 }
@@ -93,6 +99,9 @@
 }
 .ph.ph-desktop:before {
   content: "\e560";
+}
+.ph.ph-dots-three:before {
+  content: "\e1fe";
 }
 .ph.ph-download-simple:before {
   content: "\e20c";
@@ -112,8 +121,17 @@
 .ph.ph-moon:before {
   content: "\e330";
 }
+.ph.ph-note-pencil:before {
+  content: "\e34c";
+}
 .ph.ph-palette:before {
   content: "\e6c8";
+}
+.ph.ph-paperclip:before {
+  content: "\e39a";
+}
+.ph.ph-pencil-simple:before {
+  content: "\e3b4";
 }
 .ph.ph-play:before {
   content: "\e3d0";
@@ -133,8 +151,14 @@
 .ph.ph-shield-warning:before {
   content: "\e412";
 }
+.ph.ph-sidebar-simple:before {
+  content: "\ec24";
+}
 .ph.ph-sliders-horizontal:before {
   content: "\e434";
+}
+.ph.ph-stop:before {
+  content: "\e46c";
 }
 .ph.ph-sun:before {
   content: "\e472";

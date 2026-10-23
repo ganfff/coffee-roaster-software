@@ -88,8 +88,15 @@
   function getMode() { return readMode(); }
   function getTheme() { return resolve(readMode()); }
   function getPalette() {
-    try { var value = localStorage.getItem(PALETTE_KEY); if (PALETTES.indexOf(value) !== -1) return value; } catch (e) {}
-    return 'classic';
+    try {
+      var value = localStorage.getItem(PALETTE_KEY);
+      if (!localStorage.getItem('roaster.appearance.3.29')) {
+        if (!value || value === 'classic') {value = 'graphite';localStorage.setItem(PALETTE_KEY, value);}
+        localStorage.setItem('roaster.appearance.3.29', '1');
+      }
+      if (PALETTES.indexOf(value) !== -1) return value;
+    } catch (e) {}
+    return 'graphite';
   }
   function setPalette(value) {
     if (PALETTES.indexOf(value) === -1) return;
@@ -163,7 +170,7 @@
       {id:'sand',name:'暖沙色',description:'奶油纸色与烘焙棕'},
       {id:'ocean',name:'深海青',description:'海蓝面层与青色'},
       {id:'plum',name:'暮紫',description:'雾紫面层与莓紫色'},
-      {id:'graphite',name:'石墨',description:'纯净黑白与高对比'}
+      {id:'graphite',name:'石墨',description:'石墨灰与暖白，克制的蓝色重点'}
     ],
     getMode: getMode,
     getTheme: getTheme,
