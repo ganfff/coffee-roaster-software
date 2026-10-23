@@ -116,7 +116,7 @@
         ctx.lineTo(xPos, y.bottom);
         ctx.stroke();
         const text = ann.label;
-        ctx.font = '11px ' + (chartPalette.fontMono || 'monospace');
+        ctx.font = '12px ' + (chartPalette.fontMono || 'monospace');
         const textWidth = ctx.measureText(text).width;
         const padding = 4;
         const labelY = y.top + 6;
@@ -1017,8 +1017,8 @@
     // COOLING 状态弹窗确认保存（session-scoped，确保只弹一次）
     if (msg.state === 'COOLING' && msg.session_id && msg.session_id !== lastPromptedSessionId) {
       lastPromptedSessionId = msg.session_id;
-      setTimeout(() => {
-        const save = confirm('是否保存此锅烘焙记录？');
+      setTimeout(async () => {
+        const save = await window.RoasterUI.confirm('是否保存此锅烘焙记录？');
         if (save) {
           showToast('正在保存...');
           fetch('/api/v1/control/save_and_clear', { method: 'POST' }).catch(() => {});
@@ -1152,7 +1152,7 @@
     if (!copy) return;
     const wsOnline = document.getElementById('conn-status-ws')?.classList.contains('online');
     const tc4sOnline = document.getElementById('conn-status-tc4s')?.classList.contains('online');
-    setTextIfChanged(copy, wsOnline && tc4sOnline ? '控制系统已连接' : (wsOnline ? '后端已连接，等待 TC4S' : '等待连接'));
+    setTextIfChanged(copy, window.ROASTER_DEBUG ? (wsOnline ? '安全模拟器 · 样例数据' : '调试服务正在重连') : (wsOnline && tc4sOnline ? '控制系统已连接' : (wsOnline ? '后端已连接，等待 TC4S' : '等待连接')));
   }
 
   /**
@@ -1577,6 +1577,8 @@
     });
     document.querySelectorAll('.tab-content').forEach(item => item.classList.toggle('active', item === content));
     document.body.dataset.view = name;
+    const pageTitle = document.getElementById('workspace-title');
+    if (pageTitle) pageTitle.textContent = btn.textContent.trim();
     moveTabGlider(btn);
     if (!options.keepHash) history.replaceState(null, '', '#' + name);
     if (name === 'records' && !options.skipLoad) loadRecords();
@@ -1741,7 +1743,7 @@
         } else if (action === 'delete') {
           const p = profileMap[id];
           if (!p) return;
-          if (!confirm('确定要删除曲线「' + p.name + '」吗？')) return;
+          if (!await window.RoasterUI.confirm('确定要删除曲线「' + p.name + '」吗？')) return;
           try {
             const res = await fetch(profileEndpoint(id), { method: 'DELETE' });
             if (res.ok) {
@@ -1754,20 +1756,7 @@
       });
     });
 
-    // 整张卡片点击 = 应用
-    container.querySelectorAll('.profile-card').forEach(card => {
-      card.addEventListener('click', async () => {
-        if (isRoastActiveState(latestState)) {
-          showToast('烘焙中不能应用曲线');
-          return;
-        }
-        const id = card.dataset.id;
-        selectedProfileId = id;
-        const applied = await applySelectedProfile();
-        if (!applied) return;
-        updateProfileCardsActive();
-      });
-    });
+    // Browsing never changes the applied profile. Preview selection is owned by atlas.js.
     setProfileMutationEnabled(!isRoastActiveState(latestState));
     drawProfileSparklines();
   }
@@ -2332,6 +2321,7 @@
 
       // 隐藏列表，显示详情
       document.getElementById('records-list').style.display = 'none';
+      document.querySelector('.records-shell').classList.add('has-detail');
       document.getElementById('compare-actions').style.display = 'none';
       document.getElementById('record-detail').style.display = '';
 
@@ -2576,7 +2566,7 @@
         scales: {
           x: {
             type: 'linear',
-            title: { display: true, text: '时间 (min)', color: chartPalette.tick, font: { size: 11 } },
+            title: { display: true, text: '时间 (min)', color: chartPalette.tick, font: { size: 12 } },
             grid: { color: chartPalette.grid },
             ticks: {
               color: chartPalette.tick,
@@ -2593,7 +2583,7 @@
             position: 'left',
             min: 0,
             max: 300,
-            title: { display: true, text: '温度 (°C)', color: chartPalette.tick, font: { size: 11 } },
+            title: { display: true, text: '温度 (°C)', color: chartPalette.tick, font: { size: 12 } },
             grid: { color: chartPalette.grid },
             ticks: { color: chartPalette.tick }
           },
@@ -2601,7 +2591,7 @@
             type: 'linear',
             display: true,
             position: 'right',
-            title: { display: true, text: 'ROR (°C/min)', color: chartPalette.tick, font: { size: 11 } },
+            title: { display: true, text: 'ROR (°C/min)', color: chartPalette.tick, font: { size: 12 } },
             grid: { drawOnChartArea: false },
             ticks: { color: chartPalette.y1Tick },
             suggestedMin: -5,
@@ -2614,6 +2604,7 @@
 
   function backToRecordList() {
     document.getElementById('record-detail').style.display = 'none';
+    document.querySelector('.records-shell').classList.remove('has-detail');
     document.getElementById('records-list').style.display = '';
     document.getElementById('compare-actions').style.display = '';
     const container = document.getElementById('record-chart-container');

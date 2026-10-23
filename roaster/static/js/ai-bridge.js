@@ -137,7 +137,7 @@
   };
   var response = async (result) => {
     const value = await result.json();
-    if (!result.ok) throw Error(typeof value.detail === "string" ? value.detail : "AI \u8BF7\u6C42\u5931\u8D25");
+    if (!result.ok) throw Error(typeof value.detail === "string" ? value.detail : value.error?.message || "AI \u8BF7\u6C42\u5931\u8D25");
     return value;
   };
   var webRequest = (path, options = {}) => fetch("/api/v1/ai" + path, { credentials: "same-origin", ...options }).then(response);
@@ -147,6 +147,7 @@
     url.protocol = location.protocol === "https:" ? "wss:" : "ws:";
     url.searchParams.set("after", String(cursor));
     socket = new WebSocket(url);
+    socket.onopen = () => emit({ id: "host", type: "replay_required", data: {} });
     socket.onmessage = (message) => {
       let batch;
       try {
@@ -168,7 +169,12 @@
     };
   }
   var nativeUnlisten = null;
-  if (native) listen("roaster-ai-service", (event) => emit(event.payload)).then((unlisten) => {
+  if (native) listen("roaster-ai-service", (event) => {
+    const value = event.payload;
+    if (selected.kind === "local" && value.host) return;
+    if (selected.kind === "backend" && value.host !== selected.backend) return;
+    emit(value);
+  }).then((unlisten) => {
     nativeUnlisten = unlisten;
   });
   window.RoasterAITransport = {
@@ -178,7 +184,7 @@
     },
     async setHost(value) {
       if (native) await invoke("ai_remote_stop");
-      selected = { kind: value.kind, backend: value.backend || location.origin };
+      selected = { kind: native ? "local" : "backend", backend: location.origin };
       cursor = 0;
       if (socket) {
         socket.onclose = null;
@@ -189,8 +195,8 @@
       connectWeb();
     },
     request(method, params = {}) {
-      if (native) return selected.kind === "local" ? invoke("ai_rpc", { method, params }) : invoke("ai_remote_rpc", { backend: selected.backend, method, params });
-      return webRequest("/rpc", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ method, params }) });
+      if (native) return invoke("ai_rpc", { method, params });
+      return webRequest("/rpc", { method: "POST", keepalive: method === "runs.cancel", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ method, params }) });
     },
     listen(callback) {
       subscribers.add(callback);

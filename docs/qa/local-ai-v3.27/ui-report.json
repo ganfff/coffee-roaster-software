@@ -1,0 +1,89 @@
+{
+  "checks": [
+    "local model connection is primary; no host selector, pairing or sharing controls",
+    "auth event automatically opens the browser once; complete device URL and visible device code are supported",
+    "blocked popup gives visible recovery; retry retains direct user activation",
+    "cancel clears authorization and leaves a working retry action",
+    "local-model button saves a keyless connection and loads its actual loopback model catalog",
+    "expanded API fields and action have an explicit 16px gap",
+    "nested AI settings wrap at 1024 and 375px without horizontal overflow",
+    "six full palettes × light/dark × five workspaces × three sizes: 180 overflow checks; text, actions, focus and input contrast computed",
+    "palette persists and auto appearance responds to system changes"
+  ],
+  "errors": [],
+  "ratios": [
+    {
+      "id": "classic",
+      "mode": "light",
+      "minText": 4.824362430247334,
+      "minControl": 4.714818030201599
+    },
+    {
+      "id": "classic",
+      "mode": "dark",
+      "minText": 5.368234077167019,
+      "minControl": 5.011731366352684
+    },
+    {
+      "id": "sage",
+      "mode": "light",
+      "minText": 4.722961507855778,
+      "minControl": 5.1335980861049135
+    },
+    {
+      "id": "sage",
+      "mode": "dark",
+      "minText": 4.617221647857306,
+      "minControl": 5.829164444808851
+    },
+    {
+      "id": "sand",
+      "mode": "light",
+      "minText": 4.536276324911023,
+      "minControl": 4.65533546690798
+    },
+    {
+      "id": "sand",
+      "mode": "dark",
+      "minText": 4.799046486654105,
+      "minControl": 5.574082678254293
+    },
+    {
+      "id": "ocean",
+      "mode": "light",
+      "minText": 4.681837354795823,
+      "minControl": 4.575728849730729
+    },
+    {
+      "id": "ocean",
+      "mode": "dark",
+      "minText": 4.551779680837779,
+      "minControl": 5.7745378970267485
+    },
+    {
+      "id": "plum",
+      "mode": "light",
+      "minText": 4.637372995152517,
+      "minControl": 4.466333188009678
+    },
+    {
+      "id": "plum",
+      "mode": "dark",
+      "minText": 4.759776005982516,
+      "minControl": 5.086140384079389
+    },
+    {
+      "id": "graphite",
+      "mode": "light",
+      "minText": 5.695198034776311,
+      "minControl": 11.172018795965727
+    },
+    {
+      "id": "graphite",
+      "mode": "dark",
+      "minText": 6.070058194983773,
+      "minControl": 10.695533145776091
+    }
+  ],
+  "scope": "actual Edge rendering; real AI service; deterministic OAuth; no real provider login or hardware"
+}

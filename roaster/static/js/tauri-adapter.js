@@ -17,7 +17,17 @@
 
   // Tauri v2 会在 WebView 里注入 __TAURI_INTERNALS__；浏览器环境没有
   var isTauri = typeof window !== 'undefined' && '__TAURI_INTERNALS__' in window;
-  if (!isTauri) return;
+  var debug = window.ROASTER_DEBUG;
+  if (debug) document.documentElement.dataset.debug = 'simulator';
+  if (!isTauri && location.protocol !== 'file:') return;
+  if (location.protocol === 'file:') {
+    document.addEventListener('DOMContentLoaded', function () {
+      var message = document.createElement('div');message.className = 'backend-connection-notice';
+      message.textContent = '此页面需要 HTTP 服务。请双击项目根目录的「调试网页.cmd」，不要直接打开 HTML 文件。';
+      document.body.appendChild(message);
+    });
+    return;
+  }
 
   var STORAGE_KEY = 'roaster.backendUrl';
   var HISTORY_KEY = 'roaster.backendHistory';
@@ -34,7 +44,7 @@
   }
 
   function getBackend() {
-    return normalizeUrl(lsGet(STORAGE_KEY)) || DEFAULT_BACKEND;
+    return (debug && debug.backend) || normalizeUrl(lsGet(STORAGE_KEY)) || DEFAULT_BACKEND;
   }
 
   function getRealPreset() {
@@ -124,6 +134,10 @@
     if (currentEl) currentEl.textContent = getBackend();
     if (realInput) realInput.value = getRealPreset();
     if (customInput) customInput.value = getBackend();
+    if (debug) {
+      var note = document.createElement('p');note.textContent = '当前是安全模拟调试，地址由调试服务提供；不会修改正式设备地址。';section.appendChild(note);
+      section.querySelectorAll('button,input').forEach(function (control) { control.disabled = true; });
+    }
 
     section.querySelector('#backend-preset-sim').addEventListener('click', function () {
       applyAndReload(SIMULATOR_URL);
@@ -208,6 +222,25 @@
       wireBackendSection(section);
     } else {
       injectFloatingUI();
+    }
+    if (!debug) checkBackend();
+  }
+
+  async function checkBackend() {
+    var notice = document.getElementById('backend-connection-notice');
+    try {
+      var response = await origFetch(getBackend() + '/api/v1/status', { signal: AbortSignal.timeout(3000) });
+      if (!response.ok || !(await response.json()).state) throw Error('服务未就绪');
+      if (notice) notice.remove();
+    } catch (error) {
+      if (notice) return;
+      notice = document.createElement('section');notice.id = 'backend-connection-notice';notice.className = 'backend-connection-notice';notice.setAttribute('role', 'status');
+      var text = document.createElement('p');text.textContent = '设备后端未连接：' + getBackend() + '。桌面安装包不包含控机 HTTP 服务。曲线库与记录需要连接后端；离线工作台可直接使用。';notice.appendChild(text);
+      [['连接设置', 'settings'], ['打开离线工作台', 'workbench']].forEach(function (item) {
+        var button = document.createElement('button');button.className = 'ctrl-btn';button.textContent = item[0];
+        button.onclick = function () { notice.remove();var tab=document.querySelector('[data-tab="'+item[1]+'"]');if(tab)tab.click();else injectFloatingUI(); };notice.appendChild(button);
+      });
+      var retry = document.createElement('button');retry.className='ctrl-btn';retry.textContent='重新检查';retry.onclick=function(){notice.remove();checkBackend();};notice.appendChild(retry);document.body.appendChild(notice);
     }
   }
 

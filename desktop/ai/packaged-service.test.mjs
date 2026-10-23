@@ -20,7 +20,7 @@ test('isolated packaged service loads OAuth modules and all custom protocols wit
       const events=[];
       const oauth={name:'packaged mock',isSubscription:true,async login(i){i.notify({type:'auth_url',url:'https://example.invalid/no-network'});await i.prompt({type:'manual_code',message:'mock authorization'});return {type:'oauth',access:'fixture-access',refresh:'fixture-refresh',expires:Date.now()+3600000};},async refresh(c){return c;},async toAuth(c){return {apiKey:c.access};}};
       const factory=()=>({id:'openai',name:'Packaged mock',auth:{oauth},getModels:()=>[],getModel:()=>undefined});
-      const service=new AIService({emit:event=>events.push(event),providerFactories:{openai:factory}});
+      const service=new AIService({emit:event=>events.push(event),providerFactories:{openai:factory},fetcher:async()=>new Response(JSON.stringify({data:[{id:'local'}]}))});
       await service.initialize({data_dir:resolve('data'),master_key:randomBytes(32).toString('base64')});
       const providers=await service.dispatch('providers');
       for(const protocol of ['openai-completions','openai-responses','anthropic-messages']){

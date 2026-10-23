@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+from ipaddress import ip_address
 from urllib.parse import urlsplit
 
 from fastapi import APIRouter, HTTPException, Request, Response, WebSocket, WebSocketDisconnect
@@ -58,6 +59,17 @@ def store_for(app):
 
 
 def client_for(connection):
+    # A same-origin browser on this machine needs no cross-device pairing.
+    # Check both peer address and Host: loopback alone would permit DNS rebinding.
+    try:
+        local_peer = connection.client and ip_address(connection.client.host).is_loopback
+        local_host = urlsplit("http://" + connection.headers.get("host", "")).hostname in {
+            "localhost", "127.0.0.1", "::1"
+        }
+        if local_peer and local_host and same_origin(connection.scope):
+            return {"id": "local-machine", "name": "本机浏览器"}
+    except ValueError:
+        pass
     bearer = connection.headers.get("authorization", "")
     token = bearer[7:] if bearer.startswith("Bearer ") else connection.cookies.get(COOKIE)
     return store_for(connection.app).authenticate(token)

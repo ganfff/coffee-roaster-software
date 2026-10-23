@@ -23,7 +23,7 @@
 .profile-card .actions .ctrl-btn { min-height: 44px; }
 @media (max-width: 700px) { .ai-field-grid { grid-template-columns: minmax(0,1fr); } }
 
-/* Shared conversation and configuration, using the existing Calm Canvas tokens. */
+/* Shared conversation and configuration, using the existing Flavor Atlas tokens. */
 .ai-settings { grid-column: 1 / -1; gap: 16px; }
 .ai-settings .settings-card-heading { margin-bottom: 0; }
 .ai-settings .settings-card-heading h3 { margin: 0; }

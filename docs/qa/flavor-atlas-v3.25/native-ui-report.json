@@ -1,0 +1,8 @@
+{
+  "checks": [
+    "packaged Tauri WebView, real Rust pairing/proxy/events and shared full chat",
+    "packaged numerical engine, 144-field offline help and unobstructed E-STOP"
+  ],
+  "errors": [],
+  "evidence": "actual Tauri release WebView/Rust + packaged native engine; deterministic AI fixture, no cloud/hardware"
+}

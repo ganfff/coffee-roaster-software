@@ -1,0 +1,49 @@
+{
+  "date": "2026-10-23",
+  "desktop_version": "0.6.0",
+  "web_version": "3.26",
+  "base_commit": "348b14b",
+  "branch": "codex/github-sync",
+  "changes_committed": false,
+  "installer": {
+    "path": "dist/RoasterDesktop_0.6.0_x64-setup.exe",
+    "bytes": 42285425,
+    "sha256": "281b1bda7a14b9bb5e069cafd5d4ffee71125d34afd6512a204de9b88c6e3c28",
+    "built": true,
+    "copied_to_dist": true,
+    "installed_over_existing_application": false,
+    "evidence": "current release EXE, bundled Node/AI/native engine and actual Tauri WebView/Rust tested; NSIS installer produced but not executed"
+  },
+  "preview": {
+    "url": "http://127.0.0.1:18180/?settings=ai",
+    "source": "roaster/static",
+    "host": "loopback safe simulator with real AI core",
+    "web_launcher": "调试网页.cmd",
+    "native_launcher": "调试桌面.cmd",
+    "separate_debug_data": true
+  },
+  "checks": {
+    "ai_unit_and_protocol": {"passed": 45, "failed": 0},
+    "python_ai": {"passed": 18, "failed": 0},
+    "rust": {"passed": 4, "failed": 0},
+    "frontend_contracts": {"javascript": 13, "css": 6, "html": 2, "icons": 45, "passed": true},
+    "theme_and_layout": {"passed": 100, "errors": [], "report": "layout-report.json"},
+    "chat_browser": {"passed": 12, "errors": [], "report": "ui-report.json"},
+    "release_native": {"passed": 3, "errors": [], "report": "native-ui-report.json", "device_backend_unreachable_local_chat_turns": 2, "cloud_inference": false},
+    "debug_host": {"passed": 9, "errors": [], "report": "../debug-launch-2026-10-23/report.json"},
+    "debug_native": {"passed": 3, "errors": [], "report": "native-dev/native-report.json"},
+    "visual_repair_verdict": {"disposition": "ship", "required_repairs_resolved": 3, "report": "visual-review.md"},
+    "design_document_consistency": {"passed": true, "color_tokens": 137, "components": 10},
+    "release_build": "passed",
+    "debug_build": "passed"
+  },
+  "subscription_acceptance": {
+    "authorization_timing": "user explicitly deferred authorization until actual use",
+    "chatgpt": "implemented; real subscription authorization, catalog and two cloud turns not verified",
+    "kimi_code": "implemented; real subscription authorization, catalog and two cloud turns not verified",
+    "claude_code": "implemented via official CLI; installed 2.1.241 correctly triggers minimum 2.1.248 upgrade guidance; real subscription not verified"
+  },
+  "unverified": ["real cloud subscription calls", "real phone or touch hardware", "ARM64 runtime", "physical roaster and serial/GPIO/heating"],
+  "safety": {"ai_proposal_only": true, "adoption_save_apply_require_user_action": true, "hardware_control_added": false, "native_fidelity_rules_changed": false},
+  "documentation": ["DESIGN.md", ".impeccable/design.json", "docs/qa/workspace-v3.26.md", "docs/guides/ai-host-deployment.md", "docs/guides/debugging-and-packaging.md"]
+}

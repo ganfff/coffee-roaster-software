@@ -1,0 +1,23 @@
+{
+  "date": "2026-10-23",
+  "desktop": "0.6.1",
+  "web": "3.27",
+  "installer": {
+    "path": "dist/RoasterDesktop_0.6.1_x64-setup.exe",
+    "bytes": 42290128,
+    "sha256": "f12372f32528ad1d88934158e21760ce40302a482befce758147def585385587"
+  },
+  "checks": {
+    "ai": 45,
+    "rust": 5,
+    "python": 20,
+    "local_ai_ui": 9,
+    "chat_ui": 12,
+    "native_ui": 5,
+    "theme_variants": 12,
+    "workspace_size_checks": 180,
+    "page_errors": 0
+  },
+  "scope": "Actual release WebView/Rust and Windows default browser; local deterministic OAuth/model fixtures; installer built but not installed",
+  "github_policy": "Source, design and QA evidence are versioned; credentials, local AI data and build artifacts stay outside Git"
+}

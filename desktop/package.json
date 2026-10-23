@@ -1,7 +1,7 @@
 {
   "name": "roaster-desktop",
   "private": true,
-  "version": "0.4.0",
+  "version": "0.6.1",
   "description": "咖啡烘焙机控制台 — Tauri 桌面壳（复用 roaster/static 前端）",
   "scripts": {
     "prepare:ai": "node tools/prepare-ai.mjs",
@@ -15,11 +15,17 @@
     "simulator": "node tools/roaster-simulator.mjs",
     "icons:sync": "node tools/sync-icons.mjs",
     "check:frontend": "node tools/check-frontend.mjs",
+    "check:themes": "node tools/theme-palettes.mjs --check",
+    "test:local-ai:ui": "node tools/test-local-ai-ui.mjs",
     "build": "tauri build",
     "build:debug": "tauri build --debug",
     "test:workbench:native-ui": "node ../roaster/tests/test_workbench_native_ui.mjs",
     "package:ai:arm64": "node tools/package-ai-arm64.mjs",
-    "test:ai:native-ui": "node tools/test-ai-chat-ui.mjs --native"
+    "test:ai:native-ui": "node tools/test-ai-chat-ui.mjs --native",
+    "test:atlas:ui": "node tools/test-atlas-ui.mjs",
+    "dev:web": "node tools/dev-server.mjs",
+    "test:dev": "node tools/test-dev-server.mjs",
+    "test:dev:native": "node tools/test-dev-native.mjs"
   },
   "devDependencies": {
     "@phosphor-icons/web": "2.1.2",

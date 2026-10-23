@@ -1,0 +1,29 @@
+{
+  "desktop": "0.5.0",
+  "web": "3.25",
+  "artifact": "D:\\项目\\咖啡烘焙机-软件\\dist\\RoasterDesktop_0.5.0_x64-setup.exe",
+  "bytes": 42271063,
+  "sha256": "fd5817fe434ce3a10fdf88f446e6da6271f255636d060b272d26fe2d36ca7e20",
+  "verification": {
+    "frontend": "12 JS / 6 CSS / 2 HTML contracts / 45 icons",
+    "layout": "35 checks, zero page errors",
+    "ai_ui": "12 checks, zero page errors",
+    "workbench_ui": "22 checks, zero page errors",
+    "native_workbench_ui": "4 groups",
+    "tauri_release_ui": "2 groups passed on final EXE; embedded atlas.css/theme.css/atlas.js/app.js SHA256 matches source; actual WebView/Rust and packaged engine, deterministic AI fixture",
+    "visual_review": "ship: six listed fixes resolved; scoped review"
+  },
+  "limits": [
+    "No physical roaster, serial, GPIO or heating tested",
+    "NSIS installer built, not installed/uninstalled",
+    "No real cloud AI or subscription login exercised",
+    "No full accessibility certification"
+  ],
+  "sourceChanges": "Local only; not committed or pushed",
+  "frontendSources": {
+    "css/atlas.css": "26d22fdac69c6998e253b2d763eefef99b38eaa78e3b8c7e78e548cc920b1514",
+    "css/theme.css": "d8ac3e4586c49d529ce8e0a0ac1271849cd32ca9b1cecb4383c36d9fa355373d",
+    "js/atlas.js": "564bc497be55c16cfadce3cd33e05998780d7ea7ddd1fc243a84ec87a6d2f38d",
+    "js/app.js": "07adfe7e6a4bafe19707ed383aff4d728553962cb43d5876c4d6075d4f46e7f7"
+  }
+}

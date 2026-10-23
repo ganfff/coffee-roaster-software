@@ -5,29 +5,31 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="color-scheme" content="dark light" />
   <title>Ganf's 咖啡烘焙机</title>
-  <script src="js/theme.js?v=3.24"></script>
-  <link rel="stylesheet" href="css/theme.css?v=3.24" />
-  <link rel="stylesheet" href="css/ai.css?v=3.24" />
+  <script src="js/theme.js?v=3.27"></script>
+  <link rel="stylesheet" href="css/theme.css?v=3.27" />
+  <link rel="stylesheet" href="css/ai.css?v=3.27" />
   <link rel="stylesheet" href="assets/icons/phosphor/phosphor.css?v=2.1.2" />
-  <link rel="stylesheet" href="css/style.css?v=3.24" />
-  <link rel="stylesheet" href="css/workbench.css?v=3.24" />
+  <link rel="stylesheet" href="css/style.css?v=3.27" />
+  <link rel="stylesheet" href="css/workbench.css?v=3.27" />
   <script src="js/vendor/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="css/atlas.css?v=3.27" />
 </head>
 <body>
   <div id="app">
-    <header id="top-bar">
-      <div class="brand-lockup">
-        <span class="brand-icon" aria-hidden="true"><i class="ph ph-coffee-bean"></i></span>
-        <div><h1>Ganf's 咖啡烘焙机</h1><span class="brand-subtitle">ROASTING CONSOLE</span></div>
-      </div>
-      <nav class="tabs" aria-label="主工作区">
+    <aside class="workspace-nav" aria-label="工作区">      <nav class="tabs" aria-label="主工作区">
         <div class="tab-glider" aria-hidden="true"></div>
         <button class="tab-btn active" data-tab="roast" aria-selected="true"><i class="ph ph-waveform"></i><span>烘焙控制</span></button>
         <button class="tab-btn" data-tab="profile" aria-selected="false"><i class="ph ph-chart-line-up"></i><span>曲线管理</span></button>
         <button class="tab-btn" data-tab="records" aria-selected="false"><i class="ph ph-clock-counter-clockwise"></i><span>烘焙记录</span></button>
         <button class="tab-btn" data-tab="workbench" aria-selected="false"><i class="ph ph-chart-line-up"></i><span>原生工作台</span></button>
         <button class="tab-btn" data-tab="settings" aria-selected="false"><i class="ph ph-sliders-horizontal"></i><span>设置</span></button>
-      </nav>
+      </nav></aside>
+    <header id="top-bar">
+      <div class="brand-lockup">
+        <span class="brand-icon" aria-hidden="true"><i class="ph ph-coffee-bean"></i></span>
+        <div><h1>Ganf's 咖啡烘焙机</h1></div>
+      </div>
+<div class="workspace-context"><strong id="workspace-title">烘焙控制</strong></div>
       <div class="header-right">
         <div class="time-block" aria-label="烘焙计时"><div class="elapsed" id="elapsed">00:00</div><div class="clock" id="clock">--:--:--</div></div>
         <button class="icon-btn" id="btn-theme" title="切换深色或浅色主题" aria-label="切换主题"><i class="ph ph-moon icon-moon" aria-hidden="true"></i><i class="ph ph-sun icon-sun" aria-hidden="true"></i></button>
@@ -39,11 +41,11 @@
       <section class="tab-content workspace-view active" id="tab-roast" aria-label="烘焙控制">
         <div class="roast-workspace">
           <aside class="telemetry-rail" aria-label="实时遥测">
-            <div class="telemetry-heading"><span class="eyebrow">LIVE TELEMETRY</span><div class="state-badge" id="state-badge">待机</div></div>
-            <div class="readout-item pv"><span class="readout-label"><i class="ph ph-thermometer-hot"></i> 温度 PV</span><span class="readout-value-row"><strong class="readout-val" id="pv-val">--</strong><span class="readout-unit">°C</span></span><span class="readout-trend">实时豆温</span></div>
-            <div class="readout-item sv"><span class="readout-label"><i class="ph ph-crosshair"></i> 温度 SV</span><span class="readout-value-row"><strong class="readout-val" id="sv-val">--</strong><span class="readout-unit">°C</span></span><span class="readout-trend">曲线目标</span></div>
+            <div class="telemetry-heading"><div class="state-badge" id="state-badge">待机</div></div>
+            <div class="readout-item pv"><span class="readout-label"><i class="ph ph-thermometer-hot"></i> 温度 PV</span><span class="readout-value-row"><strong class="readout-val" id="pv-val">--</strong><span class="readout-unit">°C</span></span><span class="readout-trend">实时测量</span></div>
+            <div class="readout-item sv"><span class="readout-label"><i class="ph ph-crosshair"></i> 温度 SV</span><span class="readout-value-row"><strong class="readout-val" id="sv-val">--</strong><span class="readout-unit">°C</span></span><span class="readout-trend">设备设定</span></div>
             <div class="readout-item ror"><span class="readout-label"><i class="ph ph-trend-up"></i> ROR</span><span class="readout-value-row"><strong class="readout-val" id="ror-val">--</strong><span class="readout-unit">°C/min</span></span><span class="readout-trend">升温速率</span></div>
-            <div class="readout-item delta"><span class="readout-label"><i class="ph ph-target"></i> 目标偏差</span><span class="readout-value-row"><strong class="readout-val" id="delta-val">--</strong><span class="readout-unit">°C</span></span><span class="readout-trend">PV − SV</span></div>
+            <div class="readout-item delta"><span class="readout-label"><i class="ph ph-target"></i> 目标偏差</span><span class="readout-value-row"><strong class="readout-val" id="delta-val">--</strong></span><span class="readout-trend">PV − 曲线目标</span></div>
             <div id="event-temps-bar" aria-label="关键事件摘要">
               <div class="event-temp-item tp"><span class="event-temp-label">回温点</span><span class="event-temp-val" id="tp-info">--</span></div>
               <div class="event-temp-item yellowing"><span class="event-temp-label">转黄</span><span class="event-temp-val" id="yellowing-info">--</span></div>
@@ -54,8 +56,8 @@
 
           <section id="charts-panel" aria-labelledby="chart-title">
             <div class="chart-header">
-              <div><span class="eyebrow">ROAST CURVE</span><h2 class="chart-title" id="chart-title">实时温度曲线</h2></div>
-              <div class="chart-header-tools"><div class="chart-legend" aria-label="图例"><span class="legend-item temp"><i></i>温度 PV</span><span class="legend-item target"><i></i>目标 SV</span><span class="legend-item ror"><i></i>ROR</span><span class="legend-item projection"><i></i>预测</span></div><button id="btn-exit-compare" class="ctrl-btn" style="display:none"><i class="ph ph-x"></i><span>退出对比</span></button></div>
+              <div><h2 class="chart-title" id="chart-title">实时温度曲线</h2></div>
+              <div class="chart-header-tools"><div class="chart-legend" aria-label="图例"><span class="legend-item temp"><i></i>温度 PV</span><span class="legend-item target"><i></i>设定 SV</span><span class="legend-item curve-target"><i></i>曲线目标</span><span class="legend-item ror"><i></i>ROR</span><span class="legend-item projection"><i></i>预测</span></div><button id="btn-exit-compare" class="ctrl-btn" style="display:none"><i class="ph ph-x"></i><span>退出对比</span></button></div>
             </div>
             <div class="chart-wrapper"><canvas id="roast-chart" role="img" aria-label="实时温度、目标温度和升温率曲线"></canvas></div>
             <div id="event-actions-bar" aria-label="烘焙事件时间线">
@@ -93,19 +95,19 @@
       </section>
 
       <section class="tab-content workspace-view management-view" id="tab-profile" aria-label="曲线管理">
-        <div class="workspace-heading"><div><span class="eyebrow">PROFILE LIBRARY</span><h2>曲线管理</h2><p>选择、预览并维护你的烘焙目标曲线。</p></div><div class="profile-actions"><label class="search-field"><i class="ph ph-magnifying-glass"></i><input id="profile-search" type="search" placeholder="搜索曲线" aria-label="搜索曲线"></label><button id="btn-import-trigger" class="ctrl-btn"><i class="ph ph-upload-simple"></i><span>导入</span></button><button id="btn-refresh-profiles" class="ctrl-btn"><i class="ph ph-arrows-clockwise"></i><span>刷新</span></button><button id="btn-new-profile" class="ctrl-btn primary"><i class="ph ph-plus"></i><span>新建曲线</span></button><input type="file" id="btn-import-file" accept=".json" hidden /></div></div>
+        <div class="workspace-heading"><div><h2>曲线管理</h2><p>选择、预览并维护你的烘焙目标曲线。</p></div><div class="profile-actions"><label class="search-field"><i class="ph ph-magnifying-glass"></i><input id="profile-search" type="search" placeholder="搜索曲线" aria-label="搜索曲线"></label><button id="btn-import-trigger" class="ctrl-btn"><i class="ph ph-upload-simple"></i><span>导入</span></button><button id="btn-refresh-profiles" class="ctrl-btn"><i class="ph ph-arrows-clockwise"></i><span>刷新</span></button><button id="btn-new-profile" class="ctrl-btn primary"><i class="ph ph-plus"></i><span>新建曲线</span></button><input type="file" id="btn-import-file" accept=".json" hidden /></div></div>
         <div class="profile-library-shell"><div class="profile-library-meta"><span>曲线库</span><small>烘焙进行中仅可查看和导出</small></div><div class="profile-cards" id="profile-cards"><div class="list-placeholder"><i class="ph ph-circle-notch spin"></i><span>正在加载曲线</span></div></div></div>
       </section>
 
       <section class="tab-content workspace-view management-view" id="tab-records" aria-label="烘焙记录">
-        <div class="workspace-heading"><div><span class="eyebrow">ROAST ARCHIVE</span><h2>烘焙记录</h2><p>回顾每一锅的阶段、事件和真实曲线。</p></div><div class="compare-actions" id="compare-actions"><button id="btn-compare" class="ctrl-btn primary" style="display:none"><i class="ph ph-selection"></i><span>对比选中</span></button></div></div>
+        <div class="workspace-heading"><div><h2>烘焙记录</h2><p>回顾每一锅的阶段、事件和真实曲线。</p></div><div class="compare-actions" id="compare-actions"><button id="btn-compare" class="ctrl-btn primary" style="display:none"><i class="ph ph-selection"></i><span>对比选中</span></button></div></div>
         <div class="records-shell"><div class="records-list" id="records-list"><div class="list-placeholder"><i class="ph ph-circle-notch spin"></i><span>正在加载记录</span></div></div><div id="record-detail" style="display:none"><div class="record-detail-header"><button id="btn-back-to-list" class="ctrl-btn"><i class="ph ph-arrow-left"></i><span>返回列表</span></button><button id="btn-chart-fullscreen" class="ctrl-btn"><i class="ph ph-corners-out"></i><span class="btn-label">图表全屏</span></button></div><div class="record-info-card"><div class="record-info-title"><div><span class="section-kicker">烘焙曲线</span><strong id="detail-profile-name">--</strong></div><span id="detail-date">--</span></div><div class="record-info-stats" id="detail-stats"></div></div><div class="record-chart-container" id="record-chart-container"><button id="btn-chart-exit-fullscreen" class="modal-close" hidden aria-label="退出全屏"><i class="ph ph-x"></i></button><div class="record-chart-wrapper"><canvas id="record-chart" role="img" aria-label="烘焙记录曲线"></canvas></div></div><div class="record-events" id="detail-events"></div><div class="record-actions"><button id="btn-detail-csv" class="ctrl-btn"><i class="ph ph-download-simple"></i><span>导出 CSV</span></button><button id="btn-detail-json" class="ctrl-btn"><i class="ph ph-download-simple"></i><span>导出 JSON</span></button></div></div></div>
       </section>
 
       <section class="tab-content workspace-view" id="tab-workbench" aria-label="原生工作台"><div id="wb-root" class="wb-shell"></div></section>
 
       <section class="tab-content workspace-view management-view" id="tab-settings" aria-label="设置">
-        <div class="workspace-heading"><div><span class="eyebrow">PREFERENCES</span><h2>设置</h2><p>调整界面、连接、预测和烘焙提醒。</p></div></div>
+        <div class="workspace-heading"><div><h2>设置</h2><p>调整界面、连接、预测和烘焙提醒。</p></div></div>
         <div class="settings-grid">
           <section class="settings-card"><div class="settings-card-heading"><i class="ph ph-palette"></i><div><h3>外观</h3><p>首次启动默认跟随系统</p></div></div><div class="setting-row"><label>主题</label><div class="seg-control" id="theme-seg"><button type="button" data-theme-mode="auto">跟随系统</button><button type="button" data-theme-mode="dark">深色</button><button type="button" data-theme-mode="light">浅色</button></div></div></section>
           <section class="settings-card" id="backend-section" style="display:none"><div class="settings-card-heading"><i class="ph ph-plugs-connected"></i><div><h3>后端连接</h3><p>当前 <span id="backend-current">--</span></p></div></div><div class="preset-actions"><button id="backend-preset-sim" class="ctrl-btn"><i class="ph ph-desktop"></i><span>模拟器</span></button><button id="backend-preset-real" class="ctrl-btn"><i class="ph ph-broadcast"></i><span>实机</span></button></div><div class="setting-field"><label for="backend-real-preset">实机地址</label><div class="inline-field"><input type="text" id="backend-real-preset" placeholder="http://192.168.1.50:8000"><button id="backend-save-preset" class="ctrl-btn">存预设</button></div></div><div id="backend-history" class="backend-history"></div><div class="setting-field"><label for="backend-custom">手动指定</label><div class="inline-field"><input type="text" id="backend-custom" placeholder="http://...:8000"><button id="backend-apply" class="ctrl-btn primary">切换</button></div></div></section>
@@ -113,7 +115,7 @@
           <section class="settings-card"><div class="settings-card-heading"><i class="ph ph-bell-ringing"></i><div><h3>提醒</h3><p>烘焙节点与结束通知</p></div></div><div class="phase-input-row"><label>提示音</label><input type="checkbox" id="ui-sound" checked><button id="ui-sound-test" class="ctrl-btn">测试</button></div><div class="phase-input-row"><label>结束提醒</label><span class="unit">提前</span><select id="ui-alert-offset" class="phase-number"><option value="5">5 °C</option><option value="10">10 °C（默认）</option><option value="15">15 °C</option></select></div></section>
           <section class="settings-card"><div class="settings-card-heading"><i class="ph ph-crosshair"></i><div><h3>自动标记</h3><p>按温度阈值记录转黄与一爆</p></div></div><div class="phase-input-row"><label>转黄 ≥</label><input type="checkbox" id="auto-dry-enabled" title="启用自动标记转黄"><input type="number" id="auto-dry-temp" class="phase-number" min="0" max="300" step="1" value="150"><span class="unit">°C</span></div><div class="phase-input-row"><label>一爆 ≥</label><input type="checkbox" id="auto-fcs-enabled" title="启用自动标记一爆"><input type="number" id="auto-fcs-temp" class="phase-number" min="0" max="300" step="1" value="200"><span class="unit">°C</span></div></section>
           <section class="settings-card settings-card-wide"><div class="settings-card-heading split"><span><i class="ph ph-warning-circle"></i><span><h3>报警</h3><p>每锅每条仅触发一次</p></span></span><button id="btn-add-alarm" class="ctrl-btn"><i class="ph ph-plus"></i><span>添加</span></button></div><div id="alarms-list"></div></section>
-          <section class="settings-card about-card"><div class="settings-card-heading"><i class="ph ph-coffee"></i><div><h3>关于</h3><p>Ganf's 咖啡烘焙机控制台</p></div></div><div class="about-meta"><span>Web / Tauri</span><span>Calm Canvas v3.24</span></div></section>
+          <section class="settings-card about-card"><div class="settings-card-heading"><i class="ph ph-coffee"></i><div><h3>关于</h3><p>Ganf's 咖啡烘焙机控制台</p></div></div><div class="about-meta"><span>Web / Tauri</span></div></section>
         </div>
       </section>
     </main>
@@ -121,15 +123,17 @@
     <footer id="footer"><div class="footer-left"><div class="conn-status-group"><span class="status-dot offline" id="conn-status-ws" title="WebSocket"></span><span class="conn-label">WS</span></div><div class="footer-separator"></div><div class="conn-status-group"><span class="status-dot offline" id="conn-status-tc4s" title="TC4S"></span><span class="conn-label">TC4S</span></div><span class="connection-copy">等待连接</span></div><div class="footer-right"><button id="btn-e-stop" class="estop-btn disabled" aria-label="紧急停止"><i class="ph ph-shield-warning"></i><span class="estop-label">E-STOP</span></button></div></footer>
   </div>
 
-  <div id="error-overlay" class="hidden" role="alertdialog" aria-modal="true" aria-labelledby="error-title"><div class="error-box"><div class="error-icon"><i class="ph ph-warning-octagon"></i></div><span class="eyebrow">SYSTEM HALTED</span><h2 id="error-title">系统错误</h2><p id="error-reason">--</p><button id="btn-error-reset" class="error-reset-btn"><i class="ph ph-arrows-counter-clockwise"></i><span>复位系统</span></button></div></div>
+  <div id="error-overlay" class="hidden" role="alertdialog" aria-modal="true" aria-labelledby="error-title"><div class="error-box"><div class="error-icon"><i class="ph ph-warning-octagon"></i></div><h2 id="error-title">系统错误</h2><p id="error-reason">--</p><button id="btn-error-reset" class="error-reset-btn"><i class="ph ph-arrows-counter-clockwise"></i><span>复位系统</span></button></div></div>
   <div id="app-toast" class="app-toast" role="status" aria-live="polite"></div>
-  <script src="js/tauri-adapter.js?v=3.24"></script>
-  <script src="js/utils.js?v=3.24"></script>
-  <script src="js/app.js?v=3.24"></script>
-  <script src="js/workbench-pdf.js?v=3.24"></script>
-  <script src="js/workbench.js?v=3.24"></script>
-  <script src="js/ai-bridge.js?v=3.24"></script>
-  <script src="js/ai-chat.js?v=3.24"></script>
-  <script src="js/ai.js?v=3.24"></script>
+  <script src="js/tauri-adapter.js?v=3.27"></script>
+  <script src="js/utils.js?v=3.27"></script>
+  <script src="js/app.js?v=3.27"></script>
+  <script src="js/workbench-pdf.js?v=3.27"></script>
+  <script src="js/workbench.js?v=3.27"></script>
+  <script src="js/ai-bridge.js?v=3.27"></script>
+  <script src="js/ai-chat.js?v=3.27"></script>
+  <script src="js/ai.js?v=3.27"></script>
+  <script src="js/atlas.js?v=3.27"></script>
+  <script src="js/workspace-settings.js?v=3.27"></script>
 </body>
 </html>

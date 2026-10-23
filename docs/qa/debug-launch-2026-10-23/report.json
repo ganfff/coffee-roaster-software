@@ -1,0 +1,15 @@
+{
+  "checks": [
+    "standalone loopback development host starts without installation",
+    "AI authentication, cross-origin rejection and static path boundary",
+    "real entry serves current HTML/CSS/JS and simulator WS with 3 profiles",
+    "first-launch missing-backend explanation and offline workspace navigation",
+    "real local AI service, providers/settings work without a key or fake preconfigured profile",
+    "sample records available through the same server",
+    "packaged offline numerical engine creates a native document",
+    "editor opens in idle and can save without installing",
+    "AI history survives a server restart using the same OS-protected installation key"
+  ],
+  "errors": [],
+  "scope": "live source, hardware-free simulator and real AI service; no paid inference or hardware"
+}

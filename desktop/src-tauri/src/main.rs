@@ -3,12 +3,14 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 mod ai;
+mod external;
 mod workbench;
 fn main() {
     tauri::Builder::default()
         .manage(ai::AiState::default())
         .manage(ai::AiServiceState::default())
         .invoke_handler(tauri::generate_handler![
+            external::ai_open_external,
             workbench::workbench_request,
             workbench::workbench_save_file,
             ai::ai_settings,

@@ -1,0 +1,18 @@
+{
+  "checks": [
+    "local service, full multi-turn transcript and manual channel handoff",
+    "history restored after page reload",
+    "history filtering",
+    "edit and resend preserves archived original",
+    "task-based settings group and account details without manual names/model IDs",
+    "from add account through login, automatic catalog/default model and automatic persistence",
+    "light/dark desktop/mobile layout and reachable E-STOP",
+    "landscape input and send controls remain visible above emergency footer",
+    "100/115/130 percent scaling keeps chat inside viewport",
+    "reload reconnects a running request and can stop it without resending",
+    "regular curve comparison, validated explicit adoption, undo and text keyboard isolation",
+    "uploaded klog raw channel tool uses immutable attachment and its real offsets"
+  ],
+  "errors": [],
+  "evidence": "shared AI core + faux provider + browser + safe simulator"
+}

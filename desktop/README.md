@@ -1,6 +1,10 @@
 # RoasterDesktop
 
-当前版本 **0.4.0**，复用 `../roaster/static/` 的 Web 3.24。桌面通过 HTTP/WebSocket 连接设备后端，Rust 管理本机 AI 与独立原生文件引擎。
+当前版本 **0.6.1**，复用 `../roaster/static/` 的 Web 3.27。桌面通过 HTTP/WebSocket 连接设备后端，Rust 管理本机 AI 与独立原生文件引擎。
+
+日常调试优先双击根目录 **调试网页.cmd**，或运行 `npm run dev:web`；网页、API、WebSocket、离线工作台和本机 AI 会一起启动。原生窗口用 `npm run dev:sim`，无需安装。完整说明见 [免安装调试与打包](../docs/guides/debugging-and-packaging.md)。
+
+安装包是设备客户端，不会启动控机 HTTP 后端。默认 `localhost:8000` 没有服务时，需要改为设备后端地址；本机无硬件预览使用上面的调试入口。
 
 ## 开发环境
 
@@ -22,12 +26,12 @@ npm run dev:sim -- --freeze
 
 ## 当前功能
 
-- AI 对话在全局侧栏或放大视图使用，支持历史、停止、编辑重发、重新生成、附件和模型切换。设置提供订阅登录、API Key、自定义配置。
-- 默认使用当前后端共享 AI；客户端首次配对。Windows 可主动切到本机模式，旧本机配置和历史迁移需要明确操作。
+- AI 对话在全局侧栏或放大视图使用，支持历史、停止、编辑重发、重新生成、附件和模型切换。设置按任务分组，提供账户登录与自动模型目录；本地模型为首选入口，其他订阅与 API 保留独立分组。
+- Windows 固定使用本机 AI，账户与会话不随设备连接地址切换；移除运行位置、配对与设备共享入口。支持本地模型以及保存在本机的订阅/API 配置。
 - 原生工作台离线编辑 `.kpro/.klog`，内置功能说明与参数帮助。AI 候选先预览再确认采用；保存、入库与应用仍由用户分别操作。
-- 账号、密钥和配对凭据不进入 Git；Windows 凭据由系统凭据管理器保护。
+- 账号与密钥不进入 Git；Windows 凭据由系统凭据管理器保护。
 
-详见 [AI 配对与部署](../docs/guides/ai-host-deployment.md)、[原生工作台](../docs/guides/native-workbench.md)。
+详见 [本机 AI 配置](../docs/guides/ai-host-deployment.md)、[原生工作台](../docs/guides/native-workbench.md)。
 
 ## 构建与分发
 
@@ -58,7 +62,7 @@ AI UI 使用真实共享核心、确定性模型与安全模拟器，不调用�
 
 后端 `pytest` 默认可选读取相邻独立 `kaffelogic逆向` 项目的 418 文件语料及原版 oracle；也可用 `WORKBENCH_REFERENCE` 指定。没有参考库时两项扩展回归跳过，日常 UI 与构建仍可独立运行。
 
-当前证据见 [v3.24 QA](../docs/qa/ai-workspace-v3.24.md)，历版证据见 [QA 归档](../docs/qa/archive/README.md)。
+当前证据见 [v3.27 QA](../docs/qa/local-ai-v3.27.md)，历版证据见 [QA 归档](../docs/qa/archive/README.md)。
 
 ## 目录
 

@@ -1,0 +1,760 @@
+{
+  "checks": [
+    {
+      "palette": "classic",
+      "width": 1366,
+      "theme": "light",
+      "tab": "roast",
+      "scroll": 1366,
+      "footer": 800
+    },
+    {
+      "palette": "classic",
+      "width": 1366,
+      "theme": "light",
+      "tab": "profile",
+      "scroll": 1366,
+      "footer": 800
+    },
+    {
+      "palette": "classic",
+      "width": 1366,
+      "theme": "light",
+      "tab": "records",
+      "scroll": 1366,
+      "footer": 800
+    },
+    {
+      "palette": "classic",
+      "width": 1366,
+      "theme": "light",
+      "tab": "workbench",
+      "scroll": 1366,
+      "footer": 800
+    },
+    {
+      "palette": "classic",
+      "width": 1366,
+      "theme": "light",
+      "tab": "settings",
+      "scroll": 1366,
+      "footer": 800
+    },
+    {
+      "palette": "classic",
+      "width": 1366,
+      "theme": "dark",
+      "tab": "roast",
+      "scroll": 1366,
+      "footer": 800
+    },
+    {
+      "palette": "classic",
+      "width": 1366,
+      "theme": "dark",
+      "tab": "profile",
+      "scroll": 1366,
+      "footer": 800
+    },
+    {
+      "palette": "classic",
+      "width": 1366,
+      "theme": "dark",
+      "tab": "records",
+      "scroll": 1366,
+      "footer": 800
+    },
+    {
+      "palette": "classic",
+      "width": 1366,
+      "theme": "dark",
+      "tab": "workbench",
+      "scroll": 1366,
+      "footer": 800
+    },
+    {
+      "palette": "classic",
+      "width": 1366,
+      "theme": "dark",
+      "tab": "settings",
+      "scroll": 1366,
+      "footer": 800
+    },
+    {
+      "palette": "classic",
+      "width": 1024,
+      "theme": "light",
+      "tab": "roast",
+      "scroll": 1024,
+      "footer": 640
+    },
+    {
+      "palette": "classic",
+      "width": 1024,
+      "theme": "light",
+      "tab": "profile",
+      "scroll": 1024,
+      "footer": 640
+    },
+    {
+      "palette": "classic",
+      "width": 1024,
+      "theme": "light",
+      "tab": "records",
+      "scroll": 1024,
+      "footer": 640
+    },
+    {
+      "palette": "classic",
+      "width": 1024,
+      "theme": "light",
+      "tab": "workbench",
+      "scroll": 1024,
+      "footer": 640
+    },
+    {
+      "palette": "classic",
+      "width": 1024,
+      "theme": "light",
+      "tab": "settings",
+      "scroll": 1024,
+      "footer": 640
+    },
+    {
+      "palette": "classic",
+      "width": 1024,
+      "theme": "dark",
+      "tab": "roast",
+      "scroll": 1024,
+      "footer": 640
+    },
+    {
+      "palette": "classic",
+      "width": 1024,
+      "theme": "dark",
+      "tab": "profile",
+      "scroll": 1024,
+      "footer": 640
+    },
+    {
+      "palette": "classic",
+      "width": 1024,
+      "theme": "dark",
+      "tab": "records",
+      "scroll": 1024,
+      "footer": 640
+    },
+    {
+      "palette": "classic",
+      "width": 1024,
+      "theme": "dark",
+      "tab": "workbench",
+      "scroll": 1024,
+      "footer": 640
+    },
+    {
+      "palette": "classic",
+      "width": 1024,
+      "theme": "dark",
+      "tab": "settings",
+      "scroll": 1024,
+      "footer": 640
+    },
+    {
+      "palette": "classic",
+      "width": 375,
+      "theme": "light",
+      "tab": "roast",
+      "scroll": 375,
+      "footer": 800
+    },
+    {
+      "palette": "classic",
+      "width": 375,
+      "theme": "light",
+      "tab": "profile",
+      "scroll": 375,
+      "footer": 800
+    },
+    {
+      "palette": "classic",
+      "width": 375,
+      "theme": "light",
+      "tab": "records",
+      "scroll": 375,
+      "footer": 800
+    },
+    {
+      "palette": "classic",
+      "width": 375,
+      "theme": "light",
+      "tab": "workbench",
+      "scroll": 375,
+      "footer": 800
+    },
+    {
+      "palette": "classic",
+      "width": 375,
+      "theme": "light",
+      "tab": "settings",
+      "scroll": 375,
+      "footer": 800
+    },
+    {
+      "palette": "classic",
+      "width": 375,
+      "theme": "dark",
+      "tab": "roast",
+      "scroll": 375,
+      "footer": 800
+    },
+    {
+      "palette": "classic",
+      "width": 375,
+      "theme": "dark",
+      "tab": "profile",
+      "scroll": 375,
+      "footer": 800
+    },
+    {
+      "palette": "classic",
+      "width": 375,
+      "theme": "dark",
+      "tab": "records",
+      "scroll": 375,
+      "footer": 800
+    },
+    {
+      "palette": "classic",
+      "width": 375,
+      "theme": "dark",
+      "tab": "workbench",
+      "scroll": 375,
+      "footer": 800
+    },
+    {
+      "palette": "classic",
+      "width": 375,
+      "theme": "dark",
+      "tab": "settings",
+      "scroll": 375,
+      "footer": 800
+    },
+    {
+      "palette": "sage",
+      "width": 1366,
+      "theme": "light",
+      "tab": "roast",
+      "scroll": 1366,
+      "footer": 800
+    },
+    {
+      "palette": "sage",
+      "width": 1366,
+      "theme": "light",
+      "tab": "profile",
+      "scroll": 1366,
+      "footer": 800
+    },
+    {
+      "palette": "sage",
+      "width": 1366,
+      "theme": "light",
+      "tab": "records",
+      "scroll": 1366,
+      "footer": 800
+    },
+    {
+      "palette": "sage",
+      "width": 1366,
+      "theme": "light",
+      "tab": "workbench",
+      "scroll": 1366,
+      "footer": 800
+    },
+    {
+      "palette": "sage",
+      "width": 1366,
+      "theme": "light",
+      "tab": "settings",
+      "scroll": 1366,
+      "footer": 800
+    },
+    {
+      "palette": "sage",
+      "width": 1366,
+      "theme": "dark",
+      "tab": "roast",
+      "scroll": 1366,
+      "footer": 800
+    },
+    {
+      "palette": "sage",
+      "width": 1366,
+      "theme": "dark",
+      "tab": "profile",
+      "scroll": 1366,
+      "footer": 800
+    },
+    {
+      "palette": "sage",
+      "width": 1366,
+      "theme": "dark",
+      "tab": "records",
+      "scroll": 1366,
+      "footer": 800
+    },
+    {
+      "palette": "sage",
+      "width": 1366,
+      "theme": "dark",
+      "tab": "workbench",
+      "scroll": 1366,
+      "footer": 800
+    },
+    {
+      "palette": "sage",
+      "width": 1366,
+      "theme": "dark",
+      "tab": "settings",
+      "scroll": 1366,
+      "footer": 800
+    },
+    {
+      "palette": "sage",
+      "width": 1024,
+      "theme": "light",
+      "tab": "roast",
+      "scroll": 1024,
+      "footer": 640
+    },
+    {
+      "palette": "sage",
+      "width": 1024,
+      "theme": "light",
+      "tab": "profile",
+      "scroll": 1024,
+      "footer": 640
+    },
+    {
+      "palette": "sage",
+      "width": 1024,
+      "theme": "light",
+      "tab": "records",
+      "scroll": 1024,
+      "footer": 640
+    },
+    {
+      "palette": "sage",
+      "width": 1024,
+      "theme": "light",
+      "tab": "workbench",
+      "scroll": 1024,
+      "footer": 640
+    },
+    {
+      "palette": "sage",
+      "width": 1024,
+      "theme": "light",
+      "tab": "settings",
+      "scroll": 1024,
+      "footer": 640
+    },
+    {
+      "palette": "sage",
+      "width": 1024,
+      "theme": "dark",
+      "tab": "roast",
+      "scroll": 1024,
+      "footer": 640
+    },
+    {
+      "palette": "sage",
+      "width": 1024,
+      "theme": "dark",
+      "tab": "profile",
+      "scroll": 1024,
+      "footer": 640
+    },
+    {
+      "palette": "sage",
+      "width": 1024,
+      "theme": "dark",
+      "tab": "records",
+      "scroll": 1024,
+      "footer": 640
+    },
+    {
+      "palette": "sage",
+      "width": 1024,
+      "theme": "dark",
+      "tab": "workbench",
+      "scroll": 1024,
+      "footer": 640
+    },
+    {
+      "palette": "sage",
+      "width": 1024,
+      "theme": "dark",
+      "tab": "settings",
+      "scroll": 1024,
+      "footer": 640
+    },
+    {
+      "palette": "sage",
+      "width": 375,
+      "theme": "light",
+      "tab": "roast",
+      "scroll": 375,
+      "footer": 800
+    },
+    {
+      "palette": "sage",
+      "width": 375,
+      "theme": "light",
+      "tab": "profile",
+      "scroll": 375,
+      "footer": 800
+    },
+    {
+      "palette": "sage",
+      "width": 375,
+      "theme": "light",
+      "tab": "records",
+      "scroll": 375,
+      "footer": 800
+    },
+    {
+      "palette": "sage",
+      "width": 375,
+      "theme": "light",
+      "tab": "workbench",
+      "scroll": 375,
+      "footer": 800
+    },
+    {
+      "palette": "sage",
+      "width": 375,
+      "theme": "light",
+      "tab": "settings",
+      "scroll": 375,
+      "footer": 800
+    },
+    {
+      "palette": "sage",
+      "width": 375,
+      "theme": "dark",
+      "tab": "roast",
+      "scroll": 375,
+      "footer": 800
+    },
+    {
+      "palette": "sage",
+      "width": 375,
+      "theme": "dark",
+      "tab": "profile",
+      "scroll": 375,
+      "footer": 800
+    },
+    {
+      "palette": "sage",
+      "width": 375,
+      "theme": "dark",
+      "tab": "records",
+      "scroll": 375,
+      "footer": 800
+    },
+    {
+      "palette": "sage",
+      "width": 375,
+      "theme": "dark",
+      "tab": "workbench",
+      "scroll": 375,
+      "footer": 800
+    },
+    {
+      "palette": "sage",
+      "width": 375,
+      "theme": "dark",
+      "tab": "settings",
+      "scroll": 375,
+      "footer": 800
+    },
+    {
+      "palette": "sand",
+      "width": 1366,
+      "theme": "light",
+      "tab": "roast",
+      "scroll": 1366,
+      "footer": 800
+    },
+    {
+      "palette": "sand",
+      "width": 1366,
+      "theme": "light",
+      "tab": "profile",
+      "scroll": 1366,
+      "footer": 800
+    },
+    {
+      "palette": "sand",
+      "width": 1366,
+      "theme": "light",
+      "tab": "records",
+      "scroll": 1366,
+      "footer": 800
+    },
+    {
+      "palette": "sand",
+      "width": 1366,
+      "theme": "light",
+      "tab": "workbench",
+      "scroll": 1366,
+      "footer": 800
+    },
+    {
+      "palette": "sand",
+      "width": 1366,
+      "theme": "light",
+      "tab": "settings",
+      "scroll": 1366,
+      "footer": 800
+    },
+    {
+      "palette": "sand",
+      "width": 1366,
+      "theme": "dark",
+      "tab": "roast",
+      "scroll": 1366,
+      "footer": 800
+    },
+    {
+      "palette": "sand",
+      "width": 1366,
+      "theme": "dark",
+      "tab": "profile",
+      "scroll": 1366,
+      "footer": 800
+    },
+    {
+      "palette": "sand",
+      "width": 1366,
+      "theme": "dark",
+      "tab": "records",
+      "scroll": 1366,
+      "footer": 800
+    },
+    {
+      "palette": "sand",
+      "width": 1366,
+      "theme": "dark",
+      "tab": "workbench",
+      "scroll": 1366,
+      "footer": 800
+    },
+    {
+      "palette": "sand",
+      "width": 1366,
+      "theme": "dark",
+      "tab": "settings",
+      "scroll": 1366,
+      "footer": 800
+    },
+    {
+      "palette": "sand",
+      "width": 1024,
+      "theme": "light",
+      "tab": "roast",
+      "scroll": 1024,
+      "footer": 640
+    },
+    {
+      "palette": "sand",
+      "width": 1024,
+      "theme": "light",
+      "tab": "profile",
+      "scroll": 1024,
+      "footer": 640
+    },
+    {
+      "palette": "sand",
+      "width": 1024,
+      "theme": "light",
+      "tab": "records",
+      "scroll": 1024,
+      "footer": 640
+    },
+    {
+      "palette": "sand",
+      "width": 1024,
+      "theme": "light",
+      "tab": "workbench",
+      "scroll": 1024,
+      "footer": 640
+    },
+    {
+      "palette": "sand",
+      "width": 1024,
+      "theme": "light",
+      "tab": "settings",
+      "scroll": 1024,
+      "footer": 640
+    },
+    {
+      "palette": "sand",
+      "width": 1024,
+      "theme": "dark",
+      "tab": "roast",
+      "scroll": 1024,
+      "footer": 640
+    },
+    {
+      "palette": "sand",
+      "width": 1024,
+      "theme": "dark",
+      "tab": "profile",
+      "scroll": 1024,
+      "footer": 640
+    },
+    {
+      "palette": "sand",
+      "width": 1024,
+      "theme": "dark",
+      "tab": "records",
+      "scroll": 1024,
+      "footer": 640
+    },
+    {
+      "palette": "sand",
+      "width": 1024,
+      "theme": "dark",
+      "tab": "workbench",
+      "scroll": 1024,
+      "footer": 640
+    },
+    {
+      "palette": "sand",
+      "width": 1024,
+      "theme": "dark",
+      "tab": "settings",
+      "scroll": 1024,
+      "footer": 640
+    },
+    {
+      "palette": "sand",
+      "width": 375,
+      "theme": "light",
+      "tab": "roast",
+      "scroll": 375,
+      "footer": 800
+    },
+    {
+      "palette": "sand",
+      "width": 375,
+      "theme": "light",
+      "tab": "profile",
+      "scroll": 375,
+      "footer": 800
+    },
+    {
+      "palette": "sand",
+      "width": 375,
+      "theme": "light",
+      "tab": "records",
+      "scroll": 375,
+      "footer": 800
+    },
+    {
+      "palette": "sand",
+      "width": 375,
+      "theme": "light",
+      "tab": "workbench",
+      "scroll": 375,
+      "footer": 800
+    },
+    {
+      "palette": "sand",
+      "width": 375,
+      "theme": "light",
+      "tab": "settings",
+      "scroll": 375,
+      "footer": 800
+    },
+    {
+      "palette": "sand",
+      "width": 375,
+      "theme": "dark",
+      "tab": "roast",
+      "scroll": 375,
+      "footer": 800
+    },
+    {
+      "palette": "sand",
+      "width": 375,
+      "theme": "dark",
+      "tab": "profile",
+      "scroll": 375,
+      "footer": 800
+    },
+    {
+      "palette": "sand",
+      "width": 375,
+      "theme": "dark",
+      "tab": "records",
+      "scroll": 375,
+      "footer": 800
+    },
+    {
+      "palette": "sand",
+      "width": 375,
+      "theme": "dark",
+      "tab": "workbench",
+      "scroll": 375,
+      "footer": 800
+    },
+    {
+      "palette": "sand",
+      "width": 375,
+      "theme": "dark",
+      "tab": "settings",
+      "scroll": 375,
+      "footer": 800
+    },
+    {
+      "test": "palette and appearance persist across reload"
+    },
+    {
+      "test": "system appearance follows live changes and persists across reload",
+      "palette": "classic"
+    },
+    {
+      "test": "system appearance follows live changes and persists across reload",
+      "palette": "sage"
+    },
+    {
+      "test": "system appearance follows live changes and persists across reload",
+      "palette": "sand"
+    },
+    {
+      "test": "legacy explicit appearance survives palette upgrade and system changes"
+    },
+    {
+      "test": "preview leaves applied selection unchanged"
+    },
+    {
+      "test": "explicit apply updates applied curve and preview state"
+    },
+    {
+      "test": "preview action disabled when roast starts"
+    },
+    {
+      "test": "cooling confirmation preserves E-STOP reachability"
+    },
+    {
+      "test": "editor input readable font and minimum hit height",
+      "font": 14,
+      "height": 44
+    }
+  ],
+  "errors": []
+}

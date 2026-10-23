@@ -1,0 +1,11 @@
+{
+  "checks": [
+    "actual release WebView → Rust → Windows default browser → local verification HTTP request",
+    "fresh packaged desktop defaults to local AI: catalog + two real IPC/SDK streamed turns with device backend unreachable and no shared AI pairing",
+    "legacy remote selection is ignored; desktop keeps local accounts after backend changes",
+    "packaged resources match current source and local-only settings have no device sharing",
+    "packaged numerical engine, 144-field offline help and unobstructed E-STOP"
+  ],
+  "errors": [],
+  "evidence": "actual Tauri release WebView/Rust + packaged native engine; deterministic AI fixture, no cloud/hardware"
+}

@@ -1,5 +1,5 @@
 import {build} from 'esbuild';
-import {mkdir,readFile,writeFile,access,rm} from 'node:fs/promises';
+import {mkdir,readFile,writeFile,access,rm,rename} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
 import {dirname,resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
@@ -26,5 +26,10 @@ const manifest=JSON.parse(await readFile(resolve(runtime,'node-manifest.json'),'
 const actual=createHash('sha256').update(await readFile(nodePath)).digest('hex');
 if(actual!==manifest.sha256||actual!==pinned.sha256||manifest.version!==pinned.version)throw Error('本地 AI Node 运行时完整性校验失败');
 await build({entryPoints:[resolve(root,'ai/worker.mjs'),resolve(root,'ai/service.mjs')],outdir:generated,outExtension:{'.js':'.mjs'},bundle:true,platform:'node',format:'esm',splitting:true,target:'node24',banner:{js:'import {createRequire as __aiCreateRequire} from "node:module"; const require=__aiCreateRequire(import.meta.url);'},logLevel:'warning'});
-await build({entryPoints:[resolve(root,'ai/bridge.mjs')],outfile:resolve(root,'../roaster/static/js/ai-bridge.js'),bundle:true,format:'iife',target:'es2020',logLevel:'warning'});
+const bridge=await build({entryPoints:[resolve(root,'ai/bridge.mjs')],outfile:resolve(root,'../roaster/static/js/ai-bridge.js'),bundle:true,format:'iife',target:'es2020',logLevel:'warning',write:false});
+for(const output of bridge.outputFiles){
+  const previous=await readFile(output.path).catch(()=>null);
+  if(previous?.equals(Buffer.from(output.contents)))continue;
+  const temporary=output.path+'.build-'+process.pid;await writeFile(temporary,output.contents);await rename(temporary,output.path);
+}
 console.log(`AI resources ready (${manifest.version}, pi-ai 1.2.0)`);

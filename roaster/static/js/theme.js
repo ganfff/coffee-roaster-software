@@ -18,6 +18,8 @@
   'use strict';
 
   var STORAGE_KEY = 'roaster.theme';
+  var PALETTE_KEY = 'roaster.palette';
+  var PALETTES = ['classic', 'sage', 'sand', 'ocean', 'plum', 'graphite'];
   var MODES = ['dark', 'light', 'auto'];
   var mq = null;
   var animTimer = null;
@@ -53,7 +55,7 @@
   function dispatch(theme, mode) {
     try {
       window.dispatchEvent(new CustomEvent('roaster-themechange', {
-        detail: { theme: theme, mode: mode }
+        detail: { theme: theme, mode: mode, palette: getPalette() }
       }));
     } catch (e) { /* CustomEvent 不可用时静默降级,仅 CSS 主题生效 */ }
   }
@@ -85,6 +87,16 @@
 
   function getMode() { return readMode(); }
   function getTheme() { return resolve(readMode()); }
+  function getPalette() {
+    try { var value = localStorage.getItem(PALETTE_KEY); if (PALETTES.indexOf(value) !== -1) return value; } catch (e) {}
+    return 'classic';
+  }
+  function setPalette(value) {
+    if (PALETTES.indexOf(value) === -1) return;
+    try { localStorage.setItem(PALETTE_KEY, value); } catch (e) {}
+    document.documentElement.setAttribute('data-palette', value);
+    dispatch(getTheme(), getMode());
+  }
 
   /* 设置页三段选择器与头部快捷按钮的状态同步 */
   function syncSegUI(mode) {
@@ -134,6 +146,7 @@
 
   // 1) 脚本在 <head> 同步执行:立刻落主题,防闪烁
   applySilent(readMode());
+  document.documentElement.setAttribute('data-palette', getPalette());
 
   // 2) DOM 就绪后再接控件
   if (document.readyState === 'loading') {
@@ -144,8 +157,18 @@
 
   // 3) 对外 API(供 app.js / editor.js / 调试)
   window.RoasterTheme = {
+    palettes: [
+      {id:'classic',name:'经典蓝',description:'清透冷白与钴蓝'},
+      {id:'sage',name:'林间绿',description:'苔绿底色与松针绿'},
+      {id:'sand',name:'暖沙色',description:'奶油纸色与烘焙棕'},
+      {id:'ocean',name:'深海青',description:'海蓝面层与青色'},
+      {id:'plum',name:'暮紫',description:'雾紫面层与莓紫色'},
+      {id:'graphite',name:'石墨',description:'纯净黑白与高对比'}
+    ],
     getMode: getMode,
     getTheme: getTheme,
-    setMode: setMode
+    setMode: setMode,
+    getPalette: getPalette,
+    setPalette: setPalette
   };
 })();

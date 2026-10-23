@@ -1,0 +1,10 @@
+{
+  "checks": [
+    "actual dev WebView loads live source via HTTP and safe simulator WS",
+    "real Rust AI pairing/RPC loads the real debug AI providers",
+    "actual Rust offline worker creates native profile in dev mode"
+  ],
+  "errors": [],
+  "url": "http://127.0.0.1:18180/#workbench",
+  "evidence": "actual dev EXE/WebView/Rust against live debug host; no installation, fake AI provider or hardware"
+}
