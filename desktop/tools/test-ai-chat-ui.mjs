@@ -11,8 +11,9 @@ import {tmpdir} from 'node:os';
 import {resolve,dirname,extname,join} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import assert from 'node:assert/strict';
+async function settleMotion(page){await page.waitForFunction(()=>!window.RoasterMotion||(RoasterMotion.state.active===0&&RoasterMotion.state.queued===0));}
 async function chooseChatAccount(page,id){await page.getByRole('button',{name:'选择模型与账户',exact:true}).click();await page.locator('#ai-chat-profile').selectOption(id);await page.keyboard.press('Escape');}
-const root=resolve(dirname(fileURLToPath(import.meta.url)),'../..'),output=resolve(process.env.ROASTER_QA_DIR||resolve(root,'docs/qa/workspace-v3.26'));
+const root=resolve(dirname(fileURLToPath(import.meta.url)),'../..'),output=resolve(process.env.ROASTER_QA_DIR||resolve(root,'desktop/build/qa/mhub-v3.30/ai-chat'));
 const nativeSmoke=process.argv.includes('--native');
 await mkdir(output,{recursive:true});
 const dir=await mkdtemp(join(tmpdir(),'roaster-chat-ui-'));
@@ -80,7 +81,7 @@ try{
     const localProfile=await page.evaluate(async url=>{const p=await window.RoasterChat.request('profiles.save',{profile:{name:'本机离线链路验收',mode:'custom',provider:'custom',base_url:url+'/fixture-llm/v1',protocol:'openai-completions'}});await window.RoasterChat.request('models',{profile_id:p.id,refresh:true});await window.RoasterChat.refresh();return p;},origin);
     let localConversation;
     try {
-      await page.getByRole('button',{name:'AI 对话',exact:true}).click();await chooseChatAccount(page,localProfile.id);
+      await page.getByRole('button',{name:'AI 对话',exact:true}).click();await settleMotion(page);await chooseChatAccount(page,localProfile.id);
       await page.getByRole('button',{name:'新对话',exact:true}).click();await page.waitForFunction(id=>window.RoasterChat.current?.profile_id===id,localProfile.id);localConversation=await page.evaluate(()=>window.RoasterChat.current.id);
       await page.locator('#ai-prompt').fill('本机第一轮离线链路检查');await page.locator('#ai-send').click();await page.waitForFunction(()=>window.RoasterChat.current?.messages.at(-1)?.content?.includes('第 1 轮回复')&&window.RoasterChat.current.messages.at(-1).status==='completed');
       await page.locator('#ai-prompt').fill('继续第二轮');await page.locator('#ai-send').click();await page.waitForFunction(()=>window.RoasterChat.current?.messages.at(-1)?.content?.includes('第 2 轮回复')&&window.RoasterChat.current.messages.at(-1).status==='completed');
@@ -96,15 +97,17 @@ try{
     assert.equal(await page.evaluate(()=>window.RoasterAITransport.host.kind),'local');assert.equal(paired,false);
     checks.push('legacy remote selection is ignored; desktop keeps local accounts after backend changes');
     assert.equal(await page.evaluate(()=>!!window.__TAURI_INTERNALS__),true);
-    for(const resource of ['css/atlas.css','css/theme.css','js/atlas.js','js/app.js','js/ai-chat.js','js/ai-bridge.js','js/workspace-settings.js','index.html']) {
+    for(const resource of ['css/mhub.css','css/theme.css','js/theme.js','js/mhub-motion.js','js/mhub-ui.js','editor.html','js/atlas.js','js/app.js','js/ai-chat.js','js/ai-bridge.js','js/workspace-settings.js','index.html']) {
       const embedded=await page.evaluate(async resource=>{const response=await fetch(new URL(resource,location.href));return response.text();},resource);
       let source=await readFile(resolve(root,'roaster/static',resource),'utf8'),packaged=embedded;
       // Tauri parses HTML and injects its IPC bootstrap/CSP into <head>.
       // Compare the parsed app-owned body, while other resources remain byte exact.
-      if(resource==='index.html')[packaged,source]=await page.evaluate(values=>values.map(value=>new DOMParser().parseFromString(value,'text/html').body.outerHTML),[embedded,source]);
+      if(resource.endsWith('.html'))[packaged,source]=await page.evaluate(values=>values.map(value=>new DOMParser().parseFromString(value,'text/html').body.outerHTML),[embedded,source]);
       const digest=value=>createHash('sha256').update(value.replace(/^\uFEFF/,'')).digest('hex');
       assert.equal(digest(packaged),digest(source),'packaged resource must match current source: '+resource);
     }
+    await page.evaluate(()=>document.fonts.ready);
+    for(const weight of ['Regular','Semibold','Bold']){const resource='assets/fonts/misans/MiSans-'+weight+'.woff2';const actual=await page.evaluate(async resource=>{const response=await fetch(new URL(resource,location.href));const bytes=await response.arrayBuffer();return [...new Uint8Array(await crypto.subtle.digest('SHA-256',bytes))].map(b=>b.toString(16).padStart(2,'0')).join('');},resource);assert.equal(actual,createHash('sha256').update(await readFile(resolve(root,'roaster/static',resource))).digest('hex'),'packaged font '+weight);}
     await page.locator('[data-tab="settings"]').click();await page.getByRole('tab',{name:'AI 账户',exact:true}).click();await page.waitForTimeout(450);assert.equal(await page.getByText('高级与设备共享',{exact:true}).count(),0);await page.screenshot({path:resolve(output,'native-tauri-settings.png')});checks.push('packaged resources match current source and local-only settings have no device sharing');
     await page.locator('[data-tab="workbench"]').click();await page.locator('#wb-new').click();await page.waitForFunction(()=>document.querySelector('#wb-root').getAttribute('aria-busy')==='false');
     await page.locator('#wb-help').click();await page.locator('[data-help-category="parameters"]').click();assert.equal(await page.locator('.wb-help-article').count(),144);
@@ -116,7 +119,7 @@ try{
   browser=await chromium.launch({channel:'msedge',headless:true});
   const page=await browser.newPage({viewport:{width:1366,height:800}});
   page.on('pageerror',error=>errors.push(error.message));
-  await page.goto(origin);await page.getByRole('button',{name:'AI 对话',exact:true}).click();
+  await page.goto(origin);await page.getByRole('button',{name:'AI 对话',exact:true}).click();await settleMotion(page);
   await page.waitForFunction(()=>document.querySelector('#ai-chat-profile')?.options.length===2);
   await page.locator('#ai-prompt').fill('先讨论烘焙曲线');await page.locator('#ai-send').click();
   await page.waitForFunction(()=>window.RoasterChat.current?.messages.at(-1)?.status==='completed');
@@ -125,7 +128,7 @@ try{
   assert.equal((await page.evaluate(()=>window.RoasterChat.current)).profile_id,p2.id);
   assert.equal(await page.locator('.ai-message-user').count(),2);checks.push('local service, full multi-turn transcript and manual channel handoff');
   const id=await page.evaluate(()=>window.RoasterChat.current.id);
-  await page.reload();await page.getByRole('button',{name:'AI 对话',exact:true}).click();await page.waitForFunction(id=>window.RoasterChat.current?.id===id,id);
+  await page.reload();await page.getByRole('button',{name:'AI 对话',exact:true}).click();await settleMotion(page);await page.waitForFunction(id=>window.RoasterChat.current?.id===id,id);
   assert.equal(await page.locator('.ai-message-user').count(),2);checks.push('history restored after page reload');
   await page.getByRole('button',{name:'会话',exact:true}).click();
   await page.locator('#ai-history-search').fill('先讨论');assert.ok(await page.locator('.ai-history-item').count()>=1);
@@ -148,7 +151,7 @@ try{
   for(const theme of ['light','dark'])for(const width of [1366,1024,375]){
     await page.setViewportSize({width,height:width===375?812:640});
     await page.evaluate(theme=>{document.documentElement.dataset.theme=theme;localStorage.setItem('roaster.theme',theme);window.dispatchEvent(new Event('roaster-themechange'));},theme);
-    await page.getByRole('button',{name:'AI 对话',exact:true}).click();
+    await page.getByRole('button',{name:'AI 对话',exact:true}).click();await settleMotion(page);
     await page.waitForTimeout(50);
     const overflow=await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1);assert.equal(overflow,false,'overflow '+theme+' '+width);
     const footer=await page.locator('#btn-e-stop').boundingBox();assert.ok(footer&&footer.y+footer.height<=(width===375?812:640));
@@ -156,7 +159,7 @@ try{
     await page.screenshot({path:resolve(output,'chat-'+theme+'-'+width+'.png')});
     await page.getByRole('button',{name:'关闭',exact:true}).click();
   }checks.push('light/dark desktop/mobile layout and reachable E-STOP');
-  await page.setViewportSize({width:812,height:375});await page.getByRole('button',{name:'AI 对话',exact:true}).click();
+  await page.setViewportSize({width:812,height:375});await page.getByRole('button',{name:'AI 对话',exact:true}).click();await settleMotion(page);
   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false);
   const landscapeSend=await page.locator('#ai-send').boundingBox();assert.ok(landscapeSend&&landscapeSend.y+landscapeSend.height<=309);
   const reading=await page.locator('#ai-messages').boundingBox();assert.ok(reading.height>=110,'landscape must retain readable message height: '+JSON.stringify(reading));
@@ -165,17 +168,17 @@ try{
   await page.setViewportSize({width:1024,height:640});
   for(const zoom of [1,1.15,1.3]){
     await page.evaluate(value=>{document.body.style.zoom=String(value);},zoom);
-    await page.getByRole('button',{name:'AI 对话',exact:true}).click();
+    await page.getByRole('button',{name:'AI 对话',exact:true}).click();await settleMotion(page);
     assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false,'zoom overflow '+zoom);
-    const bounds=await page.locator('#ai-chat').boundingBox();assert.ok(bounds.x>=0&&bounds.x+bounds.width<=1025);
+    const bounds=await page.locator('#ai-chat').boundingBox();assert.ok(bounds.x>=0&&bounds.x+bounds.width<=1025,'chat zoom bounds '+zoom+': '+JSON.stringify(bounds));
     await page.getByRole('button',{name:'关闭',exact:true}).click();
   }checks.push('100/115/130 percent scaling keeps chat inside viewport');
   await page.evaluate(()=>{document.body.style.zoom='1';});
-  await page.getByRole('button',{name:'AI 对话',exact:true}).click();await chooseChatAccount(page,p1.id);
+  await page.getByRole('button',{name:'AI 对话',exact:true}).click();await settleMotion(page);await chooseChatAccount(page,p1.id);
   faux.setResponses([fauxAssistantMessage('可停止的流式回答'.repeat(1000))]);
   await page.locator('#ai-prompt').fill('验证刷新后继续管理正在生成的回复');await page.locator('#ai-send').click();
   await page.waitForFunction(()=>window.RoasterChat.current?.messages.at(-1)?.status==='streaming');
-  await page.reload();await page.getByRole('button',{name:'AI 对话',exact:true}).click();await page.locator('#ai-stop:not(:disabled)').waitFor();await page.locator('#ai-stop').click();
+  await page.reload();await page.getByRole('button',{name:'AI 对话',exact:true}).click();await settleMotion(page);await page.locator('#ai-stop:not(:disabled)').waitFor();await page.locator('#ai-stop').click();
   await page.waitForFunction(()=>window.RoasterChat.current?.messages.at(-1)?.status==='cancelled');checks.push('reload reconnects a running request and can stop it without resending');
   await page.goto(origin+'/editor.html?ai=1');await page.evaluate(()=>window.RoasterEditor.ready);
   await page.waitForFunction(()=>window.RoasterChat.current);
@@ -193,7 +196,7 @@ try{
   await page.getByRole('button',{name:'关闭',exact:true}).click();
   await page.getByRole('button',{name:'撤销',exact:true}).click();
   assert.equal((await page.evaluate(()=>window.RoasterEditor.getDraft())).name,source.name);
-  await page.getByRole('button',{name:'AI 对话',exact:true}).click();
+  await page.getByRole('button',{name:'AI 对话',exact:true}).click();await settleMotion(page);
   await page.locator('#ai-prompt').fill('文字输入回退');await page.locator('#ai-prompt').press('Backspace');
   assert.equal((await page.evaluate(()=>window.RoasterEditor.getDraft())).nodes.length,source.nodes.length);
   checks.push('regular curve comparison, validated explicit adoption, undo and text keyboard isolation');

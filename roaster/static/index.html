@@ -5,25 +5,25 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="color-scheme" content="dark light" />
   <title>Ganf's 咖啡烘焙机</title>
-  <script src="js/theme.js?v=3.29"></script>
-  <link rel="stylesheet" href="css/theme.css?v=3.29" />
-  <link rel="stylesheet" href="css/ai.css?v=3.29" />
+  <script src="js/theme.js?v=3.30"></script>
+  <link rel="stylesheet" href="css/theme.css?v=3.30" />
+  <link rel="stylesheet" href="css/ai.css?v=3.30" />
   <link rel="stylesheet" href="assets/icons/phosphor/phosphor.css?v=2.1.2" />
-  <link rel="stylesheet" href="css/style.css?v=3.29" />
-  <link rel="stylesheet" href="css/workbench.css?v=3.29" />
+  <link rel="stylesheet" href="css/style.css?v=3.30" />
+  <link rel="stylesheet" href="css/workbench.css?v=3.30" />
   <script src="js/vendor/chart.umd.min.js"></script>
-  <link rel="stylesheet" href="css/atlas.css?v=3.29" />
-  <link rel="stylesheet" href="css/instrument.css?v=3.29" />
+  <link rel="stylesheet" href="css/mhub.css?v=3.30" />
+  <script src="js/mhub-motion.js?v=3.30"></script>
 </head>
 <body>
   <div id="app">
-    <aside class="workspace-nav" aria-label="工作区">      <nav class="tabs" aria-label="主工作区">
+    <aside class="workspace-nav" aria-label="工作区"><div class="nav-brand"><i class="ph ph-coffee-bean" aria-hidden="true"></i><strong>Ganf’s Roaster</strong></div><div class="nav-device"><span class="nav-device-icon"><i class="ph ph-coffee" aria-hidden="true"></i></span><strong>咖啡烘焙机</strong><span id="nav-device-status">等待连接</span></div>      <nav class="tabs" aria-label="主工作区">
         <div class="tab-glider" aria-hidden="true"></div>
-        <button class="tab-btn active" data-tab="roast" aria-selected="true"><i class="ph ph-waveform"></i><span>烘焙控制</span></button>
-        <button class="tab-btn" data-tab="profile" aria-selected="false"><i class="ph ph-chart-line-up"></i><span>曲线管理</span></button>
-        <button class="tab-btn" data-tab="records" aria-selected="false"><i class="ph ph-clock-counter-clockwise"></i><span>烘焙记录</span></button>
-        <button class="tab-btn" data-tab="workbench" aria-selected="false"><i class="ph ph-chart-line-up"></i><span>原生工作台</span></button>
-        <button class="tab-btn" data-tab="settings" aria-selected="false"><i class="ph ph-sliders-horizontal"></i><span>设置</span></button>
+        <button class="tab-btn active" data-tab="roast" aria-selected="true" aria-label="烘焙控制" title="烘焙控制"><i class="ph ph-waveform"></i><span>烘焙控制</span></button>
+        <button class="tab-btn" data-tab="profile" aria-selected="false" aria-label="曲线管理" title="曲线管理"><i class="ph ph-chart-line-up"></i><span>曲线管理</span></button>
+        <button class="tab-btn" data-tab="records" aria-selected="false" aria-label="烘焙记录" title="烘焙记录"><i class="ph ph-clock-counter-clockwise"></i><span>烘焙记录</span></button>
+        <button class="tab-btn" data-tab="workbench" aria-selected="false" aria-label="原生工作台" title="原生工作台"><i class="ph ph-chart-line-up"></i><span>原生工作台</span></button>
+        <button class="tab-btn" data-tab="settings" aria-selected="false" aria-label="设置" title="设置"><i class="ph ph-sliders-horizontal"></i><span>设置</span></button>
       </nav></aside>
     <header id="top-bar">
       <div class="brand-lockup">
@@ -116,7 +116,7 @@
           <section class="settings-card"><div class="settings-card-heading"><i class="ph ph-bell-ringing"></i><div><h3>提醒</h3><p>烘焙节点与结束通知</p></div></div><div class="phase-input-row"><label>提示音</label><input type="checkbox" id="ui-sound" checked><button id="ui-sound-test" class="ctrl-btn">测试</button></div><div class="phase-input-row"><label>结束提醒</label><span class="unit">提前</span><select id="ui-alert-offset" class="phase-number"><option value="5">5 °C</option><option value="10">10 °C（默认）</option><option value="15">15 °C</option></select></div></section>
           <section class="settings-card"><div class="settings-card-heading"><i class="ph ph-crosshair"></i><div><h3>自动标记</h3><p>按温度阈值记录转黄与一爆</p></div></div><div class="phase-input-row"><label>转黄 ≥</label><input type="checkbox" id="auto-dry-enabled" title="启用自动标记转黄"><input type="number" id="auto-dry-temp" class="phase-number" min="0" max="300" step="1" value="150"><span class="unit">°C</span></div><div class="phase-input-row"><label>一爆 ≥</label><input type="checkbox" id="auto-fcs-enabled" title="启用自动标记一爆"><input type="number" id="auto-fcs-temp" class="phase-number" min="0" max="300" step="1" value="200"><span class="unit">°C</span></div></section>
           <section class="settings-card settings-card-wide"><div class="settings-card-heading split"><span><i class="ph ph-warning-circle"></i><span><h3>报警</h3><p>每锅每条仅触发一次</p></span></span><button id="btn-add-alarm" class="ctrl-btn"><i class="ph ph-plus"></i><span>添加</span></button></div><div id="alarms-list"></div></section>
-          <section class="settings-card about-card"><div class="settings-card-heading"><i class="ph ph-coffee"></i><div><h3>关于</h3><p>Ganf's 咖啡烘焙机控制台</p></div></div><div class="about-meta"><span>Web / Tauri</span></div></section>
+          <section class="settings-card about-card"><div class="settings-card-heading"><i class="ph ph-coffee"></i><div><h3>关于</h3><p>Ganf's 咖啡烘焙机控制台</p></div></div><div class="about-meta"><span>Web 3.30 / Tauri 0.7.0</span><span>界面字体 MiSans · Phosphor 图标</span></div></section>
         </div>
       </section>
     </main>
@@ -126,15 +126,16 @@
 
   <div id="error-overlay" class="hidden" role="alertdialog" aria-modal="true" aria-labelledby="error-title"><div class="error-box"><div class="error-icon"><i class="ph ph-warning-octagon"></i></div><h2 id="error-title">系统错误</h2><p id="error-reason">--</p><button id="btn-error-reset" class="error-reset-btn"><i class="ph ph-arrows-counter-clockwise"></i><span>复位系统</span></button></div></div>
   <div id="app-toast" class="app-toast" role="status" aria-live="polite"></div>
-  <script src="js/tauri-adapter.js?v=3.29"></script>
-  <script src="js/utils.js?v=3.29"></script>
-  <script src="js/app.js?v=3.29"></script>
-  <script src="js/workbench-pdf.js?v=3.29"></script>
-  <script src="js/workbench.js?v=3.29"></script>
-  <script src="js/ai-bridge.js?v=3.29"></script>
-  <script src="js/ai-chat.js?v=3.29"></script>
-  <script src="js/ai.js?v=3.29"></script>
-  <script src="js/atlas.js?v=3.29"></script>
-  <script src="js/workspace-settings.js?v=3.29"></script>
+  <script src="js/tauri-adapter.js?v=3.30"></script>
+  <script src="js/utils.js?v=3.30"></script>
+  <script src="js/app.js?v=3.30"></script>
+  <script src="js/workbench-pdf.js?v=3.30"></script>
+  <script src="js/workbench.js?v=3.30"></script>
+  <script src="js/ai-bridge.js?v=3.30"></script>
+  <script src="js/ai-chat.js?v=3.30"></script>
+  <script src="js/ai.js?v=3.30"></script>
+  <script src="js/atlas.js?v=3.30"></script>
+  <script src="js/workspace-settings.js?v=3.30"></script>
+  <script src="js/mhub-ui.js?v=3.30"></script>
 </body>
 </html>

@@ -1,954 +1,2404 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-23T08:33:29.623Z",
+  "generatedAt": "2026-10-26T08:28:09.267Z",
   "title": "Design System: Ganf's 咖啡烘焙机",
   "extensions": {
     "colorMeta": {
-      "dark-danger": {
-        "role": "semantic",
-        "displayName": "石墨深色 · danger"
-      },
-      "dark-danger-hover": {
-        "role": "semantic",
-        "displayName": "石墨深色 · danger-hover"
-      },
-      "dark-danger-soft": {
-        "role": "semantic",
-        "displayName": "石墨深色 · danger-soft"
-      },
-      "dark-on-danger": {
-        "role": "semantic",
-        "displayName": "石墨深色 · on-danger"
-      },
-      "dark-status-online": {
-        "role": "semantic",
-        "displayName": "石墨深色 · status-online"
-      },
-      "dark-warning": {
-        "role": "semantic",
-        "displayName": "石墨深色 · warning"
-      },
-      "dark-phase-drying": {
-        "role": "semantic",
-        "displayName": "石墨深色 · phase-drying"
-      },
-      "dark-phase-maillard": {
-        "role": "semantic",
-        "displayName": "石墨深色 · phase-maillard"
-      },
-      "dark-phase-development": {
-        "role": "semantic",
-        "displayName": "石墨深色 · phase-development"
-      },
-      "dark-phase-cooling": {
-        "role": "semantic",
-        "displayName": "石墨深色 · phase-cooling"
-      },
-      "dark-chart-grid": {
-        "role": "semantic",
-        "displayName": "石墨深色 · chart-grid"
-      },
-      "dark-chart-tick": {
-        "role": "semantic",
-        "displayName": "石墨深色 · chart-tick"
-      },
-      "dark-chart-legend": {
-        "role": "semantic",
-        "displayName": "石墨深色 · chart-legend"
-      },
-      "dark-chart-temp": {
-        "role": "semantic",
-        "displayName": "石墨深色 · chart-temp"
-      },
-      "dark-chart-setpoint": {
-        "role": "semantic",
-        "displayName": "石墨深色 · chart-setpoint"
-      },
-      "dark-chart-target": {
-        "role": "semantic",
-        "displayName": "石墨深色 · chart-target"
-      },
-      "dark-chart-target-fill": {
-        "role": "semantic",
-        "displayName": "石墨深色 · chart-target-fill"
-      },
-      "dark-chart-ror": {
-        "role": "semantic",
-        "displayName": "石墨深色 · chart-ror"
-      },
-      "dark-chart-ror-fill": {
-        "role": "semantic",
-        "displayName": "石墨深色 · chart-ror-fill"
-      },
-      "dark-chart-ror-preview": {
-        "role": "semantic",
-        "displayName": "石墨深色 · chart-ror-preview"
-      },
-      "dark-chart-projection": {
-        "role": "semantic",
-        "displayName": "石墨深色 · chart-projection"
-      },
-      "dark-chart-y1-tick": {
-        "role": "semantic",
-        "displayName": "石墨深色 · chart-y1-tick"
-      },
-      "dark-chart-compare-a": {
-        "role": "semantic",
-        "displayName": "石墨深色 · chart-compare-a"
-      },
-      "dark-chart-compare-b": {
-        "role": "semantic",
-        "displayName": "石墨深色 · chart-compare-b"
-      },
-      "dark-chart-event-label-bg": {
-        "role": "semantic",
-        "displayName": "石墨深色 · chart-event-label-bg"
-      },
-      "dark-chart-tooltip-bg": {
-        "role": "semantic",
-        "displayName": "石墨深色 · chart-tooltip-bg"
-      },
-      "dark-chart-tooltip-border": {
-        "role": "semantic",
-        "displayName": "石墨深色 · chart-tooltip-border"
-      },
-      "dark-chart-tooltip-text": {
-        "role": "semantic",
-        "displayName": "石墨深色 · chart-tooltip-text"
-      },
-      "dark-event-charge": {
-        "role": "semantic",
-        "displayName": "石墨深色 · event-charge"
-      },
-      "dark-event-yellowing": {
-        "role": "semantic",
-        "displayName": "石墨深色 · event-yellowing"
-      },
-      "dark-event-first-crack": {
-        "role": "semantic",
-        "displayName": "石墨深色 · event-first-crack"
-      },
-      "dark-event-second-crack": {
-        "role": "semantic",
-        "displayName": "石墨深色 · event-second-crack"
-      },
-      "dark-event-drop": {
-        "role": "semantic",
-        "displayName": "石墨深色 · event-drop"
-      },
-      "dark-event-tp": {
-        "role": "semantic",
-        "displayName": "石墨深色 · event-tp"
-      },
-      "dark-delta-good": {
-        "role": "semantic",
-        "displayName": "石墨深色 · delta-good"
-      },
-      "dark-delta-warn": {
-        "role": "semantic",
-        "displayName": "石墨深色 · delta-warn"
-      },
-      "dark-delta-info": {
-        "role": "semantic",
-        "displayName": "石墨深色 · delta-info"
-      },
-      "dark-editor-curve": {
-        "role": "semantic",
-        "displayName": "石墨深色 · editor-curve"
-      },
-      "dark-editor-node": {
-        "role": "semantic",
-        "displayName": "石墨深色 · editor-node"
-      },
-      "dark-editor-node-hover": {
-        "role": "semantic",
-        "displayName": "石墨深色 · editor-node-hover"
-      },
       "dark-bg": {
         "role": "neutral",
-        "displayName": "石墨深色 · bg"
+        "displayName": "深色 · 工作区底色",
+        "tonalRamp": [
+          "oklch(15% 0.0045 264.44)",
+          "oklch(25% 0.0045 264.44)",
+          "oklch(35% 0.0045 264.44)",
+          "oklch(45% 0.0045 264.44)",
+          "oklch(55% 0.0045 264.44)",
+          "oklch(65% 0.0045 264.44)",
+          "oklch(80% 0.0045 264.44)",
+          "oklch(95% 0.0045 264.44)"
+        ]
       },
       "dark-bg-elevated": {
         "role": "neutral",
-        "displayName": "石墨深色 · bg-elevated"
+        "displayName": "深色 · 浮层与栏背景",
+        "tonalRamp": [
+          "oklch(15% 0.0043 264.47)",
+          "oklch(25% 0.0043 264.47)",
+          "oklch(35% 0.0043 264.47)",
+          "oklch(45% 0.0043 264.47)",
+          "oklch(55% 0.0043 264.47)",
+          "oklch(65% 0.0043 264.47)",
+          "oklch(80% 0.0043 264.47)",
+          "oklch(95% 0.0043 264.47)"
+        ]
       },
       "dark-surface": {
         "role": "neutral",
-        "displayName": "石墨深色 · surface"
+        "displayName": "深色 · 内容面板",
+        "tonalRamp": [
+          "oklch(15% 0.0060 271.13)",
+          "oklch(25% 0.0060 271.13)",
+          "oklch(35% 0.0060 271.13)",
+          "oklch(45% 0.0060 271.13)",
+          "oklch(55% 0.0060 271.13)",
+          "oklch(65% 0.0060 271.13)",
+          "oklch(80% 0.0060 271.13)",
+          "oklch(95% 0.0060 271.13)"
+        ]
       },
       "dark-surface-2": {
         "role": "neutral",
-        "displayName": "石墨深色 · surface-2"
+        "displayName": "深色 · 控件与卡片",
+        "tonalRamp": [
+          "oklch(15% 0.0058 271.18)",
+          "oklch(25% 0.0058 271.18)",
+          "oklch(35% 0.0058 271.18)",
+          "oklch(45% 0.0058 271.18)",
+          "oklch(55% 0.0058 271.18)",
+          "oklch(65% 0.0058 271.18)",
+          "oklch(80% 0.0058 271.18)",
+          "oklch(95% 0.0058 271.18)"
+        ]
       },
       "dark-surface-3": {
         "role": "neutral",
-        "displayName": "石墨深色 · surface-3"
+        "displayName": "深色 · 悬停填充",
+        "tonalRamp": [
+          "oklch(15% 0.0055 271.24)",
+          "oklch(25% 0.0055 271.24)",
+          "oklch(35% 0.0055 271.24)",
+          "oklch(45% 0.0055 271.24)",
+          "oklch(55% 0.0055 271.24)",
+          "oklch(65% 0.0055 271.24)",
+          "oklch(80% 0.0055 271.24)",
+          "oklch(95% 0.0055 271.24)"
+        ]
       },
       "dark-canvas": {
         "role": "neutral",
-        "displayName": "石墨深色 · canvas"
+        "displayName": "深色 · 曲线画布",
+        "tonalRamp": [
+          "oklch(15% 0.0060 271.13)",
+          "oklch(25% 0.0060 271.13)",
+          "oklch(35% 0.0060 271.13)",
+          "oklch(45% 0.0060 271.13)",
+          "oklch(55% 0.0060 271.13)",
+          "oklch(65% 0.0060 271.13)",
+          "oklch(80% 0.0060 271.13)",
+          "oklch(95% 0.0060 271.13)"
+        ]
       },
       "dark-rail": {
         "role": "neutral",
-        "displayName": "石墨深色 · rail"
+        "displayName": "深色 · 设备任务栏",
+        "tonalRamp": [
+          "oklch(15% 0.0043 264.47)",
+          "oklch(25% 0.0043 264.47)",
+          "oklch(35% 0.0043 264.47)",
+          "oklch(45% 0.0043 264.47)",
+          "oklch(55% 0.0043 264.47)",
+          "oklch(65% 0.0043 264.47)",
+          "oklch(80% 0.0043 264.47)",
+          "oklch(95% 0.0043 264.47)"
+        ]
       },
       "dark-control-bg": {
         "role": "neutral",
-        "displayName": "石墨深色 · control-bg"
-      },
-      "dark-text": {
-        "role": "neutral",
-        "displayName": "石墨深色 · text"
-      },
-      "dark-text-secondary": {
-        "role": "neutral",
-        "displayName": "石墨深色 · text-secondary"
-      },
-      "dark-text-tertiary": {
-        "role": "neutral",
-        "displayName": "石墨深色 · text-tertiary"
-      },
-      "dark-accent": {
-        "role": "primary",
-        "displayName": "石墨深色 · accent"
-      },
-      "dark-accent-hover": {
-        "role": "primary",
-        "displayName": "石墨深色 · accent-hover"
-      },
-      "dark-accent-soft": {
-        "role": "primary",
-        "displayName": "石墨深色 · accent-soft"
-      },
-      "dark-on-accent": {
-        "role": "primary",
-        "displayName": "石墨深色 · on-accent"
-      },
-      "dark-border": {
-        "role": "neutral",
-        "displayName": "石墨深色 · border"
-      },
-      "dark-separator": {
-        "role": "neutral",
-        "displayName": "石墨深色 · separator"
-      },
-      "dark-seg-thumb": {
-        "role": "neutral",
-        "displayName": "石墨深色 · seg-thumb"
+        "displayName": "深色 · 输入背景",
+        "tonalRamp": [
+          "oklch(15% 0.0058 271.18)",
+          "oklch(25% 0.0058 271.18)",
+          "oklch(35% 0.0058 271.18)",
+          "oklch(45% 0.0058 271.18)",
+          "oklch(55% 0.0058 271.18)",
+          "oklch(65% 0.0058 271.18)",
+          "oklch(80% 0.0058 271.18)",
+          "oklch(95% 0.0058 271.18)"
+        ]
       },
       "dark-fill": {
         "role": "neutral",
-        "displayName": "石墨深色 · fill"
+        "displayName": "深色 · fill",
+        "tonalRamp": [
+          "oklch(15% 0.0055 271.24)",
+          "oklch(25% 0.0055 271.24)",
+          "oklch(35% 0.0055 271.24)",
+          "oklch(45% 0.0055 271.24)",
+          "oklch(55% 0.0055 271.24)",
+          "oklch(65% 0.0055 271.24)",
+          "oklch(80% 0.0055 271.24)",
+          "oklch(95% 0.0055 271.24)"
+        ]
       },
       "dark-fill-strong": {
         "role": "neutral",
-        "displayName": "石墨深色 · fill-strong"
+        "displayName": "深色 · fill-strong",
+        "tonalRamp": [
+          "oklch(15% 0.0169 273.70)",
+          "oklch(25% 0.0169 273.70)",
+          "oklch(35% 0.0169 273.70)",
+          "oklch(45% 0.0169 273.70)",
+          "oklch(55% 0.0169 273.70)",
+          "oklch(65% 0.0169 273.70)",
+          "oklch(80% 0.0169 273.70)",
+          "oklch(95% 0.0169 273.70)"
+        ]
+      },
+      "dark-border": {
+        "role": "neutral",
+        "displayName": "深色 · 控件边界",
+        "tonalRamp": [
+          "oklch(15% 0.0169 273.70)",
+          "oklch(25% 0.0169 273.70)",
+          "oklch(35% 0.0169 273.70)",
+          "oklch(45% 0.0169 273.70)",
+          "oklch(55% 0.0169 273.70)",
+          "oklch(65% 0.0169 273.70)",
+          "oklch(80% 0.0169 273.70)",
+          "oklch(95% 0.0169 273.70)"
+        ]
+      },
+      "dark-separator": {
+        "role": "neutral",
+        "displayName": "深色 · 区域分隔",
+        "tonalRamp": [
+          "oklch(15% 0.0125 273.02)",
+          "oklch(25% 0.0125 273.02)",
+          "oklch(35% 0.0125 273.02)",
+          "oklch(45% 0.0125 273.02)",
+          "oklch(55% 0.0125 273.02)",
+          "oklch(65% 0.0125 273.02)",
+          "oklch(80% 0.0125 273.02)",
+          "oklch(95% 0.0125 273.02)"
+        ]
+      },
+      "dark-text": {
+        "role": "neutral",
+        "displayName": "深色 · 正文",
+        "tonalRamp": [
+          "oklch(15% 0.0000 0.00)",
+          "oklch(25% 0.0000 0.00)",
+          "oklch(35% 0.0000 0.00)",
+          "oklch(45% 0.0000 0.00)",
+          "oklch(55% 0.0000 0.00)",
+          "oklch(65% 0.0000 0.00)",
+          "oklch(80% 0.0000 0.00)",
+          "oklch(95% 0.0000 0.00)"
+        ]
+      },
+      "dark-text-secondary": {
+        "role": "neutral",
+        "displayName": "深色 · 辅助文字",
+        "tonalRamp": [
+          "oklch(15% 0.0141 277.02)",
+          "oklch(25% 0.0141 277.02)",
+          "oklch(35% 0.0141 277.02)",
+          "oklch(45% 0.0141 277.02)",
+          "oklch(55% 0.0141 277.02)",
+          "oklch(65% 0.0141 277.02)",
+          "oklch(80% 0.0141 277.02)",
+          "oklch(95% 0.0141 277.02)"
+        ]
+      },
+      "dark-text-tertiary": {
+        "role": "neutral",
+        "displayName": "深色 · 次级说明",
+        "tonalRamp": [
+          "oklch(15% 0.0159 273.79)",
+          "oklch(25% 0.0159 273.79)",
+          "oklch(35% 0.0159 273.79)",
+          "oklch(45% 0.0159 273.79)",
+          "oklch(55% 0.0159 273.79)",
+          "oklch(65% 0.0159 273.79)",
+          "oklch(80% 0.0159 273.79)",
+          "oklch(95% 0.0159 273.79)"
+        ]
+      },
+      "dark-accent": {
+        "role": "primary",
+        "displayName": "深色 · 焦点蓝",
+        "tonalRamp": [
+          "oklch(15% 0.1244 261.19)",
+          "oklch(25% 0.1244 261.19)",
+          "oklch(35% 0.1244 261.19)",
+          "oklch(45% 0.1244 261.19)",
+          "oklch(55% 0.1244 261.19)",
+          "oklch(65% 0.1244 261.19)",
+          "oklch(80% 0.1244 261.19)",
+          "oklch(95% 0.1244 261.19)"
+        ]
+      },
+      "dark-accent-hover": {
+        "role": "primary",
+        "displayName": "深色 · accent-hover",
+        "tonalRamp": [
+          "oklch(15% 0.0707 261.02)",
+          "oklch(25% 0.0707 261.02)",
+          "oklch(35% 0.0707 261.02)",
+          "oklch(45% 0.0707 261.02)",
+          "oklch(55% 0.0707 261.02)",
+          "oklch(65% 0.0707 261.02)",
+          "oklch(80% 0.0707 261.02)",
+          "oklch(95% 0.0707 261.02)"
+        ]
+      },
+      "dark-accent-soft": {
+        "role": "primary",
+        "displayName": "深色 · 选中蓝底",
+        "tonalRamp": [
+          "oklch(15% 0.0534 260.45)",
+          "oklch(25% 0.0534 260.45)",
+          "oklch(35% 0.0534 260.45)",
+          "oklch(45% 0.0534 260.45)",
+          "oklch(55% 0.0534 260.45)",
+          "oklch(65% 0.0534 260.45)",
+          "oklch(80% 0.0534 260.45)",
+          "oklch(95% 0.0534 260.45)"
+        ]
+      },
+      "dark-on-accent": {
+        "role": "primary",
+        "displayName": "深色 · on-accent",
+        "tonalRamp": [
+          "oklch(15% 0.0547 258.65)",
+          "oklch(25% 0.0547 258.65)",
+          "oklch(35% 0.0547 258.65)",
+          "oklch(45% 0.0547 258.65)",
+          "oklch(55% 0.0547 258.65)",
+          "oklch(65% 0.0547 258.65)",
+          "oklch(80% 0.0547 258.65)",
+          "oklch(95% 0.0547 258.65)"
+        ]
+      },
+      "dark-primary": {
+        "role": "primary",
+        "displayName": "深色 · 操作蓝",
+        "tonalRamp": [
+          "oklch(15% 0.2102 261.14)",
+          "oklch(25% 0.2102 261.14)",
+          "oklch(35% 0.2102 261.14)",
+          "oklch(45% 0.2102 261.14)",
+          "oklch(55% 0.2102 261.14)",
+          "oklch(65% 0.2102 261.14)",
+          "oklch(80% 0.2102 261.14)",
+          "oklch(95% 0.2102 261.14)"
+        ]
+      },
+      "dark-primary-hover": {
+        "role": "primary",
+        "displayName": "深色 · 操作蓝悬停",
+        "tonalRamp": [
+          "oklch(15% 0.2027 261.42)",
+          "oklch(25% 0.2027 261.42)",
+          "oklch(35% 0.2027 261.42)",
+          "oklch(45% 0.2027 261.42)",
+          "oklch(55% 0.2027 261.42)",
+          "oklch(65% 0.2027 261.42)",
+          "oklch(80% 0.2027 261.42)",
+          "oklch(95% 0.2027 261.42)"
+        ]
+      },
+      "dark-primary-soft": {
+        "role": "primary",
+        "displayName": "深色 · primary-soft",
+        "tonalRamp": [
+          "oklch(15% 0.0534 260.45)",
+          "oklch(25% 0.0534 260.45)",
+          "oklch(35% 0.0534 260.45)",
+          "oklch(45% 0.0534 260.45)",
+          "oklch(55% 0.0534 260.45)",
+          "oklch(65% 0.0534 260.45)",
+          "oklch(80% 0.0534 260.45)",
+          "oklch(95% 0.0534 260.45)"
+        ]
+      },
+      "dark-on-primary": {
+        "role": "primary",
+        "displayName": "深色 · 主操作文字",
+        "tonalRamp": [
+          "oklch(15% 0.0000 0.00)",
+          "oklch(25% 0.0000 0.00)",
+          "oklch(35% 0.0000 0.00)",
+          "oklch(45% 0.0000 0.00)",
+          "oklch(55% 0.0000 0.00)",
+          "oklch(65% 0.0000 0.00)",
+          "oklch(80% 0.0000 0.00)",
+          "oklch(95% 0.0000 0.00)"
+        ]
+      },
+      "dark-info": {
+        "role": "primary",
+        "displayName": "深色 · info",
+        "tonalRamp": [
+          "oklch(15% 0.1244 261.19)",
+          "oklch(25% 0.1244 261.19)",
+          "oklch(35% 0.1244 261.19)",
+          "oklch(45% 0.1244 261.19)",
+          "oklch(55% 0.1244 261.19)",
+          "oklch(65% 0.1244 261.19)",
+          "oklch(80% 0.1244 261.19)",
+          "oklch(95% 0.1244 261.19)"
+        ]
+      },
+      "dark-info-hover": {
+        "role": "primary",
+        "displayName": "深色 · info-hover",
+        "tonalRamp": [
+          "oklch(15% 0.0707 261.02)",
+          "oklch(25% 0.0707 261.02)",
+          "oklch(35% 0.0707 261.02)",
+          "oklch(45% 0.0707 261.02)",
+          "oklch(55% 0.0707 261.02)",
+          "oklch(65% 0.0707 261.02)",
+          "oklch(80% 0.0707 261.02)",
+          "oklch(95% 0.0707 261.02)"
+        ]
+      },
+      "dark-info-soft": {
+        "role": "primary",
+        "displayName": "深色 · info-soft",
+        "tonalRamp": [
+          "oklch(15% 0.0534 260.45)",
+          "oklch(25% 0.0534 260.45)",
+          "oklch(35% 0.0534 260.45)",
+          "oklch(45% 0.0534 260.45)",
+          "oklch(55% 0.0534 260.45)",
+          "oklch(65% 0.0534 260.45)",
+          "oklch(80% 0.0534 260.45)",
+          "oklch(95% 0.0534 260.45)"
+        ]
+      },
+      "dark-danger": {
+        "role": "semantic",
+        "displayName": "深色 · 危险",
+        "tonalRamp": [
+          "oklch(15% 0.1456 18.01)",
+          "oklch(25% 0.1456 18.01)",
+          "oklch(35% 0.1456 18.01)",
+          "oklch(45% 0.1456 18.01)",
+          "oklch(55% 0.1456 18.01)",
+          "oklch(65% 0.1456 18.01)",
+          "oklch(80% 0.1456 18.01)",
+          "oklch(95% 0.1456 18.01)"
+        ]
+      },
+      "dark-danger-hover": {
+        "role": "semantic",
+        "displayName": "深色 · danger-hover",
+        "tonalRamp": [
+          "oklch(15% 0.0992 15.55)",
+          "oklch(25% 0.0992 15.55)",
+          "oklch(35% 0.0992 15.55)",
+          "oklch(45% 0.0992 15.55)",
+          "oklch(55% 0.0992 15.55)",
+          "oklch(65% 0.0992 15.55)",
+          "oklch(80% 0.0992 15.55)",
+          "oklch(95% 0.0992 15.55)"
+        ]
+      },
+      "dark-danger-soft": {
+        "role": "semantic",
+        "displayName": "深色 · 危险软底",
+        "tonalRamp": [
+          "oklch(15% 0.2236 28.29 / 0.13)",
+          "oklch(25% 0.2236 28.29 / 0.13)",
+          "oklch(35% 0.2236 28.29 / 0.13)",
+          "oklch(45% 0.2236 28.29 / 0.13)",
+          "oklch(55% 0.2236 28.29 / 0.13)",
+          "oklch(65% 0.2236 28.29 / 0.13)",
+          "oklch(80% 0.2236 28.29 / 0.13)",
+          "oklch(95% 0.2236 28.29 / 0.13)"
+        ]
+      },
+      "dark-on-danger": {
+        "role": "semantic",
+        "displayName": "深色 · 实色危险文字",
+        "tonalRamp": [
+          "oklch(15% 0.0523 14.59)",
+          "oklch(25% 0.0523 14.59)",
+          "oklch(35% 0.0523 14.59)",
+          "oklch(45% 0.0523 14.59)",
+          "oklch(55% 0.0523 14.59)",
+          "oklch(65% 0.0523 14.59)",
+          "oklch(80% 0.0523 14.59)",
+          "oklch(95% 0.0523 14.59)"
+        ]
       },
       "dark-gray-soft": {
         "role": "neutral",
-        "displayName": "石墨深色 · gray-soft"
+        "displayName": "深色 · gray-soft",
+        "tonalRamp": [
+          "oklch(15% 0.0055 271.24)",
+          "oklch(25% 0.0055 271.24)",
+          "oklch(35% 0.0055 271.24)",
+          "oklch(45% 0.0055 271.24)",
+          "oklch(55% 0.0055 271.24)",
+          "oklch(65% 0.0055 271.24)",
+          "oklch(80% 0.0055 271.24)",
+          "oklch(95% 0.0055 271.24)"
+        ]
       },
-      "dark-info": {
+      "dark-seg-thumb": {
         "role": "neutral",
-        "displayName": "石墨深色 · info"
+        "displayName": "深色 · seg-thumb",
+        "tonalRamp": [
+          "oklch(15% 0.0397 263.03)",
+          "oklch(25% 0.0397 263.03)",
+          "oklch(35% 0.0397 263.03)",
+          "oklch(45% 0.0397 263.03)",
+          "oklch(55% 0.0397 263.03)",
+          "oklch(65% 0.0397 263.03)",
+          "oklch(80% 0.0397 263.03)",
+          "oklch(95% 0.0397 263.03)"
+        ]
       },
-      "dark-info-hover": {
+      "dark-status-online": {
+        "role": "semantic",
+        "displayName": "深色 · status-online",
+        "tonalRamp": [
+          "oklch(15% 0.1282 155.69)",
+          "oklch(25% 0.1282 155.69)",
+          "oklch(35% 0.1282 155.69)",
+          "oklch(45% 0.1282 155.69)",
+          "oklch(55% 0.1282 155.69)",
+          "oklch(65% 0.1282 155.69)",
+          "oklch(80% 0.1282 155.69)",
+          "oklch(95% 0.1282 155.69)"
+        ]
+      },
+      "dark-warning": {
+        "role": "semantic",
+        "displayName": "深色 · warning",
+        "tonalRamp": [
+          "oklch(15% 0.1711 67.22)",
+          "oklch(25% 0.1711 67.22)",
+          "oklch(35% 0.1711 67.22)",
+          "oklch(45% 0.1711 67.22)",
+          "oklch(55% 0.1711 67.22)",
+          "oklch(65% 0.1711 67.22)",
+          "oklch(80% 0.1711 67.22)",
+          "oklch(95% 0.1711 67.22)"
+        ]
+      },
+      "dark-phase-drying": {
+        "role": "semantic",
+        "displayName": "深色 · phase-drying",
+        "tonalRamp": [
+          "oklch(15% 0.1880 259.81)",
+          "oklch(25% 0.1880 259.81)",
+          "oklch(35% 0.1880 259.81)",
+          "oklch(45% 0.1880 259.81)",
+          "oklch(55% 0.1880 259.81)",
+          "oklch(65% 0.1880 259.81)",
+          "oklch(80% 0.1880 259.81)",
+          "oklch(95% 0.1880 259.81)"
+        ]
+      },
+      "dark-phase-maillard": {
+        "role": "semantic",
+        "displayName": "深色 · phase-maillard",
+        "tonalRamp": [
+          "oklch(15% 0.1647 70.08)",
+          "oklch(25% 0.1647 70.08)",
+          "oklch(35% 0.1647 70.08)",
+          "oklch(45% 0.1647 70.08)",
+          "oklch(55% 0.1647 70.08)",
+          "oklch(65% 0.1647 70.08)",
+          "oklch(80% 0.1647 70.08)",
+          "oklch(95% 0.1647 70.08)"
+        ]
+      },
+      "dark-phase-development": {
+        "role": "semantic",
+        "displayName": "深色 · phase-development",
+        "tonalRamp": [
+          "oklch(15% 0.2236 28.29)",
+          "oklch(25% 0.2236 28.29)",
+          "oklch(35% 0.2236 28.29)",
+          "oklch(45% 0.2236 28.29)",
+          "oklch(55% 0.2236 28.29)",
+          "oklch(65% 0.2236 28.29)",
+          "oklch(80% 0.2236 28.29)",
+          "oklch(95% 0.2236 28.29)"
+        ]
+      },
+      "dark-phase-cooling": {
+        "role": "semantic",
+        "displayName": "深色 · phase-cooling",
+        "tonalRamp": [
+          "oklch(15% 0.0073 286.19)",
+          "oklch(25% 0.0073 286.19)",
+          "oklch(35% 0.0073 286.19)",
+          "oklch(45% 0.0073 286.19)",
+          "oklch(55% 0.0073 286.19)",
+          "oklch(65% 0.0073 286.19)",
+          "oklch(80% 0.0073 286.19)",
+          "oklch(95% 0.0073 286.19)"
+        ]
+      },
+      "dark-chart-grid": {
+        "role": "semantic",
+        "displayName": "深色 · chart-grid",
+        "tonalRamp": [
+          "oklch(15% 0.0126 273.02)",
+          "oklch(25% 0.0126 273.02)",
+          "oklch(35% 0.0126 273.02)",
+          "oklch(45% 0.0126 273.02)",
+          "oklch(55% 0.0126 273.02)",
+          "oklch(65% 0.0126 273.02)",
+          "oklch(80% 0.0126 273.02)",
+          "oklch(95% 0.0126 273.02)"
+        ]
+      },
+      "dark-chart-tick": {
+        "role": "semantic",
+        "displayName": "深色 · chart-tick",
+        "tonalRamp": [
+          "oklch(15% 0.0141 277.02)",
+          "oklch(25% 0.0141 277.02)",
+          "oklch(35% 0.0141 277.02)",
+          "oklch(45% 0.0141 277.02)",
+          "oklch(55% 0.0141 277.02)",
+          "oklch(65% 0.0141 277.02)",
+          "oklch(80% 0.0141 277.02)",
+          "oklch(95% 0.0141 277.02)"
+        ]
+      },
+      "dark-chart-legend": {
+        "role": "semantic",
+        "displayName": "深色 · chart-legend",
+        "tonalRamp": [
+          "oklch(15% 0.0000 0.00)",
+          "oklch(25% 0.0000 0.00)",
+          "oklch(35% 0.0000 0.00)",
+          "oklch(45% 0.0000 0.00)",
+          "oklch(55% 0.0000 0.00)",
+          "oklch(65% 0.0000 0.00)",
+          "oklch(80% 0.0000 0.00)",
+          "oklch(95% 0.0000 0.00)"
+        ]
+      },
+      "dark-chart-temp": {
+        "role": "semantic",
+        "displayName": "深色 · chart-temp",
+        "tonalRamp": [
+          "oklch(15% 0.1216 57.44)",
+          "oklch(25% 0.1216 57.44)",
+          "oklch(35% 0.1216 57.44)",
+          "oklch(45% 0.1216 57.44)",
+          "oklch(55% 0.1216 57.44)",
+          "oklch(65% 0.1216 57.44)",
+          "oklch(80% 0.1216 57.44)",
+          "oklch(95% 0.1216 57.44)"
+        ]
+      },
+      "dark-chart-setpoint": {
+        "role": "semantic",
+        "displayName": "深色 · chart-setpoint",
+        "tonalRamp": [
+          "oklch(15% 0.1657 255.39)",
+          "oklch(25% 0.1657 255.39)",
+          "oklch(35% 0.1657 255.39)",
+          "oklch(45% 0.1657 255.39)",
+          "oklch(55% 0.1657 255.39)",
+          "oklch(65% 0.1657 255.39)",
+          "oklch(80% 0.1657 255.39)",
+          "oklch(95% 0.1657 255.39)"
+        ]
+      },
+      "dark-chart-target": {
+        "role": "semantic",
+        "displayName": "深色 · chart-target",
+        "tonalRamp": [
+          "oklch(15% 0.0000 0.00)",
+          "oklch(25% 0.0000 0.00)",
+          "oklch(35% 0.0000 0.00)",
+          "oklch(45% 0.0000 0.00)",
+          "oklch(55% 0.0000 0.00)",
+          "oklch(65% 0.0000 0.00)",
+          "oklch(80% 0.0000 0.00)",
+          "oklch(95% 0.0000 0.00)"
+        ]
+      },
+      "dark-chart-target-fill": {
+        "role": "semantic",
+        "displayName": "深色 · chart-target-fill",
+        "tonalRamp": [
+          "oklch(15% 0.0000 0.00 / 0.06)",
+          "oklch(25% 0.0000 0.00 / 0.06)",
+          "oklch(35% 0.0000 0.00 / 0.06)",
+          "oklch(45% 0.0000 0.00 / 0.06)",
+          "oklch(55% 0.0000 0.00 / 0.06)",
+          "oklch(65% 0.0000 0.00 / 0.06)",
+          "oklch(80% 0.0000 0.00 / 0.06)",
+          "oklch(95% 0.0000 0.00 / 0.06)"
+        ]
+      },
+      "dark-chart-ror": {
+        "role": "semantic",
+        "displayName": "深色 · chart-ror",
+        "tonalRamp": [
+          "oklch(15% 0.1383 156.81)",
+          "oklch(25% 0.1383 156.81)",
+          "oklch(35% 0.1383 156.81)",
+          "oklch(45% 0.1383 156.81)",
+          "oklch(55% 0.1383 156.81)",
+          "oklch(65% 0.1383 156.81)",
+          "oklch(80% 0.1383 156.81)",
+          "oklch(95% 0.1383 156.81)"
+        ]
+      },
+      "dark-chart-ror-fill": {
+        "role": "semantic",
+        "displayName": "深色 · chart-ror-fill",
+        "tonalRamp": [
+          "oklch(15% 0.1383 156.81 / 0.1)",
+          "oklch(25% 0.1383 156.81 / 0.1)",
+          "oklch(35% 0.1383 156.81 / 0.1)",
+          "oklch(45% 0.1383 156.81 / 0.1)",
+          "oklch(55% 0.1383 156.81 / 0.1)",
+          "oklch(65% 0.1383 156.81 / 0.1)",
+          "oklch(80% 0.1383 156.81 / 0.1)",
+          "oklch(95% 0.1383 156.81 / 0.1)"
+        ]
+      },
+      "dark-chart-ror-preview": {
+        "role": "semantic",
+        "displayName": "深色 · chart-ror-preview",
+        "tonalRamp": [
+          "oklch(15% 0.1164 158.61)",
+          "oklch(25% 0.1164 158.61)",
+          "oklch(35% 0.1164 158.61)",
+          "oklch(45% 0.1164 158.61)",
+          "oklch(55% 0.1164 158.61)",
+          "oklch(65% 0.1164 158.61)",
+          "oklch(80% 0.1164 158.61)",
+          "oklch(95% 0.1164 158.61)"
+        ]
+      },
+      "dark-chart-projection": {
+        "role": "semantic",
+        "displayName": "深色 · chart-projection",
+        "tonalRamp": [
+          "oklch(15% 0.1758 55.37 / 0.48)",
+          "oklch(25% 0.1758 55.37 / 0.48)",
+          "oklch(35% 0.1758 55.37 / 0.48)",
+          "oklch(45% 0.1758 55.37 / 0.48)",
+          "oklch(55% 0.1758 55.37 / 0.48)",
+          "oklch(65% 0.1758 55.37 / 0.48)",
+          "oklch(80% 0.1758 55.37 / 0.48)",
+          "oklch(95% 0.1758 55.37 / 0.48)"
+        ]
+      },
+      "dark-chart-y1-tick": {
+        "role": "semantic",
+        "displayName": "深色 · chart-y1-tick",
+        "tonalRamp": [
+          "oklch(15% 0.1287 156.72)",
+          "oklch(25% 0.1287 156.72)",
+          "oklch(35% 0.1287 156.72)",
+          "oklch(45% 0.1287 156.72)",
+          "oklch(55% 0.1287 156.72)",
+          "oklch(65% 0.1287 156.72)",
+          "oklch(80% 0.1287 156.72)",
+          "oklch(95% 0.1287 156.72)"
+        ]
+      },
+      "dark-chart-compare-a": {
+        "role": "semantic",
+        "displayName": "深色 · chart-compare-a",
+        "tonalRamp": [
+          "oklch(15% 0.1741 64.05)",
+          "oklch(25% 0.1741 64.05)",
+          "oklch(35% 0.1741 64.05)",
+          "oklch(45% 0.1741 64.05)",
+          "oklch(55% 0.1741 64.05)",
+          "oklch(65% 0.1741 64.05)",
+          "oklch(80% 0.1741 64.05)",
+          "oklch(95% 0.1741 64.05)"
+        ]
+      },
+      "dark-chart-compare-b": {
+        "role": "semantic",
+        "displayName": "深色 · chart-compare-b",
+        "tonalRamp": [
+          "oklch(15% 0.2773 321.37)",
+          "oklch(25% 0.2773 321.37)",
+          "oklch(35% 0.2773 321.37)",
+          "oklch(45% 0.2773 321.37)",
+          "oklch(55% 0.2773 321.37)",
+          "oklch(65% 0.2773 321.37)",
+          "oklch(80% 0.2773 321.37)",
+          "oklch(95% 0.2773 321.37)"
+        ]
+      },
+      "dark-chart-event-label-bg": {
+        "role": "semantic",
+        "displayName": "深色 · chart-event-label-bg",
+        "tonalRamp": [
+          "oklch(15% 0.0000 0.00 / 0.82)",
+          "oklch(25% 0.0000 0.00 / 0.82)",
+          "oklch(35% 0.0000 0.00 / 0.82)",
+          "oklch(45% 0.0000 0.00 / 0.82)",
+          "oklch(55% 0.0000 0.00 / 0.82)",
+          "oklch(65% 0.0000 0.00 / 0.82)",
+          "oklch(80% 0.0000 0.00 / 0.82)",
+          "oklch(95% 0.0000 0.00 / 0.82)"
+        ]
+      },
+      "dark-chart-tooltip-bg": {
+        "role": "semantic",
+        "displayName": "深色 · chart-tooltip-bg",
+        "tonalRamp": [
+          "oklch(15% 0.0059 285.89 / 0.96)",
+          "oklch(25% 0.0059 285.89 / 0.96)",
+          "oklch(35% 0.0059 285.89 / 0.96)",
+          "oklch(45% 0.0059 285.89 / 0.96)",
+          "oklch(55% 0.0059 285.89 / 0.96)",
+          "oklch(65% 0.0059 285.89 / 0.96)",
+          "oklch(80% 0.0059 285.89 / 0.96)",
+          "oklch(95% 0.0059 285.89 / 0.96)"
+        ]
+      },
+      "dark-chart-tooltip-border": {
+        "role": "semantic",
+        "displayName": "深色 · chart-tooltip-border",
+        "tonalRamp": [
+          "oklch(15% 0.0000 0.00 / 0.1)",
+          "oklch(25% 0.0000 0.00 / 0.1)",
+          "oklch(35% 0.0000 0.00 / 0.1)",
+          "oklch(45% 0.0000 0.00 / 0.1)",
+          "oklch(55% 0.0000 0.00 / 0.1)",
+          "oklch(65% 0.0000 0.00 / 0.1)",
+          "oklch(80% 0.0000 0.00 / 0.1)",
+          "oklch(95% 0.0000 0.00 / 0.1)"
+        ]
+      },
+      "dark-chart-tooltip-text": {
+        "role": "semantic",
+        "displayName": "深色 · chart-tooltip-text",
+        "tonalRamp": [
+          "oklch(15% 0.0027 286.35)",
+          "oklch(25% 0.0027 286.35)",
+          "oklch(35% 0.0027 286.35)",
+          "oklch(45% 0.0027 286.35)",
+          "oklch(55% 0.0027 286.35)",
+          "oklch(65% 0.0027 286.35)",
+          "oklch(80% 0.0027 286.35)",
+          "oklch(95% 0.0027 286.35)"
+        ]
+      },
+      "dark-event-charge": {
+        "role": "semantic",
+        "displayName": "深色 · event-charge",
+        "tonalRamp": [
+          "oklch(15% 0.1920 149.58)",
+          "oklch(25% 0.1920 149.58)",
+          "oklch(35% 0.1920 149.58)",
+          "oklch(45% 0.1920 149.58)",
+          "oklch(55% 0.1920 149.58)",
+          "oklch(65% 0.1920 149.58)",
+          "oklch(80% 0.1920 149.58)",
+          "oklch(95% 0.1920 149.58)"
+        ]
+      },
+      "dark-event-yellowing": {
+        "role": "semantic",
+        "displayName": "深色 · event-yellowing",
+        "tonalRamp": [
+          "oklch(15% 0.1647 70.08)",
+          "oklch(25% 0.1647 70.08)",
+          "oklch(35% 0.1647 70.08)",
+          "oklch(45% 0.1647 70.08)",
+          "oklch(55% 0.1647 70.08)",
+          "oklch(65% 0.1647 70.08)",
+          "oklch(80% 0.1647 70.08)",
+          "oklch(95% 0.1647 70.08)"
+        ]
+      },
+      "dark-event-first-crack": {
+        "role": "semantic",
+        "displayName": "深色 · event-first-crack",
+        "tonalRamp": [
+          "oklch(15% 0.2078 25.33)",
+          "oklch(25% 0.2078 25.33)",
+          "oklch(35% 0.2078 25.33)",
+          "oklch(45% 0.2078 25.33)",
+          "oklch(55% 0.2078 25.33)",
+          "oklch(65% 0.2078 25.33)",
+          "oklch(80% 0.2078 25.33)",
+          "oklch(95% 0.2078 25.33)"
+        ]
+      },
+      "dark-event-second-crack": {
+        "role": "semantic",
+        "displayName": "深色 · event-second-crack",
+        "tonalRamp": [
+          "oklch(15% 0.2325 303.90)",
+          "oklch(25% 0.2325 303.90)",
+          "oklch(35% 0.2325 303.90)",
+          "oklch(45% 0.2325 303.90)",
+          "oklch(55% 0.2325 303.90)",
+          "oklch(65% 0.2325 303.90)",
+          "oklch(80% 0.2325 303.90)",
+          "oklch(95% 0.2325 303.90)"
+        ]
+      },
+      "dark-event-drop": {
+        "role": "semantic",
+        "displayName": "深色 · event-drop",
+        "tonalRamp": [
+          "oklch(15% 0.1880 259.81)",
+          "oklch(25% 0.1880 259.81)",
+          "oklch(35% 0.1880 259.81)",
+          "oklch(45% 0.1880 259.81)",
+          "oklch(55% 0.1880 259.81)",
+          "oklch(65% 0.1880 259.81)",
+          "oklch(80% 0.1880 259.81)",
+          "oklch(95% 0.1880 259.81)"
+        ]
+      },
+      "dark-event-tp": {
+        "role": "semantic",
+        "displayName": "深色 · event-tp",
+        "tonalRamp": [
+          "oklch(15% 0.1071 185.34)",
+          "oklch(25% 0.1071 185.34)",
+          "oklch(35% 0.1071 185.34)",
+          "oklch(45% 0.1071 185.34)",
+          "oklch(55% 0.1071 185.34)",
+          "oklch(65% 0.1071 185.34)",
+          "oklch(80% 0.1071 185.34)",
+          "oklch(95% 0.1071 185.34)"
+        ]
+      },
+      "dark-delta-good": {
+        "role": "semantic",
+        "displayName": "深色 · delta-good",
+        "tonalRamp": [
+          "oklch(15% 0.1920 149.58)",
+          "oklch(25% 0.1920 149.58)",
+          "oklch(35% 0.1920 149.58)",
+          "oklch(45% 0.1920 149.58)",
+          "oklch(55% 0.1920 149.58)",
+          "oklch(65% 0.1920 149.58)",
+          "oklch(80% 0.1920 149.58)",
+          "oklch(95% 0.1920 149.58)"
+        ]
+      },
+      "dark-delta-warn": {
+        "role": "semantic",
+        "displayName": "深色 · delta-warn",
+        "tonalRamp": [
+          "oklch(15% 0.1867 47.60)",
+          "oklch(25% 0.1867 47.60)",
+          "oklch(35% 0.1867 47.60)",
+          "oklch(45% 0.1867 47.60)",
+          "oklch(55% 0.1867 47.60)",
+          "oklch(65% 0.1867 47.60)",
+          "oklch(80% 0.1867 47.60)",
+          "oklch(95% 0.1867 47.60)"
+        ]
+      },
+      "dark-delta-info": {
+        "role": "semantic",
+        "displayName": "深色 · delta-info",
+        "tonalRamp": [
+          "oklch(15% 0.1880 259.81)",
+          "oklch(25% 0.1880 259.81)",
+          "oklch(35% 0.1880 259.81)",
+          "oklch(45% 0.1880 259.81)",
+          "oklch(55% 0.1880 259.81)",
+          "oklch(65% 0.1880 259.81)",
+          "oklch(80% 0.1880 259.81)",
+          "oklch(95% 0.1880 259.81)"
+        ]
+      },
+      "dark-editor-curve": {
+        "role": "semantic",
+        "displayName": "深色 · editor-curve",
+        "tonalRamp": [
+          "oklch(15% 0.0192 261.32)",
+          "oklch(25% 0.0192 261.32)",
+          "oklch(35% 0.0192 261.32)",
+          "oklch(45% 0.0192 261.32)",
+          "oklch(55% 0.0192 261.32)",
+          "oklch(65% 0.0192 261.32)",
+          "oklch(80% 0.0192 261.32)",
+          "oklch(95% 0.0192 261.32)"
+        ]
+      },
+      "dark-editor-node": {
+        "role": "semantic",
+        "displayName": "深色 · editor-node",
+        "tonalRamp": [
+          "oklch(15% 0.1647 70.08)",
+          "oklch(25% 0.1647 70.08)",
+          "oklch(35% 0.1647 70.08)",
+          "oklch(45% 0.1647 70.08)",
+          "oklch(55% 0.1647 70.08)",
+          "oklch(65% 0.1647 70.08)",
+          "oklch(80% 0.1647 70.08)",
+          "oklch(95% 0.1647 70.08)"
+        ]
+      },
+      "dark-editor-node-hover": {
+        "role": "semantic",
+        "displayName": "深色 · editor-node-hover",
+        "tonalRamp": [
+          "oklch(15% 0.0000 0.00)",
+          "oklch(25% 0.0000 0.00)",
+          "oklch(35% 0.0000 0.00)",
+          "oklch(45% 0.0000 0.00)",
+          "oklch(55% 0.0000 0.00)",
+          "oklch(65% 0.0000 0.00)",
+          "oklch(80% 0.0000 0.00)",
+          "oklch(95% 0.0000 0.00)"
+        ]
+      },
+      "dark-primary-active": {
+        "role": "primary",
+        "displayName": "深色 · 操作蓝按下",
+        "tonalRamp": [
+          "oklch(15% 0.1882 262.01)",
+          "oklch(25% 0.1882 262.01)",
+          "oklch(35% 0.1882 262.01)",
+          "oklch(45% 0.1882 262.01)",
+          "oklch(55% 0.1882 262.01)",
+          "oklch(65% 0.1882 262.01)",
+          "oklch(80% 0.1882 262.01)",
+          "oklch(95% 0.1882 262.01)"
+        ]
+      },
+      "dark-mc-text-color-main": {
         "role": "neutral",
-        "displayName": "石墨深色 · info-hover"
+        "displayName": "深色 · mc-text-color-main",
+        "tonalRamp": [
+          "oklch(15% 0.0000 0.00)",
+          "oklch(25% 0.0000 0.00)",
+          "oklch(35% 0.0000 0.00)",
+          "oklch(45% 0.0000 0.00)",
+          "oklch(55% 0.0000 0.00)",
+          "oklch(65% 0.0000 0.00)",
+          "oklch(80% 0.0000 0.00)",
+          "oklch(95% 0.0000 0.00)"
+        ]
       },
-      "dark-info-soft": {
+      "dark-mc-bg-color-panel": {
         "role": "neutral",
-        "displayName": "石墨深色 · info-soft"
+        "displayName": "深色 · mc-bg-color-panel",
+        "tonalRamp": [
+          "oklch(15% 0.0060 271.13)",
+          "oklch(25% 0.0060 271.13)",
+          "oklch(35% 0.0060 271.13)",
+          "oklch(45% 0.0060 271.13)",
+          "oklch(55% 0.0060 271.13)",
+          "oklch(65% 0.0060 271.13)",
+          "oklch(80% 0.0060 271.13)",
+          "oklch(95% 0.0060 271.13)"
+        ]
       },
-      "light-danger": {
-        "role": "semantic",
-        "displayName": "暖白浅色 · danger"
+      "dark-mc-bg-color-card": {
+        "role": "neutral",
+        "displayName": "深色 · mc-bg-color-card",
+        "tonalRamp": [
+          "oklch(15% 0.0058 271.18)",
+          "oklch(25% 0.0058 271.18)",
+          "oklch(35% 0.0058 271.18)",
+          "oklch(45% 0.0058 271.18)",
+          "oklch(55% 0.0058 271.18)",
+          "oklch(65% 0.0058 271.18)",
+          "oklch(80% 0.0058 271.18)",
+          "oklch(95% 0.0058 271.18)"
+        ]
       },
-      "light-danger-hover": {
-        "role": "semantic",
-        "displayName": "暖白浅色 · danger-hover"
+      "dark-mc-button-border-color": {
+        "role": "neutral",
+        "displayName": "深色 · mc-button-border-color",
+        "tonalRamp": [
+          "oklch(15% 0.0169 273.70)",
+          "oklch(25% 0.0169 273.70)",
+          "oklch(35% 0.0169 273.70)",
+          "oklch(45% 0.0169 273.70)",
+          "oklch(55% 0.0169 273.70)",
+          "oklch(65% 0.0169 273.70)",
+          "oklch(80% 0.0169 273.70)",
+          "oklch(95% 0.0169 273.70)"
+        ]
       },
-      "light-danger-soft": {
-        "role": "semantic",
-        "displayName": "暖白浅色 · danger-soft"
-      },
-      "light-on-danger": {
-        "role": "semantic",
-        "displayName": "暖白浅色 · on-danger"
-      },
-      "light-status-online": {
-        "role": "semantic",
-        "displayName": "暖白浅色 · status-online"
-      },
-      "light-warning": {
-        "role": "semantic",
-        "displayName": "暖白浅色 · warning"
-      },
-      "light-phase-drying": {
-        "role": "semantic",
-        "displayName": "暖白浅色 · phase-drying"
-      },
-      "light-phase-maillard": {
-        "role": "semantic",
-        "displayName": "暖白浅色 · phase-maillard"
-      },
-      "light-phase-development": {
-        "role": "semantic",
-        "displayName": "暖白浅色 · phase-development"
-      },
-      "light-phase-cooling": {
-        "role": "semantic",
-        "displayName": "暖白浅色 · phase-cooling"
-      },
-      "light-chart-grid": {
-        "role": "semantic",
-        "displayName": "暖白浅色 · chart-grid"
-      },
-      "light-chart-tick": {
-        "role": "semantic",
-        "displayName": "暖白浅色 · chart-tick"
-      },
-      "light-chart-legend": {
-        "role": "semantic",
-        "displayName": "暖白浅色 · chart-legend"
-      },
-      "light-chart-temp": {
-        "role": "semantic",
-        "displayName": "暖白浅色 · chart-temp"
-      },
-      "light-chart-setpoint": {
-        "role": "semantic",
-        "displayName": "暖白浅色 · chart-setpoint"
-      },
-      "light-chart-target": {
-        "role": "semantic",
-        "displayName": "暖白浅色 · chart-target"
-      },
-      "light-chart-target-fill": {
-        "role": "semantic",
-        "displayName": "暖白浅色 · chart-target-fill"
-      },
-      "light-chart-ror": {
-        "role": "semantic",
-        "displayName": "暖白浅色 · chart-ror"
-      },
-      "light-chart-ror-fill": {
-        "role": "semantic",
-        "displayName": "暖白浅色 · chart-ror-fill"
-      },
-      "light-chart-ror-preview": {
-        "role": "semantic",
-        "displayName": "暖白浅色 · chart-ror-preview"
-      },
-      "light-chart-projection": {
-        "role": "semantic",
-        "displayName": "暖白浅色 · chart-projection"
-      },
-      "light-chart-y1-tick": {
-        "role": "semantic",
-        "displayName": "暖白浅色 · chart-y1-tick"
-      },
-      "light-chart-compare-a": {
-        "role": "semantic",
-        "displayName": "暖白浅色 · chart-compare-a"
-      },
-      "light-chart-compare-b": {
-        "role": "semantic",
-        "displayName": "暖白浅色 · chart-compare-b"
-      },
-      "light-chart-event-label-bg": {
-        "role": "semantic",
-        "displayName": "暖白浅色 · chart-event-label-bg"
-      },
-      "light-chart-tooltip-bg": {
-        "role": "semantic",
-        "displayName": "暖白浅色 · chart-tooltip-bg"
-      },
-      "light-chart-tooltip-border": {
-        "role": "semantic",
-        "displayName": "暖白浅色 · chart-tooltip-border"
-      },
-      "light-chart-tooltip-text": {
-        "role": "semantic",
-        "displayName": "暖白浅色 · chart-tooltip-text"
-      },
-      "light-event-charge": {
-        "role": "semantic",
-        "displayName": "暖白浅色 · event-charge"
-      },
-      "light-event-yellowing": {
-        "role": "semantic",
-        "displayName": "暖白浅色 · event-yellowing"
-      },
-      "light-event-first-crack": {
-        "role": "semantic",
-        "displayName": "暖白浅色 · event-first-crack"
-      },
-      "light-event-second-crack": {
-        "role": "semantic",
-        "displayName": "暖白浅色 · event-second-crack"
-      },
-      "light-event-drop": {
-        "role": "semantic",
-        "displayName": "暖白浅色 · event-drop"
-      },
-      "light-event-tp": {
-        "role": "semantic",
-        "displayName": "暖白浅色 · event-tp"
-      },
-      "light-delta-good": {
-        "role": "semantic",
-        "displayName": "暖白浅色 · delta-good"
-      },
-      "light-delta-warn": {
-        "role": "semantic",
-        "displayName": "暖白浅色 · delta-warn"
-      },
-      "light-delta-info": {
-        "role": "semantic",
-        "displayName": "暖白浅色 · delta-info"
-      },
-      "light-editor-curve": {
-        "role": "semantic",
-        "displayName": "暖白浅色 · editor-curve"
-      },
-      "light-editor-node": {
-        "role": "semantic",
-        "displayName": "暖白浅色 · editor-node"
-      },
-      "light-editor-node-hover": {
-        "role": "semantic",
-        "displayName": "暖白浅色 · editor-node-hover"
+      "dark-mc-color-b11": {
+        "role": "primary",
+        "displayName": "深色 · mc-color-b11",
+        "tonalRamp": [
+          "oklch(15% 0.2102 261.14)",
+          "oklch(25% 0.2102 261.14)",
+          "oklch(35% 0.2102 261.14)",
+          "oklch(45% 0.2102 261.14)",
+          "oklch(55% 0.2102 261.14)",
+          "oklch(65% 0.2102 261.14)",
+          "oklch(80% 0.2102 261.14)",
+          "oklch(95% 0.2102 261.14)"
+        ]
       },
       "light-bg": {
         "role": "neutral",
-        "displayName": "暖白浅色 · bg"
+        "displayName": "浅色 · 工作区底色",
+        "tonalRamp": [
+          "oklch(15% 0.0054 274.97)",
+          "oklch(25% 0.0054 274.97)",
+          "oklch(35% 0.0054 274.97)",
+          "oklch(45% 0.0054 274.97)",
+          "oklch(55% 0.0054 274.97)",
+          "oklch(65% 0.0054 274.97)",
+          "oklch(80% 0.0054 274.97)",
+          "oklch(95% 0.0054 274.97)"
+        ]
       },
       "light-bg-elevated": {
         "role": "neutral",
-        "displayName": "暖白浅色 · bg-elevated"
+        "displayName": "浅色 · 浮层与栏背景",
+        "tonalRamp": [
+          "oklch(15% 0.0000 0.00)",
+          "oklch(25% 0.0000 0.00)",
+          "oklch(35% 0.0000 0.00)",
+          "oklch(45% 0.0000 0.00)",
+          "oklch(55% 0.0000 0.00)",
+          "oklch(65% 0.0000 0.00)",
+          "oklch(80% 0.0000 0.00)",
+          "oklch(95% 0.0000 0.00)"
+        ]
       },
       "light-surface": {
         "role": "neutral",
-        "displayName": "暖白浅色 · surface"
+        "displayName": "浅色 · 内容面板",
+        "tonalRamp": [
+          "oklch(15% 0.0000 0.00)",
+          "oklch(25% 0.0000 0.00)",
+          "oklch(35% 0.0000 0.00)",
+          "oklch(45% 0.0000 0.00)",
+          "oklch(55% 0.0000 0.00)",
+          "oklch(65% 0.0000 0.00)",
+          "oklch(80% 0.0000 0.00)",
+          "oklch(95% 0.0000 0.00)"
+        ]
       },
       "light-surface-2": {
         "role": "neutral",
-        "displayName": "暖白浅色 · surface-2"
+        "displayName": "浅色 · 控件与卡片",
+        "tonalRamp": [
+          "oklch(15% 0.0054 274.97)",
+          "oklch(25% 0.0054 274.97)",
+          "oklch(35% 0.0054 274.97)",
+          "oklch(45% 0.0054 274.97)",
+          "oklch(55% 0.0054 274.97)",
+          "oklch(65% 0.0054 274.97)",
+          "oklch(80% 0.0054 274.97)",
+          "oklch(95% 0.0054 274.97)"
+        ]
       },
       "light-surface-3": {
         "role": "neutral",
-        "displayName": "暖白浅色 · surface-3"
+        "displayName": "浅色 · 悬停填充",
+        "tonalRamp": [
+          "oklch(15% 0.0097 273.35)",
+          "oklch(25% 0.0097 273.35)",
+          "oklch(35% 0.0097 273.35)",
+          "oklch(45% 0.0097 273.35)",
+          "oklch(55% 0.0097 273.35)",
+          "oklch(65% 0.0097 273.35)",
+          "oklch(80% 0.0097 273.35)",
+          "oklch(95% 0.0097 273.35)"
+        ]
       },
       "light-canvas": {
         "role": "neutral",
-        "displayName": "暖白浅色 · canvas"
+        "displayName": "浅色 · 曲线画布",
+        "tonalRamp": [
+          "oklch(15% 0.0000 0.00)",
+          "oklch(25% 0.0000 0.00)",
+          "oklch(35% 0.0000 0.00)",
+          "oklch(45% 0.0000 0.00)",
+          "oklch(55% 0.0000 0.00)",
+          "oklch(65% 0.0000 0.00)",
+          "oklch(80% 0.0000 0.00)",
+          "oklch(95% 0.0000 0.00)"
+        ]
       },
       "light-rail": {
         "role": "neutral",
-        "displayName": "暖白浅色 · rail"
+        "displayName": "浅色 · 设备任务栏",
+        "tonalRamp": [
+          "oklch(15% 0.0000 0.00)",
+          "oklch(25% 0.0000 0.00)",
+          "oklch(35% 0.0000 0.00)",
+          "oklch(45% 0.0000 0.00)",
+          "oklch(55% 0.0000 0.00)",
+          "oklch(65% 0.0000 0.00)",
+          "oklch(80% 0.0000 0.00)",
+          "oklch(95% 0.0000 0.00)"
+        ]
       },
       "light-control-bg": {
         "role": "neutral",
-        "displayName": "暖白浅色 · control-bg"
-      },
-      "light-text": {
-        "role": "neutral",
-        "displayName": "暖白浅色 · text"
-      },
-      "light-text-secondary": {
-        "role": "neutral",
-        "displayName": "暖白浅色 · text-secondary"
-      },
-      "light-text-tertiary": {
-        "role": "neutral",
-        "displayName": "暖白浅色 · text-tertiary"
-      },
-      "light-accent": {
-        "role": "primary",
-        "displayName": "暖白浅色 · accent"
-      },
-      "light-accent-hover": {
-        "role": "primary",
-        "displayName": "暖白浅色 · accent-hover"
-      },
-      "light-accent-soft": {
-        "role": "primary",
-        "displayName": "暖白浅色 · accent-soft"
-      },
-      "light-on-accent": {
-        "role": "primary",
-        "displayName": "暖白浅色 · on-accent"
-      },
-      "light-border": {
-        "role": "neutral",
-        "displayName": "暖白浅色 · border"
-      },
-      "light-separator": {
-        "role": "neutral",
-        "displayName": "暖白浅色 · separator"
-      },
-      "light-seg-thumb": {
-        "role": "neutral",
-        "displayName": "暖白浅色 · seg-thumb"
+        "displayName": "浅色 · 输入背景",
+        "tonalRamp": [
+          "oklch(15% 0.0054 274.97)",
+          "oklch(25% 0.0054 274.97)",
+          "oklch(35% 0.0054 274.97)",
+          "oklch(45% 0.0054 274.97)",
+          "oklch(55% 0.0054 274.97)",
+          "oklch(65% 0.0054 274.97)",
+          "oklch(80% 0.0054 274.97)",
+          "oklch(95% 0.0054 274.97)"
+        ]
       },
       "light-fill": {
         "role": "neutral",
-        "displayName": "暖白浅色 · fill"
+        "displayName": "浅色 · fill",
+        "tonalRamp": [
+          "oklch(15% 0.0097 273.35)",
+          "oklch(25% 0.0097 273.35)",
+          "oklch(35% 0.0097 273.35)",
+          "oklch(45% 0.0097 273.35)",
+          "oklch(55% 0.0097 273.35)",
+          "oklch(65% 0.0097 273.35)",
+          "oklch(80% 0.0097 273.35)",
+          "oklch(95% 0.0097 273.35)"
+        ]
       },
       "light-fill-strong": {
         "role": "neutral",
-        "displayName": "暖白浅色 · fill-strong"
+        "displayName": "浅色 · fill-strong",
+        "tonalRamp": [
+          "oklch(15% 0.0186 274.62)",
+          "oklch(25% 0.0186 274.62)",
+          "oklch(35% 0.0186 274.62)",
+          "oklch(45% 0.0186 274.62)",
+          "oklch(55% 0.0186 274.62)",
+          "oklch(65% 0.0186 274.62)",
+          "oklch(80% 0.0186 274.62)",
+          "oklch(95% 0.0186 274.62)"
+        ]
+      },
+      "light-border": {
+        "role": "neutral",
+        "displayName": "浅色 · 控件边界",
+        "tonalRamp": [
+          "oklch(15% 0.0186 274.62)",
+          "oklch(25% 0.0186 274.62)",
+          "oklch(35% 0.0186 274.62)",
+          "oklch(45% 0.0186 274.62)",
+          "oklch(55% 0.0186 274.62)",
+          "oklch(65% 0.0186 274.62)",
+          "oklch(80% 0.0186 274.62)",
+          "oklch(95% 0.0186 274.62)"
+        ]
+      },
+      "light-separator": {
+        "role": "neutral",
+        "displayName": "浅色 · 区域分隔",
+        "tonalRamp": [
+          "oklch(15% 0.0140 272.68)",
+          "oklch(25% 0.0140 272.68)",
+          "oklch(35% 0.0140 272.68)",
+          "oklch(45% 0.0140 272.68)",
+          "oklch(55% 0.0140 272.68)",
+          "oklch(65% 0.0140 272.68)",
+          "oklch(80% 0.0140 272.68)",
+          "oklch(95% 0.0140 272.68)"
+        ]
+      },
+      "light-text": {
+        "role": "neutral",
+        "displayName": "浅色 · 正文",
+        "tonalRamp": [
+          "oklch(15% 0.0000 0.00)",
+          "oklch(25% 0.0000 0.00)",
+          "oklch(35% 0.0000 0.00)",
+          "oklch(45% 0.0000 0.00)",
+          "oklch(55% 0.0000 0.00)",
+          "oklch(65% 0.0000 0.00)",
+          "oklch(80% 0.0000 0.00)",
+          "oklch(95% 0.0000 0.00)"
+        ]
+      },
+      "light-text-secondary": {
+        "role": "neutral",
+        "displayName": "浅色 · 辅助文字",
+        "tonalRamp": [
+          "oklch(15% 0.0182 277.45)",
+          "oklch(25% 0.0182 277.45)",
+          "oklch(35% 0.0182 277.45)",
+          "oklch(45% 0.0182 277.45)",
+          "oklch(55% 0.0182 277.45)",
+          "oklch(65% 0.0182 277.45)",
+          "oklch(80% 0.0182 277.45)",
+          "oklch(95% 0.0182 277.45)"
+        ]
+      },
+      "light-text-tertiary": {
+        "role": "neutral",
+        "displayName": "浅色 · 次级说明",
+        "tonalRamp": [
+          "oklch(15% 0.0181 273.56)",
+          "oklch(25% 0.0181 273.56)",
+          "oklch(35% 0.0181 273.56)",
+          "oklch(45% 0.0181 273.56)",
+          "oklch(55% 0.0181 273.56)",
+          "oklch(65% 0.0181 273.56)",
+          "oklch(80% 0.0181 273.56)",
+          "oklch(95% 0.0181 273.56)"
+        ]
+      },
+      "light-accent": {
+        "role": "primary",
+        "displayName": "浅色 · 焦点蓝",
+        "tonalRamp": [
+          "oklch(15% 0.2273 261.70)",
+          "oklch(25% 0.2273 261.70)",
+          "oklch(35% 0.2273 261.70)",
+          "oklch(45% 0.2273 261.70)",
+          "oklch(55% 0.2273 261.70)",
+          "oklch(65% 0.2273 261.70)",
+          "oklch(80% 0.2273 261.70)",
+          "oklch(95% 0.2273 261.70)"
+        ]
+      },
+      "light-accent-hover": {
+        "role": "primary",
+        "displayName": "浅色 · accent-hover",
+        "tonalRamp": [
+          "oklch(15% 0.2002 261.68)",
+          "oklch(25% 0.2002 261.68)",
+          "oklch(35% 0.2002 261.68)",
+          "oklch(45% 0.2002 261.68)",
+          "oklch(55% 0.2002 261.68)",
+          "oklch(65% 0.2002 261.68)",
+          "oklch(80% 0.2002 261.68)",
+          "oklch(95% 0.2002 261.68)"
+        ]
+      },
+      "light-accent-soft": {
+        "role": "primary",
+        "displayName": "浅色 · 选中蓝底",
+        "tonalRamp": [
+          "oklch(15% 0.0249 263.33)",
+          "oklch(25% 0.0249 263.33)",
+          "oklch(35% 0.0249 263.33)",
+          "oklch(45% 0.0249 263.33)",
+          "oklch(55% 0.0249 263.33)",
+          "oklch(65% 0.0249 263.33)",
+          "oklch(80% 0.0249 263.33)",
+          "oklch(95% 0.0249 263.33)"
+        ]
+      },
+      "light-on-accent": {
+        "role": "primary",
+        "displayName": "浅色 · on-accent",
+        "tonalRamp": [
+          "oklch(15% 0.0000 0.00)",
+          "oklch(25% 0.0000 0.00)",
+          "oklch(35% 0.0000 0.00)",
+          "oklch(45% 0.0000 0.00)",
+          "oklch(55% 0.0000 0.00)",
+          "oklch(65% 0.0000 0.00)",
+          "oklch(80% 0.0000 0.00)",
+          "oklch(95% 0.0000 0.00)"
+        ]
+      },
+      "light-primary": {
+        "role": "primary",
+        "displayName": "浅色 · 操作蓝",
+        "tonalRamp": [
+          "oklch(15% 0.2273 261.70)",
+          "oklch(25% 0.2273 261.70)",
+          "oklch(35% 0.2273 261.70)",
+          "oklch(45% 0.2273 261.70)",
+          "oklch(55% 0.2273 261.70)",
+          "oklch(65% 0.2273 261.70)",
+          "oklch(80% 0.2273 261.70)",
+          "oklch(95% 0.2273 261.70)"
+        ]
+      },
+      "light-primary-hover": {
+        "role": "primary",
+        "displayName": "浅色 · 操作蓝悬停",
+        "tonalRamp": [
+          "oklch(15% 0.2002 261.68)",
+          "oklch(25% 0.2002 261.68)",
+          "oklch(35% 0.2002 261.68)",
+          "oklch(45% 0.2002 261.68)",
+          "oklch(55% 0.2002 261.68)",
+          "oklch(65% 0.2002 261.68)",
+          "oklch(80% 0.2002 261.68)",
+          "oklch(95% 0.2002 261.68)"
+        ]
+      },
+      "light-primary-soft": {
+        "role": "primary",
+        "displayName": "浅色 · primary-soft",
+        "tonalRamp": [
+          "oklch(15% 0.0249 263.33)",
+          "oklch(25% 0.0249 263.33)",
+          "oklch(35% 0.0249 263.33)",
+          "oklch(45% 0.0249 263.33)",
+          "oklch(55% 0.0249 263.33)",
+          "oklch(65% 0.0249 263.33)",
+          "oklch(80% 0.0249 263.33)",
+          "oklch(95% 0.0249 263.33)"
+        ]
+      },
+      "light-on-primary": {
+        "role": "primary",
+        "displayName": "浅色 · 主操作文字",
+        "tonalRamp": [
+          "oklch(15% 0.0000 0.00)",
+          "oklch(25% 0.0000 0.00)",
+          "oklch(35% 0.0000 0.00)",
+          "oklch(45% 0.0000 0.00)",
+          "oklch(55% 0.0000 0.00)",
+          "oklch(65% 0.0000 0.00)",
+          "oklch(80% 0.0000 0.00)",
+          "oklch(95% 0.0000 0.00)"
+        ]
+      },
+      "light-info": {
+        "role": "primary",
+        "displayName": "浅色 · info",
+        "tonalRamp": [
+          "oklch(15% 0.2273 261.70)",
+          "oklch(25% 0.2273 261.70)",
+          "oklch(35% 0.2273 261.70)",
+          "oklch(45% 0.2273 261.70)",
+          "oklch(55% 0.2273 261.70)",
+          "oklch(65% 0.2273 261.70)",
+          "oklch(80% 0.2273 261.70)",
+          "oklch(95% 0.2273 261.70)"
+        ]
+      },
+      "light-info-hover": {
+        "role": "primary",
+        "displayName": "浅色 · info-hover",
+        "tonalRamp": [
+          "oklch(15% 0.2002 261.68)",
+          "oklch(25% 0.2002 261.68)",
+          "oklch(35% 0.2002 261.68)",
+          "oklch(45% 0.2002 261.68)",
+          "oklch(55% 0.2002 261.68)",
+          "oklch(65% 0.2002 261.68)",
+          "oklch(80% 0.2002 261.68)",
+          "oklch(95% 0.2002 261.68)"
+        ]
+      },
+      "light-info-soft": {
+        "role": "primary",
+        "displayName": "浅色 · info-soft",
+        "tonalRamp": [
+          "oklch(15% 0.0249 263.33)",
+          "oklch(25% 0.0249 263.33)",
+          "oklch(35% 0.0249 263.33)",
+          "oklch(45% 0.0249 263.33)",
+          "oklch(55% 0.0249 263.33)",
+          "oklch(65% 0.0249 263.33)",
+          "oklch(80% 0.0249 263.33)",
+          "oklch(95% 0.0249 263.33)"
+        ]
+      },
+      "light-danger": {
+        "role": "semantic",
+        "displayName": "浅色 · 危险",
+        "tonalRamp": [
+          "oklch(15% 0.1799 21.73)",
+          "oklch(25% 0.1799 21.73)",
+          "oklch(35% 0.1799 21.73)",
+          "oklch(45% 0.1799 21.73)",
+          "oklch(55% 0.1799 21.73)",
+          "oklch(65% 0.1799 21.73)",
+          "oklch(80% 0.1799 21.73)",
+          "oklch(95% 0.1799 21.73)"
+        ]
+      },
+      "light-danger-hover": {
+        "role": "semantic",
+        "displayName": "浅色 · danger-hover",
+        "tonalRamp": [
+          "oklch(15% 0.1585 22.01)",
+          "oklch(25% 0.1585 22.01)",
+          "oklch(35% 0.1585 22.01)",
+          "oklch(45% 0.1585 22.01)",
+          "oklch(55% 0.1585 22.01)",
+          "oklch(65% 0.1585 22.01)",
+          "oklch(80% 0.1585 22.01)",
+          "oklch(95% 0.1585 22.01)"
+        ]
+      },
+      "light-danger-soft": {
+        "role": "semantic",
+        "displayName": "浅色 · 危险软底",
+        "tonalRamp": [
+          "oklch(15% 0.2321 28.66 / 0.1)",
+          "oklch(25% 0.2321 28.66 / 0.1)",
+          "oklch(35% 0.2321 28.66 / 0.1)",
+          "oklch(45% 0.2321 28.66 / 0.1)",
+          "oklch(55% 0.2321 28.66 / 0.1)",
+          "oklch(65% 0.2321 28.66 / 0.1)",
+          "oklch(80% 0.2321 28.66 / 0.1)",
+          "oklch(95% 0.2321 28.66 / 0.1)"
+        ]
+      },
+      "light-on-danger": {
+        "role": "semantic",
+        "displayName": "浅色 · 实色危险文字",
+        "tonalRamp": [
+          "oklch(15% 0.0000 0.00)",
+          "oklch(25% 0.0000 0.00)",
+          "oklch(35% 0.0000 0.00)",
+          "oklch(45% 0.0000 0.00)",
+          "oklch(55% 0.0000 0.00)",
+          "oklch(65% 0.0000 0.00)",
+          "oklch(80% 0.0000 0.00)",
+          "oklch(95% 0.0000 0.00)"
+        ]
       },
       "light-gray-soft": {
         "role": "neutral",
-        "displayName": "暖白浅色 · gray-soft"
+        "displayName": "浅色 · gray-soft",
+        "tonalRamp": [
+          "oklch(15% 0.0097 273.35)",
+          "oklch(25% 0.0097 273.35)",
+          "oklch(35% 0.0097 273.35)",
+          "oklch(45% 0.0097 273.35)",
+          "oklch(55% 0.0097 273.35)",
+          "oklch(65% 0.0097 273.35)",
+          "oklch(80% 0.0097 273.35)",
+          "oklch(95% 0.0097 273.35)"
+        ]
       },
-      "light-info": {
+      "light-seg-thumb": {
         "role": "neutral",
-        "displayName": "暖白浅色 · info"
+        "displayName": "浅色 · seg-thumb",
+        "tonalRamp": [
+          "oklch(15% 0.0000 0.00)",
+          "oklch(25% 0.0000 0.00)",
+          "oklch(35% 0.0000 0.00)",
+          "oklch(45% 0.0000 0.00)",
+          "oklch(55% 0.0000 0.00)",
+          "oklch(65% 0.0000 0.00)",
+          "oklch(80% 0.0000 0.00)",
+          "oklch(95% 0.0000 0.00)"
+        ]
       },
-      "light-info-hover": {
-        "role": "neutral",
-        "displayName": "暖白浅色 · info-hover"
+      "light-status-online": {
+        "role": "semantic",
+        "displayName": "浅色 · status-online",
+        "tonalRamp": [
+          "oklch(15% 0.1224 150.74)",
+          "oklch(25% 0.1224 150.74)",
+          "oklch(35% 0.1224 150.74)",
+          "oklch(45% 0.1224 150.74)",
+          "oklch(55% 0.1224 150.74)",
+          "oklch(65% 0.1224 150.74)",
+          "oklch(80% 0.1224 150.74)",
+          "oklch(95% 0.1224 150.74)"
+        ]
       },
-      "light-info-soft": {
+      "light-warning": {
+        "role": "semantic",
+        "displayName": "浅色 · warning",
+        "tonalRamp": [
+          "oklch(15% 0.1618 62.68)",
+          "oklch(25% 0.1618 62.68)",
+          "oklch(35% 0.1618 62.68)",
+          "oklch(45% 0.1618 62.68)",
+          "oklch(55% 0.1618 62.68)",
+          "oklch(65% 0.1618 62.68)",
+          "oklch(80% 0.1618 62.68)",
+          "oklch(95% 0.1618 62.68)"
+        ]
+      },
+      "light-phase-drying": {
+        "role": "semantic",
+        "displayName": "浅色 · phase-drying",
+        "tonalRamp": [
+          "oklch(15% 0.2177 257.42)",
+          "oklch(25% 0.2177 257.42)",
+          "oklch(35% 0.2177 257.42)",
+          "oklch(45% 0.2177 257.42)",
+          "oklch(55% 0.2177 257.42)",
+          "oklch(65% 0.2177 257.42)",
+          "oklch(80% 0.2177 257.42)",
+          "oklch(95% 0.2177 257.42)"
+        ]
+      },
+      "light-phase-maillard": {
+        "role": "semantic",
+        "displayName": "浅色 · phase-maillard",
+        "tonalRamp": [
+          "oklch(15% 0.1455 49.00)",
+          "oklch(25% 0.1455 49.00)",
+          "oklch(35% 0.1455 49.00)",
+          "oklch(45% 0.1455 49.00)",
+          "oklch(55% 0.1455 49.00)",
+          "oklch(65% 0.1455 49.00)",
+          "oklch(80% 0.1455 49.00)",
+          "oklch(95% 0.1455 49.00)"
+        ]
+      },
+      "light-phase-development": {
+        "role": "semantic",
+        "displayName": "浅色 · phase-development",
+        "tonalRamp": [
+          "oklch(15% 0.2321 28.66)",
+          "oklch(25% 0.2321 28.66)",
+          "oklch(35% 0.2321 28.66)",
+          "oklch(45% 0.2321 28.66)",
+          "oklch(55% 0.2321 28.66)",
+          "oklch(65% 0.2321 28.66)",
+          "oklch(80% 0.2321 28.66)",
+          "oklch(95% 0.2321 28.66)"
+        ]
+      },
+      "light-phase-cooling": {
+        "role": "semantic",
+        "displayName": "浅色 · phase-cooling",
+        "tonalRamp": [
+          "oklch(15% 0.0073 286.19)",
+          "oklch(25% 0.0073 286.19)",
+          "oklch(35% 0.0073 286.19)",
+          "oklch(45% 0.0073 286.19)",
+          "oklch(55% 0.0073 286.19)",
+          "oklch(65% 0.0073 286.19)",
+          "oklch(80% 0.0073 286.19)",
+          "oklch(95% 0.0073 286.19)"
+        ]
+      },
+      "light-chart-grid": {
+        "role": "semantic",
+        "displayName": "浅色 · chart-grid",
+        "tonalRamp": [
+          "oklch(15% 0.0113 269.54)",
+          "oklch(25% 0.0113 269.54)",
+          "oklch(35% 0.0113 269.54)",
+          "oklch(45% 0.0113 269.54)",
+          "oklch(55% 0.0113 269.54)",
+          "oklch(65% 0.0113 269.54)",
+          "oklch(80% 0.0113 269.54)",
+          "oklch(95% 0.0113 269.54)"
+        ]
+      },
+      "light-chart-tick": {
+        "role": "semantic",
+        "displayName": "浅色 · chart-tick",
+        "tonalRamp": [
+          "oklch(15% 0.0182 277.45)",
+          "oklch(25% 0.0182 277.45)",
+          "oklch(35% 0.0182 277.45)",
+          "oklch(45% 0.0182 277.45)",
+          "oklch(55% 0.0182 277.45)",
+          "oklch(65% 0.0182 277.45)",
+          "oklch(80% 0.0182 277.45)",
+          "oklch(95% 0.0182 277.45)"
+        ]
+      },
+      "light-chart-legend": {
+        "role": "semantic",
+        "displayName": "浅色 · chart-legend",
+        "tonalRamp": [
+          "oklch(15% 0.0000 0.00)",
+          "oklch(25% 0.0000 0.00)",
+          "oklch(35% 0.0000 0.00)",
+          "oklch(45% 0.0000 0.00)",
+          "oklch(55% 0.0000 0.00)",
+          "oklch(65% 0.0000 0.00)",
+          "oklch(80% 0.0000 0.00)",
+          "oklch(95% 0.0000 0.00)"
+        ]
+      },
+      "light-chart-temp": {
+        "role": "semantic",
+        "displayName": "浅色 · chart-temp",
+        "tonalRamp": [
+          "oklch(15% 0.1253 48.07)",
+          "oklch(25% 0.1253 48.07)",
+          "oklch(35% 0.1253 48.07)",
+          "oklch(45% 0.1253 48.07)",
+          "oklch(55% 0.1253 48.07)",
+          "oklch(65% 0.1253 48.07)",
+          "oklch(80% 0.1253 48.07)",
+          "oklch(95% 0.1253 48.07)"
+        ]
+      },
+      "light-chart-setpoint": {
+        "role": "semantic",
+        "displayName": "浅色 · chart-setpoint",
+        "tonalRamp": [
+          "oklch(15% 0.1929 257.11)",
+          "oklch(25% 0.1929 257.11)",
+          "oklch(35% 0.1929 257.11)",
+          "oklch(45% 0.1929 257.11)",
+          "oklch(55% 0.1929 257.11)",
+          "oklch(65% 0.1929 257.11)",
+          "oklch(80% 0.1929 257.11)",
+          "oklch(95% 0.1929 257.11)"
+        ]
+      },
+      "light-chart-target": {
+        "role": "semantic",
+        "displayName": "浅色 · chart-target",
+        "tonalRamp": [
+          "oklch(15% 0.0073 286.19)",
+          "oklch(25% 0.0073 286.19)",
+          "oklch(35% 0.0073 286.19)",
+          "oklch(45% 0.0073 286.19)",
+          "oklch(55% 0.0073 286.19)",
+          "oklch(65% 0.0073 286.19)",
+          "oklch(80% 0.0073 286.19)",
+          "oklch(95% 0.0073 286.19)"
+        ]
+      },
+      "light-chart-target-fill": {
+        "role": "semantic",
+        "displayName": "浅色 · chart-target-fill",
+        "tonalRamp": [
+          "oklch(15% 0.0121 286.01 / 0.1)",
+          "oklch(25% 0.0121 286.01 / 0.1)",
+          "oklch(35% 0.0121 286.01 / 0.1)",
+          "oklch(45% 0.0121 286.01 / 0.1)",
+          "oklch(55% 0.0121 286.01 / 0.1)",
+          "oklch(65% 0.0121 286.01 / 0.1)",
+          "oklch(80% 0.0121 286.01 / 0.1)",
+          "oklch(95% 0.0121 286.01 / 0.1)"
+        ]
+      },
+      "light-chart-ror": {
+        "role": "semantic",
+        "displayName": "浅色 · chart-ror",
+        "tonalRamp": [
+          "oklch(15% 0.1035 155.76)",
+          "oklch(25% 0.1035 155.76)",
+          "oklch(35% 0.1035 155.76)",
+          "oklch(45% 0.1035 155.76)",
+          "oklch(55% 0.1035 155.76)",
+          "oklch(65% 0.1035 155.76)",
+          "oklch(80% 0.1035 155.76)",
+          "oklch(95% 0.1035 155.76)"
+        ]
+      },
+      "light-chart-ror-fill": {
+        "role": "semantic",
+        "displayName": "浅色 · chart-ror-fill",
+        "tonalRamp": [
+          "oklch(15% 0.1330 155.34 / 0.09)",
+          "oklch(25% 0.1330 155.34 / 0.09)",
+          "oklch(35% 0.1330 155.34 / 0.09)",
+          "oklch(45% 0.1330 155.34 / 0.09)",
+          "oklch(55% 0.1330 155.34 / 0.09)",
+          "oklch(65% 0.1330 155.34 / 0.09)",
+          "oklch(80% 0.1330 155.34 / 0.09)",
+          "oklch(95% 0.1330 155.34 / 0.09)"
+        ]
+      },
+      "light-chart-ror-preview": {
+        "role": "semantic",
+        "displayName": "浅色 · chart-ror-preview",
+        "tonalRamp": [
+          "oklch(15% 0.1018 158.93)",
+          "oklch(25% 0.1018 158.93)",
+          "oklch(35% 0.1018 158.93)",
+          "oklch(45% 0.1018 158.93)",
+          "oklch(55% 0.1018 158.93)",
+          "oklch(65% 0.1018 158.93)",
+          "oklch(80% 0.1018 158.93)",
+          "oklch(95% 0.1018 158.93)"
+        ]
+      },
+      "light-chart-projection": {
+        "role": "semantic",
+        "displayName": "浅色 · chart-projection",
+        "tonalRamp": [
+          "oklch(15% 0.1799 49.79 / 0.48)",
+          "oklch(25% 0.1799 49.79 / 0.48)",
+          "oklch(35% 0.1799 49.79 / 0.48)",
+          "oklch(45% 0.1799 49.79 / 0.48)",
+          "oklch(55% 0.1799 49.79 / 0.48)",
+          "oklch(65% 0.1799 49.79 / 0.48)",
+          "oklch(80% 0.1799 49.79 / 0.48)",
+          "oklch(95% 0.1799 49.79 / 0.48)"
+        ]
+      },
+      "light-chart-y1-tick": {
+        "role": "semantic",
+        "displayName": "浅色 · chart-y1-tick",
+        "tonalRamp": [
+          "oklch(15% 0.1330 155.34)",
+          "oklch(25% 0.1330 155.34)",
+          "oklch(35% 0.1330 155.34)",
+          "oklch(45% 0.1330 155.34)",
+          "oklch(55% 0.1330 155.34)",
+          "oklch(65% 0.1330 155.34)",
+          "oklch(80% 0.1330 155.34)",
+          "oklch(95% 0.1330 155.34)"
+        ]
+      },
+      "light-chart-compare-a": {
+        "role": "semantic",
+        "displayName": "浅色 · chart-compare-a",
+        "tonalRamp": [
+          "oklch(15% 0.1847 48.15)",
+          "oklch(25% 0.1847 48.15)",
+          "oklch(35% 0.1847 48.15)",
+          "oklch(45% 0.1847 48.15)",
+          "oklch(55% 0.1847 48.15)",
+          "oklch(65% 0.1847 48.15)",
+          "oklch(80% 0.1847 48.15)",
+          "oklch(95% 0.1847 48.15)"
+        ]
+      },
+      "light-chart-compare-b": {
+        "role": "semantic",
+        "displayName": "浅色 · chart-compare-b",
+        "tonalRamp": [
+          "oklch(15% 0.2569 322.90)",
+          "oklch(25% 0.2569 322.90)",
+          "oklch(35% 0.2569 322.90)",
+          "oklch(45% 0.2569 322.90)",
+          "oklch(55% 0.2569 322.90)",
+          "oklch(65% 0.2569 322.90)",
+          "oklch(80% 0.2569 322.90)",
+          "oklch(95% 0.2569 322.90)"
+        ]
+      },
+      "light-chart-event-label-bg": {
+        "role": "semantic",
+        "displayName": "浅色 · chart-event-label-bg",
+        "tonalRamp": [
+          "oklch(15% 0.0000 0.00 / 0.92)",
+          "oklch(25% 0.0000 0.00 / 0.92)",
+          "oklch(35% 0.0000 0.00 / 0.92)",
+          "oklch(45% 0.0000 0.00 / 0.92)",
+          "oklch(55% 0.0000 0.00 / 0.92)",
+          "oklch(65% 0.0000 0.00 / 0.92)",
+          "oklch(80% 0.0000 0.00 / 0.92)",
+          "oklch(95% 0.0000 0.00 / 0.92)"
+        ]
+      },
+      "light-chart-tooltip-bg": {
+        "role": "semantic",
+        "displayName": "浅色 · chart-tooltip-bg",
+        "tonalRamp": [
+          "oklch(15% 0.0000 0.00 / 0.97)",
+          "oklch(25% 0.0000 0.00 / 0.97)",
+          "oklch(35% 0.0000 0.00 / 0.97)",
+          "oklch(45% 0.0000 0.00 / 0.97)",
+          "oklch(55% 0.0000 0.00 / 0.97)",
+          "oklch(65% 0.0000 0.00 / 0.97)",
+          "oklch(80% 0.0000 0.00 / 0.97)",
+          "oklch(95% 0.0000 0.00 / 0.97)"
+        ]
+      },
+      "light-chart-tooltip-border": {
+        "role": "semantic",
+        "displayName": "浅色 · chart-tooltip-border",
+        "tonalRamp": [
+          "oklch(15% 0.0000 0.00 / 0.1)",
+          "oklch(25% 0.0000 0.00 / 0.1)",
+          "oklch(35% 0.0000 0.00 / 0.1)",
+          "oklch(45% 0.0000 0.00 / 0.1)",
+          "oklch(55% 0.0000 0.00 / 0.1)",
+          "oklch(65% 0.0000 0.00 / 0.1)",
+          "oklch(80% 0.0000 0.00 / 0.1)",
+          "oklch(95% 0.0000 0.00 / 0.1)"
+        ]
+      },
+      "light-chart-tooltip-text": {
+        "role": "semantic",
+        "displayName": "浅色 · chart-tooltip-text",
+        "tonalRamp": [
+          "oklch(15% 0.0038 286.10)",
+          "oklch(25% 0.0038 286.10)",
+          "oklch(35% 0.0038 286.10)",
+          "oklch(45% 0.0038 286.10)",
+          "oklch(55% 0.0038 286.10)",
+          "oklch(65% 0.0038 286.10)",
+          "oklch(80% 0.0038 286.10)",
+          "oklch(95% 0.0038 286.10)"
+        ]
+      },
+      "light-event-charge": {
+        "role": "semantic",
+        "displayName": "浅色 · event-charge",
+        "tonalRamp": [
+          "oklch(15% 0.1699 149.21)",
+          "oklch(25% 0.1699 149.21)",
+          "oklch(35% 0.1699 149.21)",
+          "oklch(45% 0.1699 149.21)",
+          "oklch(55% 0.1699 149.21)",
+          "oklch(65% 0.1699 149.21)",
+          "oklch(80% 0.1699 149.21)",
+          "oklch(95% 0.1699 149.21)"
+        ]
+      },
+      "light-event-yellowing": {
+        "role": "semantic",
+        "displayName": "浅色 · event-yellowing",
+        "tonalRamp": [
+          "oklch(15% 0.1574 58.32)",
+          "oklch(25% 0.1574 58.32)",
+          "oklch(35% 0.1574 58.32)",
+          "oklch(45% 0.1574 58.32)",
+          "oklch(55% 0.1574 58.32)",
+          "oklch(65% 0.1574 58.32)",
+          "oklch(80% 0.1574 58.32)",
+          "oklch(95% 0.1574 58.32)"
+        ]
+      },
+      "light-event-first-crack": {
+        "role": "semantic",
+        "displayName": "浅色 · event-first-crack",
+        "tonalRamp": [
+          "oklch(15% 0.2152 27.33)",
+          "oklch(25% 0.2152 27.33)",
+          "oklch(35% 0.2152 27.33)",
+          "oklch(45% 0.2152 27.33)",
+          "oklch(55% 0.2152 27.33)",
+          "oklch(65% 0.2152 27.33)",
+          "oklch(80% 0.2152 27.33)",
+          "oklch(95% 0.2152 27.33)"
+        ]
+      },
+      "light-event-second-crack": {
+        "role": "semantic",
+        "displayName": "浅色 · event-second-crack",
+        "tonalRamp": [
+          "oklch(15% 0.2525 302.32)",
+          "oklch(25% 0.2525 302.32)",
+          "oklch(35% 0.2525 302.32)",
+          "oklch(45% 0.2525 302.32)",
+          "oklch(55% 0.2525 302.32)",
+          "oklch(65% 0.2525 302.32)",
+          "oklch(80% 0.2525 302.32)",
+          "oklch(95% 0.2525 302.32)"
+        ]
+      },
+      "light-event-drop": {
+        "role": "semantic",
+        "displayName": "浅色 · event-drop",
+        "tonalRamp": [
+          "oklch(15% 0.2152 262.88)",
+          "oklch(25% 0.2152 262.88)",
+          "oklch(35% 0.2152 262.88)",
+          "oklch(45% 0.2152 262.88)",
+          "oklch(55% 0.2152 262.88)",
+          "oklch(65% 0.2152 262.88)",
+          "oklch(80% 0.2152 262.88)",
+          "oklch(95% 0.2152 262.88)"
+        ]
+      },
+      "light-event-tp": {
+        "role": "semantic",
+        "displayName": "浅色 · event-tp",
+        "tonalRamp": [
+          "oklch(15% 0.1038 184.70)",
+          "oklch(25% 0.1038 184.70)",
+          "oklch(35% 0.1038 184.70)",
+          "oklch(45% 0.1038 184.70)",
+          "oklch(55% 0.1038 184.70)",
+          "oklch(65% 0.1038 184.70)",
+          "oklch(80% 0.1038 184.70)",
+          "oklch(95% 0.1038 184.70)"
+        ]
+      },
+      "light-delta-good": {
+        "role": "semantic",
+        "displayName": "浅色 · delta-good",
+        "tonalRamp": [
+          "oklch(15% 0.1699 149.21)",
+          "oklch(25% 0.1699 149.21)",
+          "oklch(35% 0.1699 149.21)",
+          "oklch(45% 0.1699 149.21)",
+          "oklch(55% 0.1699 149.21)",
+          "oklch(65% 0.1699 149.21)",
+          "oklch(80% 0.1699 149.21)",
+          "oklch(95% 0.1699 149.21)"
+        ]
+      },
+      "light-delta-warn": {
+        "role": "semantic",
+        "displayName": "浅色 · delta-warn",
+        "tonalRamp": [
+          "oklch(15% 0.1943 41.12)",
+          "oklch(25% 0.1943 41.12)",
+          "oklch(35% 0.1943 41.12)",
+          "oklch(45% 0.1943 41.12)",
+          "oklch(55% 0.1943 41.12)",
+          "oklch(65% 0.1943 41.12)",
+          "oklch(80% 0.1943 41.12)",
+          "oklch(95% 0.1943 41.12)"
+        ]
+      },
+      "light-delta-info": {
+        "role": "semantic",
+        "displayName": "浅色 · delta-info",
+        "tonalRamp": [
+          "oklch(15% 0.2152 262.88)",
+          "oklch(25% 0.2152 262.88)",
+          "oklch(35% 0.2152 262.88)",
+          "oklch(45% 0.2152 262.88)",
+          "oklch(55% 0.2152 262.88)",
+          "oklch(65% 0.2152 262.88)",
+          "oklch(80% 0.2152 262.88)",
+          "oklch(95% 0.2152 262.88)"
+        ]
+      },
+      "light-editor-curve": {
+        "role": "semantic",
+        "displayName": "浅色 · editor-curve",
+        "tonalRamp": [
+          "oklch(15% 0.0234 264.36)",
+          "oklch(25% 0.0234 264.36)",
+          "oklch(35% 0.0234 264.36)",
+          "oklch(45% 0.0234 264.36)",
+          "oklch(55% 0.0234 264.36)",
+          "oklch(65% 0.0234 264.36)",
+          "oklch(80% 0.0234 264.36)",
+          "oklch(95% 0.0234 264.36)"
+        ]
+      },
+      "light-editor-node": {
+        "role": "semantic",
+        "displayName": "浅色 · editor-node",
+        "tonalRamp": [
+          "oklch(15% 0.1574 58.32)",
+          "oklch(25% 0.1574 58.32)",
+          "oklch(35% 0.1574 58.32)",
+          "oklch(45% 0.1574 58.32)",
+          "oklch(55% 0.1574 58.32)",
+          "oklch(65% 0.1574 58.32)",
+          "oklch(80% 0.1574 58.32)",
+          "oklch(95% 0.1574 58.32)"
+        ]
+      },
+      "light-editor-node-hover": {
+        "role": "semantic",
+        "displayName": "浅色 · editor-node-hover",
+        "tonalRamp": [
+          "oklch(15% 0.0038 286.10)",
+          "oklch(25% 0.0038 286.10)",
+          "oklch(35% 0.0038 286.10)",
+          "oklch(45% 0.0038 286.10)",
+          "oklch(55% 0.0038 286.10)",
+          "oklch(65% 0.0038 286.10)",
+          "oklch(80% 0.0038 286.10)",
+          "oklch(95% 0.0038 286.10)"
+        ]
+      },
+      "light-primary-active": {
+        "role": "primary",
+        "displayName": "浅色 · 操作蓝按下",
+        "tonalRamp": [
+          "oklch(15% 0.1711 261.25)",
+          "oklch(25% 0.1711 261.25)",
+          "oklch(35% 0.1711 261.25)",
+          "oklch(45% 0.1711 261.25)",
+          "oklch(55% 0.1711 261.25)",
+          "oklch(65% 0.1711 261.25)",
+          "oklch(80% 0.1711 261.25)",
+          "oklch(95% 0.1711 261.25)"
+        ]
+      },
+      "light-mc-text-color-main": {
         "role": "neutral",
-        "displayName": "暖白浅色 · info-soft"
+        "displayName": "浅色 · mc-text-color-main",
+        "tonalRamp": [
+          "oklch(15% 0.0000 0.00)",
+          "oklch(25% 0.0000 0.00)",
+          "oklch(35% 0.0000 0.00)",
+          "oklch(45% 0.0000 0.00)",
+          "oklch(55% 0.0000 0.00)",
+          "oklch(65% 0.0000 0.00)",
+          "oklch(80% 0.0000 0.00)",
+          "oklch(95% 0.0000 0.00)"
+        ]
+      },
+      "light-mc-bg-color-panel": {
+        "role": "neutral",
+        "displayName": "浅色 · mc-bg-color-panel",
+        "tonalRamp": [
+          "oklch(15% 0.0000 0.00)",
+          "oklch(25% 0.0000 0.00)",
+          "oklch(35% 0.0000 0.00)",
+          "oklch(45% 0.0000 0.00)",
+          "oklch(55% 0.0000 0.00)",
+          "oklch(65% 0.0000 0.00)",
+          "oklch(80% 0.0000 0.00)",
+          "oklch(95% 0.0000 0.00)"
+        ]
+      },
+      "light-mc-bg-color-card": {
+        "role": "neutral",
+        "displayName": "浅色 · mc-bg-color-card",
+        "tonalRamp": [
+          "oklch(15% 0.0054 274.97)",
+          "oklch(25% 0.0054 274.97)",
+          "oklch(35% 0.0054 274.97)",
+          "oklch(45% 0.0054 274.97)",
+          "oklch(55% 0.0054 274.97)",
+          "oklch(65% 0.0054 274.97)",
+          "oklch(80% 0.0054 274.97)",
+          "oklch(95% 0.0054 274.97)"
+        ]
+      },
+      "light-mc-button-border-color": {
+        "role": "neutral",
+        "displayName": "浅色 · mc-button-border-color",
+        "tonalRamp": [
+          "oklch(15% 0.0186 274.62)",
+          "oklch(25% 0.0186 274.62)",
+          "oklch(35% 0.0186 274.62)",
+          "oklch(45% 0.0186 274.62)",
+          "oklch(55% 0.0186 274.62)",
+          "oklch(65% 0.0186 274.62)",
+          "oklch(80% 0.0186 274.62)",
+          "oklch(95% 0.0186 274.62)"
+        ]
+      },
+      "light-mc-color-b11": {
+        "role": "primary",
+        "displayName": "浅色 · mc-color-b11",
+        "tonalRamp": [
+          "oklch(15% 0.2273 261.70)",
+          "oklch(25% 0.2273 261.70)",
+          "oklch(35% 0.2273 261.70)",
+          "oklch(45% 0.2273 261.70)",
+          "oklch(55% 0.2273 261.70)",
+          "oklch(65% 0.2273 261.70)",
+          "oklch(80% 0.2273 261.70)",
+          "oklch(95% 0.2273 261.70)"
+        ]
       }
     },
     "typographyMeta": {
       "display": {
         "displayName": "display",
-        "purpose": "主要实时读数"
+        "purpose": "常规实时读数。"
       },
       "delta": {
         "displayName": "delta",
-        "purpose": "偏差读数"
+        "purpose": "目标偏差读数。"
       },
       "display-compact": {
         "displayName": "display-compact",
-        "purpose": "紧凑桌面和宽屏停靠"
+        "purpose": "1024–1279px 紧凑读数。"
       },
-      "delta-compact": {
-        "displayName": "delta-compact",
-        "purpose": "紧凑偏差"
+      "display-tablet": {
+        "displayName": "display-tablet",
+        "purpose": "≤1023px 较窄布局读数。"
       },
       "display-mobile": {
         "displayName": "display-mobile",
-        "purpose": "移动窄屏读数"
+        "purpose": "≤600px 双列读数。"
       },
       "headline": {
         "displayName": "headline",
-        "purpose": "管理标题"
+        "purpose": "工作区标题和欢迎标题。"
       },
       "title": {
         "displayName": "title",
-        "purpose": "图表与分组"
-      },
-      "chat-title": {
-        "displayName": "chat-title",
-        "purpose": "简约聊天标题"
-      },
-      "welcome": {
-        "displayName": "welcome",
-        "purpose": "欢迎标题"
-      },
-      "welcome-mobile": {
-        "displayName": "welcome-mobile",
-        "purpose": "手机欢迎标题"
+        "purpose": "面板标题和工作区上下文。"
       },
       "body": {
         "displayName": "body",
-        "purpose": "普通正文"
+        "purpose": "常规正文与表单内容。"
       },
       "reading": {
         "displayName": "reading",
-        "purpose": "聊天阅读正文"
+        "purpose": "AI 长消息与阅读内容，最大 72ch。"
       },
       "input-reading": {
         "displayName": "input-reading",
-        "purpose": "AI输入"
+        "purpose": "AI 输入正文。"
       },
       "label": {
         "displayName": "label",
-        "purpose": "导航、图例、事件与署名"
+        "purpose": "可读的控件标签与状态。"
       },
-      "legacy-annotation": {
-        "displayName": "legacy-annotation",
-        "purpose": "既有局部辅助标注，不作为正文或关键操作尺寸"
+      "annotation": {
+        "displayName": "annotation",
+        "purpose": "已有技术注释和图表辅助内容下限，不用于主操作。"
       },
       "button": {
         "displayName": "button",
-        "purpose": "标准控件"
+        "purpose": "常规平面按钮。"
       },
       "number": {
         "displayName": "number",
-        "purpose": "等宽数字特性"
+        "purpose": "等宽数字特性，沿用 MiSans。"
       }
     },
     "shadows": [
       {
-        "name": "key-shadow",
-        "value": "0 1px 0 var(--border), 0 3px 5px var(--key-shade), inset 0 1px 0 var(--key-highlight)",
-        "purpose": "标准可操作控件的有限下沿、软阴影和细顶光。"
+        "name": "flat",
+        "value": "none",
+        "purpose": "普通卡片、按钮、数字、滑块和内凹上边缘。"
       },
       {
-        "name": "key-highlight-dark",
-        "value": "color-mix(in srgb, var(--text) 12%, transparent)",
-        "purpose": "深色细顶光。"
+        "name": "pop-dark",
+        "value": "0 16px 48px rgba(0,0,0,.4)",
+        "purpose": "深色悬浮 AI、菜单、提示和对话层。"
       },
       {
-        "name": "key-highlight-light",
-        "value": "color-mix(in srgb, var(--surface) 92%, transparent)",
-        "purpose": "浅色细顶光。"
-      },
-      {
-        "name": "key-shade-dark",
-        "value": "color-mix(in srgb, var(--bg) 74%, transparent)",
-        "purpose": "深色控件软阴影。"
-      },
-      {
-        "name": "key-shade-light",
-        "value": "color-mix(in srgb, var(--text) 10%, transparent)",
-        "purpose": "浅色控件软阴影。"
-      },
-      {
-        "name": "key-pressed",
-        "value": "inset 0 2px 3px var(--key-shade), 0 1px 0 var(--key-highlight)",
-        "purpose": "按下收拢深度。"
-      },
-      {
-        "name": "composer-inset",
-        "value": "inset 0 1px 3px var(--key-shade)",
-        "purpose": "单一内嵌输入区。"
-      },
-      {
-        "name": "emergency-edge",
-        "value": "inset 0 1px 0 var(--key-highlight), 0 2px 3px var(--key-shade)",
-        "purpose": "急停另有3px下边界；不推广为内容卡片阴影。"
-      },
-      {
-        "name": "shadow-card-dark",
-        "value": "0 1px 2px rgba(0, 0, 0, 0.22), 0 12px 30px rgba(0, 0, 0, 0.2)",
-        "purpose": "有限独立控件；常规内容面保持平面。"
-      },
-      {
-        "name": "shadow-pop-dark",
-        "value": "0 24px 70px rgba(0, 0, 0, 0.48)",
-        "purpose": "菜单、历史与抽屉浮层。"
-      },
-      {
-        "name": "shadow-thumb-dark",
-        "value": "0 1px 3px rgba(0, 0, 0, 0.5), 0 0 0 0.5px rgba(0, 0, 0, 0.2)",
-        "purpose": "分段选择器。"
-      },
-      {
-        "name": "shadow-card-light",
-        "value": "0 1px 2px rgba(52, 45, 36, 0.04), 0 10px 30px rgba(52, 45, 36, 0.06)",
-        "purpose": "有限独立控件；常规内容面保持平面。"
-      },
-      {
-        "name": "shadow-pop-light",
-        "value": "0 24px 70px rgba(52, 45, 36, 0.18)",
-        "purpose": "菜单、历史与抽屉浮层。"
-      },
-      {
-        "name": "shadow-thumb-light",
-        "value": "0 1px 3px rgba(0, 0, 0, 0.18), 0 0 0 0.5px rgba(0, 0, 0, 0.04)",
-        "purpose": "分段选择器。"
+        "name": "pop-light",
+        "value": "0 16px 48px rgba(20,25,40,.16)",
+        "purpose": "浅色悬浮 AI、菜单、提示和对话层。"
       }
     ],
     "motion": [
       {
-        "name": "ease-apple",
-        "value": "cubic-bezier(0.32, 0.72, 0, 1)",
-        "purpose": "空间状态变化。"
+        "name": "button-state",
+        "value": "150ms ease",
+        "purpose": "按钮的颜色、背景、边界和透明度反馈，无位移或缩放。"
       },
       {
-        "name": "ease-apple-fast",
-        "value": "cubic-bezier(0.4, 0, 0.2, 1)",
-        "purpose": "控件反馈。"
+        "name": "region-duration",
+        "value": "200ms",
+        "purpose": "区域进入和反向退出；只绑定已确认区域。"
       },
       {
-        "name": "tactile-control",
-        "value": "120ms",
-        "purpose": "标准控件反馈。"
+        "name": "ease-mhub",
+        "value": "cubic-bezier(.43,.77,.16,1)",
+        "purpose": "区域与短暂主题颜色过渡。"
       },
       {
-        "name": "press-travel",
-        "value": "translateY(1px)",
-        "purpose": "标准按钮和事件按钮。"
+        "name": "sidebar",
+        "value": "translateY(100%) → translateY(0)",
+        "purpose": "首屏任务导航。"
       },
       {
-        "name": "emergency-press",
-        "value": "scale(.97)",
-        "purpose": "当前急停局部实现，不作为通用规则。"
+        "name": "header",
+        "value": "translateY(-100%) → translateY(0)",
+        "purpose": "首屏侧栏产品身份。"
       },
       {
-        "name": "duration-fast",
-        "value": "160ms",
-        "purpose": "既有短反馈。"
+        "name": "tab",
+        "value": "translateX(100%) → translateX(0)",
+        "purpose": "AI 面板进入／退出。"
       },
       {
-        "name": "duration-med",
-        "value": "240ms",
-        "purpose": "主题颜色过渡。"
+        "name": "content",
+        "value": "opacity 0 → 1; scale(1.25) → scale(1)",
+        "purpose": "管理工作区与普通弹层，含 canvas 的弹层跳过。"
       },
       {
-        "name": "theme-window",
-        "value": "280ms",
-        "purpose": "仅主动主题切换，减少动效时跳过。"
+        "name": "mouseKey",
+        "value": "translateX(calc(-100% - 60px)) → translateX(0)",
+        "purpose": "可复用类型，当前无页面绑定。"
+      },
+      {
+        "name": "footer",
+        "value": "below viewport → translateY(0)",
+        "purpose": "可复用类型，不绑定安全底栏。"
+      },
+      {
+        "name": "up",
+        "value": "translateY(20px) → translateY(0); opacity 0 → 1",
+        "purpose": "AI 菜单、附件菜单和设置任务内容。"
+      },
+      {
+        "name": "batch",
+        "value": "5",
+        "purpose": "每次最多处理五个区域任务。"
+      },
+      {
+        "name": "idle-timeout",
+        "value": "40ms",
+        "purpose": "requestIdleCallback 超时。"
+      },
+      {
+        "name": "timer-fallback",
+        "value": "20ms",
+        "purpose": "不支持空闲调度时的回退间隔。"
+      },
+      {
+        "name": "lifecycle",
+        "value": "Promise; cancel previous; clear WAAPI effect; pause/resume",
+        "purpose": "页面隐藏暂停／返回恢复、目标重复先取消、完成后移除效果；快速切换与 AI 重开守护最后意图。"
       },
       {
         "name": "reduced-motion",
-        "value": "prefers-reduced-motion: reduce",
-        "purpose": "取消非必要过渡，状态即时更新。"
+        "value": "finish immediately",
+        "purpose": "减少动效时直接完成视觉状态；安全、实时／编辑曲线始终稳定。"
       }
     ],
     "breakpoints": [
       {
-        "name": "drawer",
-        "value": "min-width: 1280px",
-        "purpose": "520px普通抽屉。"
+        "name": "ai-side-by-side-min",
+        "value": "1600px"
       },
       {
-        "name": "docked",
-        "value": "min-width: 1600px",
-        "purpose": "未放大聊天预留544px。"
+        "name": "compact-rail-min",
+        "value": "1024px"
       },
       {
-        "name": "navigation",
-        "value": "max-width: 1023px",
-        "purpose": "横向主导航。"
+        "name": "compact-rail-max",
+        "value": "1279px"
       },
       {
-        "name": "mobile",
-        "value": "max-width: 600px",
-        "purpose": "两列读数、三列事件。"
+        "name": "horizontal-tasks-max",
+        "value": "1023px"
       },
       {
-        "name": "landscape",
-        "value": "max-height: 480px and min-width: 600px",
-        "purpose": "阅读和输入左右分区。"
+        "name": "editor-stack-max",
+        "value": "820px"
       },
       {
-        "name": "workspace-stack",
-        "value": "container workspace max-width: 840px",
-        "purpose": "按实际工作区与UI缩放堆叠。"
+        "name": "settings-stack-max",
+        "value": "700px"
       },
       {
-        "name": "workspace-narrow",
-        "value": "container workspace max-width: 540px",
-        "purpose": "两列读数、三列事件。"
+        "name": "phone-max",
+        "value": "600px"
       },
       {
-        "name": "workspace-short",
-        "value": "container workspace max-height: 540px",
-        "purpose": "桌面曲线最小380px并滚动。"
+        "name": "workspace-stack-container",
+        "value": "840px"
+      },
+      {
+        "name": "workspace-two-readouts-container",
+        "value": "540px"
+      },
+      {
+        "name": "workspace-short-container",
+        "value": "540px height"
+      },
+      {
+        "name": "ai-landscape",
+        "value": "max-height:480px and min-width:600px"
       }
-    ],
-    "paletteSource": {
-      "path": "desktop/tools/theme-palettes.mjs",
-      "generated": "roaster/static/css/theme.css",
-      "default": "graphite",
-      "modes": [
-        "dark",
-        "light",
-        "auto"
-      ],
-      "palettes": [
-        "classic",
-        "sage",
-        "sand",
-        "ocean",
-        "plum",
-        "graphite"
-      ],
-      "migration": "roaster.appearance.3.29：仅一次把缺省或classic迁移到graphite，保留其他配色选择。"
-    },
-    "sourceOrder": [
-      "roaster/static/css/theme.css",
-      "roaster/static/css/style.css or editor.css",
-      "roaster/static/css/ai.css",
-      "roaster/static/css/atlas.css",
-      "roaster/static/css/instrument.css"
-    ],
-    "geometry": {
-      "scope": "主应用；编辑器保留自己的画布与模态几何",
-      "navigation": "92px",
-      "header": "64px",
-      "footer": "64px",
-      "roastColumn": "296px",
-      "compactRoastColumn": "272px",
-      "drawer": "520px",
-      "dockReservation": "544px",
-      "readingMeasure": "72ch",
-      "landscape": "阅读、上下文及移除、输入、发送与安全入口保持可达"
-    },
-    "localAI": {
-      "ownership": "账户和会话保存在本机",
-      "restore": "保存账户与会话自动恢复，启动不打开授权页面",
-      "browser": "仅本页明确发起且匹配已知登录标识的请求可以自动打开系统默认浏览器；恢复中的授权提供继续按钮",
-      "controls": "头部：历史、新对话、更多、关闭；输入区：附件、模型/账户菜单、发送/停止",
-      "safety": "proposal-only；预览、采用草稿、保存、应用保持明确步骤"
-    },
-    "evidence": {
-      "source": "3.29 final shared cascade",
-      "direction": ".impeccable/surfaces/roaster-static-index-html.md",
-      "seed": "3329047aed8ff09d",
-      "native": [
-        "desktop/build/qa/instrument-v3.29/native/native-roast.png",
-        "desktop/build/qa/instrument-v3.29/native/native-chat.png",
-        "desktop/build/qa/instrument-v3.29/native/native-chat-dark.png",
-        "desktop/build/qa/instrument-v3.29/native/native-expanded.png"
-      ],
-      "limits": "界面截图不等同于真实订阅授权或硬件验证；本轮无新增栅格资产。"
-    },
-    "notCanonized": "旧蓝底、纯黑白石墨、364px聊天、聊天22px与急停12px圆角、通用缩放按压和头部常驻账户模型选择器属于过期记录，已协调。原始检测告警不构成新增令牌依据。"
+    ]
   },
   "components": [
     {
-      "name": "主要动作",
+      "name": "Primary Button",
       "kind": "button",
       "refersTo": "button-primary",
-      "description": "有限下沿、细顶光与短按压行程，颜色继承当前语义变量。",
-      "html": "<button class=\"ds-button ds-primary\" type=\"button\">开始烘焙</button>",
-      "css": ".ds-button{--ds-shade:var(--key-shade,color-mix(in srgb,var(--bg,#1b1c1e) 74%,transparent));--ds-light:var(--key-highlight,color-mix(in srgb,var(--text,#edeeec) 12%,transparent));min-width:44px;min-height:44px;padding:0 14px;border:1px solid var(--separator,#3b3d41);border-radius:10px;background:linear-gradient(180deg,var(--surface,#252628),var(--surface-2,#2c2d30));color:var(--text,#edeeec);font-family:var(--font-ui,-apple-system,BlinkMacSystemFont,\"Segoe UI\",\"Microsoft YaHei\",sans-serif);font-size:14px;font-weight:620;cursor:pointer;box-shadow:var(--key-shadow,0 1px 0 var(--border,#82858a),0 3px 5px var(--ds-shade),inset 0 1px 0 var(--ds-light));transition:transform 120ms var(--ease-apple-fast,cubic-bezier(.4,0,.2,1)),box-shadow 120ms var(--ease-apple-fast,cubic-bezier(.4,0,.2,1)),background-color 120ms var(--ease-apple-fast,cubic-bezier(.4,0,.2,1))}.ds-button:hover:not(:disabled){background:var(--surface,#252628);border-color:var(--border,#82858a)}.ds-button:focus-visible{outline:2px solid var(--accent,#92b5f6);outline-offset:3px}.ds-button:active:not(:disabled){transform:translateY(1px);box-shadow:inset 0 2px 3px var(--ds-shade),0 1px 0 var(--ds-light)}.ds-button:disabled{opacity:.42;box-shadow:none;transform:none;cursor:not-allowed}@media(prefers-reduced-motion:reduce){.ds-button{transition:none}}.ds-primary{background:linear-gradient(180deg,color-mix(in srgb,var(--accent,#92b5f6) 88%,var(--surface,#252628)),var(--accent,#92b5f6));border-color:color-mix(in srgb,var(--accent,#92b5f6) 75%,var(--text,#edeeec));color:var(--on-accent,#14233d)}.ds-primary:hover:not(:disabled){background:var(--accent-hover,#b9cffa)}"
+      "description": "明确保存、采用后的下一步或主要流程动作；按钮状态只改变颜色。",
+      "html": "<button class=\"ds-button ds-primary\">保存曲线</button>",
+      "css": ".ds-button{min-height:44px;min-width:44px;padding:0 14px;border:1px solid var(--separator,#35373e);border-radius:8px;font-family:var(--font-ui,MiSans),sans-serif;font-size:14px;font-weight:400;cursor:pointer;box-shadow:none;transition:color 150ms ease,background-color 150ms ease,border-color 150ms ease,opacity 150ms ease}.ds-button:focus-visible{outline:2px solid var(--accent,#83b0ff);outline-offset:3px}.ds-button:disabled{opacity:.4;cursor:not-allowed}.ds-primary{background:var(--primary,#226bee);color:var(--on-primary,#fff);border-color:var(--primary,#226bee)}.ds-primary:hover:not(:disabled){background:var(--primary-hover,#1b5fdc);border-color:var(--primary-hover,#1b5fdc)}.ds-primary:active:not(:disabled){background:var(--primary-active,#154fc1)}"
     },
     {
-      "name": "次要动作",
+      "name": "Neutral Button",
       "kind": "button",
-      "refersTo": "button-secondary",
-      "description": "有限下沿、细顶光与短按压行程，颜色继承当前语义变量。",
-      "html": "<button class=\"ds-button ds-secondary\" type=\"button\">比较曲线</button>",
-      "css": ".ds-button{--ds-shade:var(--key-shade,color-mix(in srgb,var(--bg,#1b1c1e) 74%,transparent));--ds-light:var(--key-highlight,color-mix(in srgb,var(--text,#edeeec) 12%,transparent));min-width:44px;min-height:44px;padding:0 14px;border:1px solid var(--separator,#3b3d41);border-radius:10px;background:linear-gradient(180deg,var(--surface,#252628),var(--surface-2,#2c2d30));color:var(--text,#edeeec);font-family:var(--font-ui,-apple-system,BlinkMacSystemFont,\"Segoe UI\",\"Microsoft YaHei\",sans-serif);font-size:14px;font-weight:620;cursor:pointer;box-shadow:var(--key-shadow,0 1px 0 var(--border,#82858a),0 3px 5px var(--ds-shade),inset 0 1px 0 var(--ds-light));transition:transform 120ms var(--ease-apple-fast,cubic-bezier(.4,0,.2,1)),box-shadow 120ms var(--ease-apple-fast,cubic-bezier(.4,0,.2,1)),background-color 120ms var(--ease-apple-fast,cubic-bezier(.4,0,.2,1))}.ds-button:hover:not(:disabled){background:var(--surface,#252628);border-color:var(--border,#82858a)}.ds-button:focus-visible{outline:2px solid var(--accent,#92b5f6);outline-offset:3px}.ds-button:active:not(:disabled){transform:translateY(1px);box-shadow:inset 0 2px 3px var(--ds-shade),0 1px 0 var(--ds-light)}.ds-button:disabled{opacity:.42;box-shadow:none;transform:none;cursor:not-allowed}@media(prefers-reduced-motion:reduce){.ds-button{transition:none}}"
+      "refersTo": "button-neutral",
+      "description": "导出、取消和次级操作，使用灰阶底和清楚的边界。",
+      "html": "<button class=\"ds-button ds-neutral\">导出 JSON</button>",
+      "css": ".ds-button{min-height:44px;min-width:44px;padding:0 14px;border:1px solid var(--separator,#35373e);border-radius:8px;font-family:var(--font-ui,MiSans),sans-serif;font-size:14px;font-weight:400;cursor:pointer;box-shadow:none;transition:color 150ms ease,background-color 150ms ease,border-color 150ms ease,opacity 150ms ease}.ds-button:focus-visible{outline:2px solid var(--accent,#83b0ff);outline-offset:3px}.ds-button:disabled{opacity:.4;cursor:not-allowed}.ds-neutral{background:var(--surface-2,#212225);color:var(--text,#fff)}.ds-neutral:hover:not(:disabled){background:var(--surface-3,#303134);border-color:var(--border,#81848f)}.ds-neutral:active:not(:disabled){background:var(--fill,#303134)}"
     },
     {
-      "name": "危险次动作",
+      "name": "Text Icon Action",
+      "kind": "button",
+      "refersTo": "button-text",
+      "description": "AI 头部等低频图标操作；保持 44px 触控区和可访问名称。",
+      "html": "<button class=\"ds-button ds-icon\" aria-label=\"关闭 AI 对话\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" aria-hidden=\"true\"><path d=\"m6 6 12 12M18 6 6 18\"/></svg></button>",
+      "css": ".ds-button{min-height:44px;min-width:44px;padding:0 14px;border:1px solid var(--separator,#35373e);border-radius:8px;font-family:var(--font-ui,MiSans),sans-serif;font-size:14px;font-weight:400;cursor:pointer;box-shadow:none;transition:color 150ms ease,background-color 150ms ease,border-color 150ms ease,opacity 150ms ease}.ds-button:focus-visible{outline:2px solid var(--accent,#83b0ff);outline-offset:3px}.ds-button:disabled{opacity:.4;cursor:not-allowed}.ds-icon{display:grid;place-items:center;width:44px;height:44px;padding:0;border:0;background:transparent;color:var(--text-secondary,#bfc1cb)}.ds-icon:hover{background:var(--surface-2,#212225);color:var(--text,#fff)}.ds-icon:active{background:var(--surface-3,#303134)}"
+    },
+    {
+      "name": "Soft Danger Action",
       "kind": "button",
       "refersTo": "button-danger",
-      "description": "有限下沿、细顶光与短按压行程，颜色继承当前语义变量。",
-      "html": "<button class=\"ds-button ds-danger\" type=\"button\">移除账户</button>",
-      "css": ".ds-button{--ds-shade:var(--key-shade,color-mix(in srgb,var(--bg,#1b1c1e) 74%,transparent));--ds-light:var(--key-highlight,color-mix(in srgb,var(--text,#edeeec) 12%,transparent));min-width:44px;min-height:44px;padding:0 14px;border:1px solid var(--separator,#3b3d41);border-radius:10px;background:linear-gradient(180deg,var(--surface,#252628),var(--surface-2,#2c2d30));color:var(--text,#edeeec);font-family:var(--font-ui,-apple-system,BlinkMacSystemFont,\"Segoe UI\",\"Microsoft YaHei\",sans-serif);font-size:14px;font-weight:620;cursor:pointer;box-shadow:var(--key-shadow,0 1px 0 var(--border,#82858a),0 3px 5px var(--ds-shade),inset 0 1px 0 var(--ds-light));transition:transform 120ms var(--ease-apple-fast,cubic-bezier(.4,0,.2,1)),box-shadow 120ms var(--ease-apple-fast,cubic-bezier(.4,0,.2,1)),background-color 120ms var(--ease-apple-fast,cubic-bezier(.4,0,.2,1))}.ds-button:hover:not(:disabled){background:var(--surface,#252628);border-color:var(--border,#82858a)}.ds-button:focus-visible{outline:2px solid var(--accent,#92b5f6);outline-offset:3px}.ds-button:active:not(:disabled){transform:translateY(1px);box-shadow:inset 0 2px 3px var(--ds-shade),0 1px 0 var(--ds-light)}.ds-button:disabled{opacity:.42;box-shadow:none;transform:none;cursor:not-allowed}@media(prefers-reduced-motion:reduce){.ds-button{transition:none}}.ds-danger{background:var(--danger-soft,rgba(255,69,58,.13));color:var(--danger,#ff827f);border-color:transparent}"
+      "description": "删除等普通危险操作；不借用急停的实色层级。",
+      "html": "<button class=\"ds-button ds-danger\">删除选中节点</button>",
+      "css": ".ds-button{min-height:44px;min-width:44px;padding:0 14px;border:1px solid var(--separator,#35373e);border-radius:8px;font-family:var(--font-ui,MiSans),sans-serif;font-size:14px;font-weight:400;cursor:pointer;box-shadow:none;transition:color 150ms ease,background-color 150ms ease,border-color 150ms ease,opacity 150ms ease}.ds-button:focus-visible{outline:2px solid var(--accent,#83b0ff);outline-offset:3px}.ds-button:disabled{opacity:.4;cursor:not-allowed}.ds-danger{background:var(--danger-soft,rgba(255,69,58,.13));color:var(--danger,#ff878d)}.ds-danger:hover:not(:disabled){background:var(--surface-3,#303134);border-color:var(--border,#81848f)}.ds-danger:active:not(:disabled){background:var(--fill,#303134)}"
     },
     {
-      "name": "AI 输入",
-      "kind": "input",
-      "refersTo": "field-ai",
-      "description": "标签14px、输入16px、8px字段圆角，占位读取当前说明文字色。",
-      "html": "<label class=\"ds-field\">消息<input class=\"ds-input\" placeholder=\"描述本次烘焙问题\"></label>",
-      "css": ".ds-field{display:grid;gap:6px;font-family:var(--font-ui,sans-serif);font-size:14px;color:var(--text-secondary,#c2c3c0)}.ds-input{min-height:44px;padding:10px;border:1px solid var(--border,#82858a);border-radius:8px;background:var(--control-bg,#2c2d30);color:var(--text,#edeeec);font-family:inherit;font-size:16px}.ds-input::placeholder{color:var(--text-secondary,#c2c3c0);opacity:1}.ds-input:focus-visible{outline:2px solid var(--accent,#92b5f6);outline-offset:2px}"
-    },
-    {
-      "name": "当前导航",
-      "kind": "nav",
-      "refersTo": "nav-active",
-      "description": "中性当前任务面、13px文字与强调色图标，72px桌面高度。",
-      "html": "<nav aria-label=\"工作区\"><button class=\"ds-nav\" aria-current=\"page\" type=\"button\"><svg width=\"22\" height=\"22\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" aria-hidden=\"true\"><path d=\"M4 20V4M4 20h16M7 16l4-6 4 3 5-8\"/></svg>烘焙控制</button></nav>",
-      "css": ".ds-button{--ds-shade:var(--key-shade,color-mix(in srgb,var(--bg,#1b1c1e) 74%,transparent));--ds-light:var(--key-highlight,color-mix(in srgb,var(--text,#edeeec) 12%,transparent));min-width:44px;min-height:44px;padding:0 14px;border:1px solid var(--separator,#3b3d41);border-radius:10px;background:linear-gradient(180deg,var(--surface,#252628),var(--surface-2,#2c2d30));color:var(--text,#edeeec);font-family:var(--font-ui,-apple-system,BlinkMacSystemFont,\"Segoe UI\",\"Microsoft YaHei\",sans-serif);font-size:14px;font-weight:620;cursor:pointer;box-shadow:var(--key-shadow,0 1px 0 var(--border,#82858a),0 3px 5px var(--ds-shade),inset 0 1px 0 var(--ds-light));transition:transform 120ms var(--ease-apple-fast,cubic-bezier(.4,0,.2,1)),box-shadow 120ms var(--ease-apple-fast,cubic-bezier(.4,0,.2,1)),background-color 120ms var(--ease-apple-fast,cubic-bezier(.4,0,.2,1))}.ds-button:hover:not(:disabled){background:var(--surface,#252628);border-color:var(--border,#82858a)}.ds-button:focus-visible{outline:2px solid var(--accent,#92b5f6);outline-offset:3px}.ds-button:active:not(:disabled){transform:translateY(1px);box-shadow:inset 0 2px 3px var(--ds-shade),0 1px 0 var(--ds-light)}.ds-button:disabled{opacity:.42;box-shadow:none;transform:none;cursor:not-allowed}@media(prefers-reduced-motion:reduce){.ds-button{transition:none}}.ds-nav{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;width:76px;min-height:72px;padding:8px 0;border:0;border-radius:10px;background:var(--surface,#252628);color:var(--text,#edeeec);font-family:var(--font-ui,sans-serif);font-size:13px;cursor:pointer;box-shadow:var(--key-shadow,0 1px 0 var(--border,#82858a),0 3px 5px rgba(0,0,0,.15))}.ds-nav svg{color:var(--accent,#92b5f6)}.ds-nav:hover{background:var(--surface-2,#2c2d30)}.ds-nav:focus-visible{outline:2px solid var(--accent,#92b5f6);outline-offset:3px}.ds-nav:active{transform:translateY(1px)}"
-    },
-    {
-      "name": "只读烘焙状态",
-      "kind": "chip",
-      "refersTo": "state-roasting",
-      "description": "只读语义状态pill，不作为可点击上下文尺寸。",
-      "html": "<span class=\"ds-state\">烘焙中</span>",
-      "css": ".ds-state{display:inline-flex;align-items:center;justify-content:center;min-height:24px;padding:7px 10px;border:1px solid var(--separator,#3b3d41);border-radius:var(--radius-pill,999px);background:var(--accent-soft,#303e55);color:var(--accent,#92b5f6);font-family:var(--font-ui,sans-serif);font-size:14px;font-weight:680;line-height:1.5}"
-    },
-    {
-      "name": "设置分组",
-      "kind": "card",
-      "refersTo": "card-settings",
-      "description": "平面圆角内容组；当前设置使用16px圆角和24px内边距。",
-      "html": "<section class=\"ds-card\"><h3>外观</h3><p>浅色 / 深色 / 跟随系统</p></section>",
-      "css": ".ds-card{padding:24px;border:0;border-radius:var(--radius-lg,16px);background:var(--surface,#252628);color:var(--text,#edeeec);font-family:var(--font-ui,sans-serif);box-shadow:none}.ds-card h3{margin:0 0 12px;font-size:16px}.ds-card p{margin:0;font-size:14px;color:var(--text-secondary,#c2c3c0)}"
-    },
-    {
-      "name": "温度读数",
-      "kind": "custom",
-      "description": "主要读数34px/550，标签与单位14px，保留等宽数字和温度语义。",
-      "html": "<div class=\"ds-readout\"><span>温度 PV</span><strong>168.6 <small>°C</small></strong><span>实时测量</span></div>",
-      "css": ".ds-readout{padding:8px 16px;border-left:1px solid var(--separator,#3b3d41);font-family:var(--font-ui,sans-serif);color:var(--text,#edeeec)}.ds-readout span{display:block;font-size:14px;color:var(--text-secondary,#c2c3c0)}.ds-readout span:first-child{font-size:14px}.ds-readout strong{display:block;margin-top:8px;color:var(--text,#edeeec);font-family:var(--font-mono,sans-serif);font-size:34px;font-weight:550;line-height:1.15;letter-spacing:-.025em;font-variant-numeric:tabular-nums;font-feature-settings:\"tnum\"}.ds-readout small{font-size:14px;letter-spacing:normal;color:var(--chart-temp,#f2a366)}"
-    },
-    {
-      "name": "急停外观",
+      "name": "Safety Action",
       "kind": "button",
-      "refersTo": "emergency-stop",
-      "description": "10px圆角、3px实体下沿与现有局部按压缩放；无硬件事件。",
-      "html": "<button class=\"ds-estop\" type=\"button\">E-STOP</button>",
-      "css": ".ds-estop{min-width:178px;height:44px;display:inline-flex;align-items:center;justify-content:center;border:0;border-bottom:3px solid color-mix(in srgb,var(--danger,#ff827f) 65%,var(--text,#edeeec));border-radius:10px;background:var(--danger,#ff827f);color:var(--on-danger,#1c1c1e);font-family:var(--font-ui,sans-serif);font-size:15px;font-weight:750;letter-spacing:.06em;cursor:pointer;box-shadow:inset 0 1px 0 var(--key-highlight,rgba(255,255,255,.12)),0 2px 3px var(--key-shade,rgba(0,0,0,.15));transition:transform var(--duration-fast,160ms) var(--ease-apple-fast,cubic-bezier(.4,0,.2,1))}.ds-estop:hover{opacity:.96}.ds-estop:focus-visible{outline:2px solid var(--accent,#92b5f6);outline-offset:3px}.ds-estop:active{transform:scale(.97)}@media(prefers-reduced-motion:reduce){.ds-estop{transition:none}}"
+      "refersTo": "button-safety",
+      "description": "常驻安全栏中的急停实色样式。此静态样例不连接设备动作。",
+      "html": "<button class=\"ds-safety\">E-STOP</button>",
+      "css": ".ds-safety{min-width:178px;min-height:44px;padding:0 18px;border:0;border-radius:8px;background:var(--danger,#ff878d);color:var(--on-danger,#301014);font-family:var(--font-ui,MiSans),sans-serif;font-size:15px;font-weight:750;letter-spacing:.06em;cursor:pointer;box-shadow:none;transition:color 150ms ease,background-color 150ms ease}.ds-safety:hover{background:var(--danger-hover,#ffabb0)}.ds-safety:focus-visible{outline:2px solid var(--accent,#83b0ff);outline-offset:3px}.ds-safety:active{transform:none}.ds-safety:disabled{opacity:.4;cursor:not-allowed}"
     },
     {
-      "name": "简约聊天",
+      "name": "Composite Number Field",
+      "kind": "input",
+      "refersTo": "field",
+      "description": "只有外壳绘制边界和焦点环，内部输入与单位共享一条边界。",
+      "html": "<label class=\"ds-field-label\">温度<span class=\"ds-number\"><input type=\"number\" value=\"210\" aria-label=\"温度\"/><em>°C</em></span></label>",
+      "css": ".ds-field-label{display:grid;gap:8px;font-family:var(--font-ui,MiSans),sans-serif;font-size:14px;color:var(--text,#fff)}.ds-number{display:flex;align-items:center;min-height:44px;border:1px solid var(--border,#81848f);border-radius:8px;background:var(--control-bg,#212225)}.ds-number input{min-height:44px;min-width:0;width:100%;padding:0 8px 0 10px;border:0;border-radius:0;outline:0;box-shadow:none;background:transparent;color:var(--text,#fff);font:inherit;font-variant-numeric:tabular-nums}.ds-number em{padding-right:10px;font-style:normal;color:var(--text-secondary,#bfc1cb)}.ds-number:focus-within{outline:2px solid var(--accent,#83b0ff);outline-offset:2px}"
+    },
+    {
+      "name": "Task Navigation",
+      "kind": "nav",
+      "refersTo": "navigation-active",
+      "description": "当前任务用浅蓝底、焦点蓝和 600 字重共同表示。",
+      "html": "<nav class=\"ds-nav\" aria-label=\"工作区\"><button class=\"ds-nav-item\" aria-current=\"page\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" stroke=\"currentColor\" fill=\"none\" stroke-width=\"1.5\" aria-hidden=\"true\"><path d=\"M4 10v4m4-8v12m4-15v18m4-15v12m4-8v4\"/></svg><span>烘焙控制</span></button><button class=\"ds-nav-item\">曲线管理</button></nav>",
+      "css": ".ds-nav{display:flex;flex-direction:column;gap:8px;width:188px}.ds-nav-item{display:flex;align-items:center;gap:12px;min-height:48px;padding:12px;border:0;border-radius:8px;background:transparent;color:var(--text-secondary,#bfc1cb);font-family:var(--font-ui,MiSans),sans-serif;font-size:14px;cursor:pointer}.ds-nav-item:hover{background:var(--surface-2,#212225);color:var(--text,#fff)}.ds-nav-item[aria-current=page]{background:var(--accent-soft,#20304b);color:var(--accent,#83b0ff);font-weight:600}.ds-nav-item:focus-visible{outline:2px solid var(--accent,#83b0ff);outline-offset:3px}.ds-nav-item:active{transform:none}"
+    },
+    {
+      "name": "Roast State Badge",
+      "kind": "chip",
+      "refersTo": "state-badge",
+      "description": "非交互状态标记保留文字含义，不把颜色当作唯一信息。",
+      "html": "<span class=\"ds-badge\">烘焙中</span>",
+      "css": ".ds-badge{display:inline-block;padding:8px 10px;border:0;border-radius:6px;background:var(--accent-soft,#20304b);color:var(--accent,#83b0ff);font-family:var(--font-ui,MiSans),sans-serif;font-size:14px;line-height:1.5}"
+    },
+    {
+      "name": "Task Surface",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "设置与预览的平面内容面板，以面层和间距分组。",
+      "html": "<section class=\"ds-card\"><h3>外观</h3><p>浅色、深色或跟随系统。</p></section>",
+      "css": ".ds-card{padding:24px;border:0;border-radius:12px;background:var(--surface,#191a1d);color:var(--text,#fff);box-shadow:none;font-family:var(--font-ui,MiSans),sans-serif;font-size:14px;line-height:1.5}.ds-card h3{margin:0 0 8px;font-size:16px;font-weight:600}.ds-card p{margin:0;color:var(--text-secondary,#bfc1cb)}"
+    },
+    {
+      "name": "AI Composer",
       "kind": "custom",
-      "refersTo": "chat-shell",
-      "description": "520px抽屉与一个内嵌输入区，模型和账户由输入区展开。",
-      "html": "<section class=\"ds-chat\" aria-label=\"AI 对话\"><header><button type=\"button\" aria-label=\"会话\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" aria-hidden=\"true\"><path d=\"M4 4h16v16H4zM9 4v16\"/></svg></button><h2>AI 烘焙助手</h2><button type=\"button\" aria-label=\"新对话\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" aria-hidden=\"true\"><path d=\"M4 7v13h13M9 12l9-9 3 3-9 9-4 1z\"/></svg></button><button type=\"button\" aria-label=\"更多对话选项\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" aria-hidden=\"true\"><circle cx=\"5\" cy=\"12\" r=\"1\"/><circle cx=\"12\" cy=\"12\" r=\"1\"/><circle cx=\"19\" cy=\"12\" r=\"1\"/></svg></button><button type=\"button\" aria-label=\"关闭\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" aria-hidden=\"true\"><path d=\"M6 6l12 12M18 6 6 18\"/></svg></button></header><div class=\"ds-messages\"><div class=\"ds-user\">请查看这次烘焙的温度变化。</div><span>烘焙助手</span><p>可以结合温度、RoR 与事件记录分析，再由你决定是否采用建议。</p></div><div class=\"ds-composer\"><div class=\"ds-input-shell\"><textarea aria-label=\"消息\" placeholder=\"向烘焙助手发送消息\"></textarea><div class=\"ds-input-actions\"><button type=\"button\" aria-label=\"添加附件或数据\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" aria-hidden=\"true\"><path d=\"M12 5v14M5 12h14\"/></svg></button><details class=\"ds-model\"><summary>当前模型</summary><label>账户<select><option>本机账户</option></select></label><label>模型<select><option>当前模型</option></select></label></details><button class=\"ds-send\" type=\"button\" aria-label=\"发送\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" aria-hidden=\"true\"><path d=\"m6 11 6-6 6 6M12 5v14\"/></svg></button></div></div></div></section>",
-      "css": ".ds-chat{width:520px;max-width:100%;overflow:hidden;border:1px solid var(--separator,#3b3d41);border-radius:16px;background:var(--surface,#252628);color:var(--text,#edeeec);font-family:var(--font-ui,-apple-system,BlinkMacSystemFont,\"Segoe UI\",sans-serif);line-height:1.5}.ds-chat header{display:flex;align-items:center;gap:10px;min-height:68px;padding:0 16px;border-bottom:1px solid var(--separator,#3b3d41)}.ds-chat h2{flex:1;margin:0;font-size:15px;font-weight:600;white-space:nowrap}.ds-chat button{display:inline-flex;align-items:center;justify-content:center;min-width:44px;min-height:44px;padding:0;border:0;border-radius:10px;background:transparent;color:var(--text-secondary,#c2c3c0);cursor:pointer}.ds-chat button:hover,.ds-model summary:hover{background:var(--fill,#35363a);color:var(--text,#edeeec)}.ds-chat button:focus-visible,.ds-chat textarea:focus-visible,.ds-model summary:focus-visible,.ds-model select:focus-visible{outline:2px solid var(--accent,#92b5f6);outline-offset:-3px}.ds-chat button:active{transform:translateY(1px)}.ds-messages{padding:24px 28px 12px;font-size:16px;line-height:1.8}.ds-user{width:fit-content;max-width:85%;margin:0 0 28px auto;padding:12px 18px;background:var(--surface-2,#2c2d30);border-radius:16px 16px 4px 16px}.ds-messages span{font-size:13px;font-weight:500;color:var(--text-secondary,#c2c3c0)}.ds-messages p{margin:8px 0 16px}.ds-composer{padding:12px 20px 20px}.ds-input-shell{padding:12px;border:1px solid var(--separator,#3b3d41);border-radius:16px;background:var(--surface-2,#2c2d30);box-shadow:inset 0 1px 3px var(--key-shade,rgba(0,0,0,.15))}.ds-chat textarea{width:100%;min-height:64px;max-height:144px;padding:8px;border:0;border-radius:8px;background:transparent;color:inherit;font:16px/1.6 var(--font-ui,sans-serif);resize:vertical}.ds-chat textarea::placeholder{color:var(--text-secondary,#c2c3c0);opacity:1}.ds-input-actions{display:flex;align-items:center;gap:6px;margin-top:8px}.ds-model{flex:1;font-size:14px;color:var(--text-secondary,#c2c3c0)}.ds-model summary{min-height:44px;align-content:center;padding:0 8px;list-style:none;cursor:pointer}.ds-model label{display:grid;gap:6px;padding:8px;font-size:14px}.ds-model select{min-height:44px;padding:10px 12px;border:1px solid var(--border,#82858a);border-radius:10px;background:var(--control-bg,#2c2d30);color:var(--text,#edeeec)}.ds-chat .ds-send{border-radius:50%;background:var(--text,#edeeec);color:var(--surface,#252628);box-shadow:var(--key-shadow,0 1px 0 var(--border,#82858a),0 3px 5px rgba(0,0,0,.15))}.ds-chat .ds-send:hover{background:var(--text-secondary,#c2c3c0)}"
+      "refersTo": "ai-composer",
+      "description": "单一外壳承担输入边界和焦点；模型、附件与发送邻近输入。",
+      "html": "<div class=\"ds-composer\"><textarea aria-label=\"发给 AI 的消息\" placeholder=\"描述这次烘焙的问题\"></textarea><div class=\"ds-composer-actions\"><button class=\"ds-model\">选择模型</button><button class=\"ds-send\" aria-label=\"发送消息\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" aria-hidden=\"true\"><path d=\"M12 19V5m-6 6 6-6 6 6\"/></svg></button></div></div>",
+      "css": ".ds-composer{padding:12px;border:1px solid var(--border,#81848f);border-radius:12px;background:var(--surface-2,#212225);font-family:var(--font-ui,MiSans),sans-serif;color:var(--text,#fff)}.ds-composer:focus-within{outline:2px solid var(--accent,#83b0ff);outline-offset:2px}.ds-composer textarea{display:block;width:100%;min-height:64px;max-height:144px;padding:8px;border:0;outline:0;box-shadow:none;resize:vertical;background:transparent;color:inherit;font-family:inherit;font-size:16px;line-height:1.6}.ds-composer textarea::placeholder{color:var(--text-secondary,#bfc1cb)}.ds-composer-actions{display:flex;justify-content:space-between;gap:6px;margin-top:8px}.ds-composer-actions button{min-height:44px;min-width:44px;border:0;border-radius:8px;font:inherit;font-size:14px;cursor:pointer;transition:color 150ms ease,background-color 150ms ease}.ds-model{padding:0 8px;background:transparent;color:var(--text-secondary,#bfc1cb)}.ds-model:hover{background:var(--surface-3,#303134)}.ds-send{display:grid;place-items:center;background:var(--primary,#226bee);color:var(--on-primary,#fff)}.ds-send:hover{background:var(--primary-hover,#1b5fdc)}.ds-send:active{background:var(--primary-active,#154fc1)}.ds-composer-actions button:focus-visible{outline:2px solid var(--accent,#83b0ff);outline-offset:3px}.ds-composer-actions button:disabled{opacity:.4;cursor:not-allowed}"
     }
   ],
   "narrative": {
-    "northStar": "安静的烘焙工作区 · Quiet Roasting Workspace",
-    "overview": "石墨灰与暖白构成日常烘焙工作区，克制的蓝色标识重要动作、当前选择与键盘焦点。系统字体、稳定读数和清楚的任务分组让操作者先读曲线，再识别下一步。可操作按钮以细顶光、下沿和短按压行程呈现实体感；内容面保持平面。\n\nAI 对话沿用用户确认的 Codex 简约方向：阅读区与一个内嵌输入区主导界面，常用动作直接可达，账户、模型、历史和低频选项按需展开。专业功能完整保留，通过任务组和折叠详情逐步呈现。\n\n本规范从当前共享 Web 前端提取，覆盖浏览器、树莓派 kiosk 与 Tauri。配色以 desktop/tools/theme-palettes.mjs 及其生成的 theme.css 最终区块为源；布局和控件以两入口在 atlas.css 之后加载的 instrument.css 最终级联为准（缓存版本 3.29）。frontmatter 的 dark / light 记录默认石墨配色，其余配色使用各自前缀。已确认方向见 .impeccable/surfaces/roaster-static-index-html.md（Operate，code-led，seed:3329047aed8ff09d）。",
+    "northStar": "Mhub 工作区",
+    "overview": "以用户指定的正式 Mhub 主程序／音频界面为视觉权威。黑白灰纯色表面承载内容，蓝色区分主要操作、当前选择和可见焦点。按钮平面、边界清楚，曲线与设备状态保持视觉中心。\n\n同一套展示层覆盖五个工作区、独立编辑器、AI 和动态弹层。以清楚的设备身份、稳定的读数、足够大的触控目标和渐进菜单组织专业功能；浏览、保存与应用的区分必须能从操作层级辨认。",
     "keyCharacteristics": [
-      "石墨灰、暖白与少量蓝色重点；六套完整配色共享同一结构。",
-      "实体按钮与平面内容面分工明确，常用操作可见，复杂能力分组展开。",
-      "曲线占主区域，读数使用等宽数字特性，图表和 DOM 共用语义颜色。",
-      "简约聊天保留模型、账户、附件、上下文、历史与发送 / 停止能力。",
-      "离线资源、可见焦点、减少动效及急停优先层次属于基础体验。"
+      "黑白灰纯色面层与语义蓝色，只有浅色／深色／跟随系统。",
+      "本地 MiSans、离线 Phosphor、正文与控件优先使用 14–16px。",
+      "平面按钮、单一输入边界、稳定的实时曲线与安全区域。",
+      "区域进入与退出可中断，快速操作始终服从最后一次意图。"
     ],
     "rules": [
       {
-        "name": "One Accent",
-        "body": "一个工作区使用当前配色的一组强调色表示重要动作与选择；曲线、阶段、事件和危险状态保留各自语义。",
+        "name": "The Source Rule",
+        "body": "颜色与共享令牌只在 desktop/tools/theme-palettes.mjs 编辑，再生成 theme.css；mhub.css 是最终展示层。本文前置数据把源中的颜色别名展开为当前实值，不能反向建立第二套主题。",
         "section": "colors"
       },
       {
-        "name": "Shared Semantic Color",
-        "body": "读数、图例与 canvas 对同一数据读取同一语义令牌；切换外观后重新取色，并以无动画方式更新图表。",
+        "name": "The Semantic Blue Rule",
+        "body": "实色主要按钮使用 primary／on-primary，链接、焦点和选中内容使用 accent／accent-soft。深色主题中这两种蓝色承担不同对比任务，不能互换。",
         "section": "colors"
       },
       {
-        "name": "Stable Measurement",
-        "body": "数值使用数字字体栈和等宽数字特性，单位、坐标轴与数据角色持续可辨；实时变化不以发光或字号跳动表达。",
-        "section": "typography"
-      },
-      {
-        "name": "Tactile Action",
-        "body": "深度帮助识别可操作控件；内容面保持平面，标准按钮按压采用短距离位移。",
+        "name": "The Flat Surface Rule",
+        "body": "普通卡片与按钮静止时没有投影、渐变或内凹高光；层级由纯色面层、间距与必要边界表达。只有悬浮面板、菜单、提示和对话层使用 pop 阴影。",
         "section": "elevation"
-      },
-      {
-        "name": "Safety Above Workspace",
-        "body": "普通弹窗、聊天与图表全屏位于急停底栏之下，故障层位于其上；窄屏与横屏保留安全入口。",
-        "section": "elevation"
-      },
-      {
-        "name": "Explicit Adoption",
-        "body": "列表选择只预览，AI 只提供建议；采用进入草稿，保存与应用由操作者分别明确执行。",
-        "section": "components"
       }
     ],
     "dos": [
-      "**Do** 以生成的 theme.css 语义变量和最后加载的 instrument.css 为当前实现依据，核对六种配色的深浅外观。",
-      "**Do** 使用石墨灰与暖白作为默认面层，把蓝色用于重要动作、选择与焦点。",
-      "**Do** 让标准可操作按钮保留细顶光、柔和阴影与（1px）按压行程，内容面保持平面。",
-      "**Do** 保持（16px）聊天阅读正文、（14px）控件与可读元数据，按实际工作区宽高响应 UI 缩放。",
-      "**Do** 通过任务组、命名菜单与折叠详情呈现复杂功能，保留模型、账户、附件、历史和上下文能力。",
-      "**Do** 在窄屏与横屏保留阅读、已选上下文及移除、输入、发送 / 停止与急停入口。",
-      "**Do** 恢复本机保存的账户和会话，只让本页明确发起的已知登录自动打开授权页面。",
-      "**Do** 区分源代码、浏览器、安全模拟器、原生窗口、真实订阅与硬件证据。"
+      "Do 使用共享语义变量和最终展示层，让五个工作区、独立编辑器、AI 与弹层保持一致。",
+      "Do 把主要操作、软危险操作、急停与故障复位按语义区分，并保持安全区域可达。",
+      "Do 保留常用触控目标至少 44px、正文与控件 14–16px、可见键盘焦点和减少动效。",
+      "Do 在 2048、1366、1024×640、375px 与 130% 缩放中检查读数、任务导航、AI、滚动和编辑流程。",
+      "Do 保留浏览／保存／应用分离、原生文件未知字段保真、指针编辑与撤销。",
+      "Do 静默恢复本机 AI 账户、模型和历史；只有本页明确发起且匹配的登录才打开系统默认浏览器。"
     ],
     "donts": [
-      "**Don't** 把默认石墨配色改回大面积蓝底、纯黑白高对比或全屏单一强调色。",
-      "**Don't** 用当前强调色重定义温度、RoR、阶段、事件或危险状态。",
-      "**Don't** 把所有元数据写成（14px），或把所有组件强制成同一圆角；遵循用途和实际实现。",
-      "**Don't** 为聊天常驻头部增加账户与模型选择器，或把低频功能重新铺成永久工具栏。",
-      "**Don't** 将预览、采用草稿、保存或切换账户等同于应用当前执行曲线。",
-      "**Don't** 用聊天、普通模态或图表全屏遮住急停，或降低故障信息的优先级。",
-      "**Don't** 引入联网字体、图标 CDN、backdrop-filter、大面积模糊或内容卡片的硬偏移阴影。",
-      "**Don't** 将历史截图、旧检测告警或未完成的真实授权写成当前视觉要求或验证结论。"
+      "Don't 恢复旧六配色、暖白石墨实体按钮、壁纸、模糊或装饰性光晕。",
+      "Don't 把 primary 与 accent 合并，或用品牌蓝覆盖图表、事件、阶段和危险语义色。",
+      "Don't 给复合输入内外同时绘制边框或焦点环。",
+      "Don't 为安全栏、实时数据和可编辑画布增加区域位移或缩放，或把七种可复用类型都写成已绑定页面行为。",
+      "Don't 让 AI 直接控制加热、SV、E-STOP、串口／GPIO 或当前已应用曲线；AI 仅给出建议，采用／保存／应用由操作者明确执行。",
+      "Don't 将账户凭据、会话、运行数据、构建产物或本机截图证据加入 Git，也不能用 Windows／模拟器证据声称真实硬件或真实付费授权已经通过。"
     ]
   }
 }

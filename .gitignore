@@ -78,3 +78,6 @@ Desktop.ini
 # Temporary local notes
 /readme.txt
 desktop/runtime/
+
+# Generated visual verification evidence stays local
+/.impeccable/review/

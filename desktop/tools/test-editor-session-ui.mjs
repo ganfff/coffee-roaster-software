@@ -88,6 +88,7 @@ try {
     assert.equal(await page.locator('.editor-app').evaluate(n=>n.inert),true);
     const expanded=await page.locator('#ai-chat').boundingBox();assert.ok(expanded.width>=width-30);
     await page.locator('#ai-chat').getByRole('button',{name:'关闭',exact:true}).click();
+    await page.waitForFunction(()=>document.querySelector('#ai-chat').hidden);
     assert.equal(await page.locator('.editor-app').evaluate(n=>n.inert),false);
     assert.equal(await page.locator('#ai-launcher').evaluate(n=>n===document.activeElement),true);
   }

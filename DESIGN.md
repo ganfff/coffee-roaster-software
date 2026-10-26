@@ -1,20 +1,48 @@
 ---
-name: "Ganf's 咖啡烘焙机 · 安静工作区"
-description: "石墨灰与暖白、实体按钮和简约 AI 对话组成的离线烘焙工作界面"
+name: "Ganf's 咖啡烘焙机 · Mhub 工作区"
+description: "正式 Mhub 主程序与音频界面的黑白灰面层、蓝色操作和稳定曲线"
 colors:
-  dark-danger: "#ff827f"
-  dark-danger-hover: "#ffa19f"
+  dark-bg: "#0d0e10"
+  dark-bg-elevated: "#131416"
+  dark-surface: "#191a1d"
+  dark-surface-2: "#212225"
+  dark-surface-3: "#303134"
+  dark-canvas: "#191a1d"
+  dark-rail: "#131416"
+  dark-control-bg: "#212225"
+  dark-fill: "#303134"
+  dark-fill-strong: "#81848f"
+  dark-border: "#81848f"
+  dark-separator: "#35373e"
+  dark-text: "#ffffff"
+  dark-text-secondary: "#bfc1cb"
+  dark-text-tertiary: "#b1b4bf"
+  dark-accent: "#83b0ff"
+  dark-accent-hover: "#b6d1ff"
+  dark-accent-soft: "#20304b"
+  dark-on-accent: "#10213b"
+  dark-primary: "#226bee"
+  dark-primary-hover: "#1b5fdc"
+  dark-primary-soft: "#20304b"
+  dark-on-primary: "#ffffff"
+  dark-info: "#83b0ff"
+  dark-info-hover: "#b6d1ff"
+  dark-info-soft: "#20304b"
+  dark-danger: "#ff878d"
+  dark-danger-hover: "#ffabb0"
   dark-danger-soft: "rgba(255, 69, 58, 0.13)"
-  dark-on-danger: "#1c1c1e"
-  dark-status-online: "#55c469"
+  dark-on-danger: "#301014"
+  dark-gray-soft: "#303134"
+  dark-seg-thumb: "#303b50"
+  dark-status-online: "#72d69a"
   dark-warning: "#ff9f0a"
   dark-phase-drying: "#3b82f6"
   dark-phase-maillard: "#f59e0b"
   dark-phase-development: "#ff453a"
   dark-phase-cooling: "#8e8e93"
-  dark-chart-grid: "#38393d"
-  dark-chart-tick: "#c2c3c0"
-  dark-chart-legend: "#edeeec"
+  dark-chart-grid: "#34363d"
+  dark-chart-tick: "#bfc1cb"
+  dark-chart-legend: "#ffffff"
   dark-chart-temp: "#f2a366"
   dark-chart-setpoint: "#4d9cff"
   dark-chart-target: "#9e9e9e"
@@ -42,43 +70,53 @@ colors:
   dark-editor-curve: "#9ca3af"
   dark-editor-node: "#f59e0b"
   dark-editor-node-hover: "#ffffff"
-  dark-bg: "#1b1c1e"
-  dark-bg-elevated: "#242528"
-  dark-surface: "#252628"
-  dark-surface-2: "#2c2d30"
-  dark-surface-3: "#35363a"
-  dark-canvas: "#222325"
-  dark-rail: "#202123"
-  dark-control-bg: "#2c2d30"
-  dark-text: "#edeeec"
-  dark-text-secondary: "#c2c3c0"
-  dark-text-tertiary: "#b4b5b2"
-  dark-accent: "#92b5f6"
-  dark-accent-hover: "#b9cffa"
-  dark-accent-soft: "#303e55"
-  dark-on-accent: "#14233d"
-  dark-border: "#82858a"
-  dark-separator: "#3b3d41"
-  dark-seg-thumb: "#4a4c50"
-  dark-fill: "#35363a"
-  dark-fill-strong: "#35363a"
-  dark-gray-soft: "#35363a"
-  dark-info: "#92b5f6"
-  dark-info-hover: "#b9cffa"
-  dark-info-soft: "#303e55"
-  light-danger: "#bd2833"
-  light-danger-hover: "#9f1727"
+  dark-primary-active: "#154fc1"
+  dark-mc-text-color-main: "#ffffff"
+  dark-mc-bg-color-panel: "#191a1d"
+  dark-mc-bg-color-card: "#212225"
+  dark-mc-button-border-color: "#81848f"
+  dark-mc-color-b11: "#226bee"
+  light-bg: "#f2f3f7"
+  light-bg-elevated: "#ffffff"
+  light-surface: "#ffffff"
+  light-surface-2: "#f2f3f7"
+  light-surface-3: "#e6e8ef"
+  light-canvas: "#ffffff"
+  light-rail: "#ffffff"
+  light-control-bg: "#f2f3f7"
+  light-fill: "#e6e8ef"
+  light-fill-strong: "#787b87"
+  light-border: "#787b87"
+  light-separator: "#d8dbe5"
+  light-text: "#151515"
+  light-text-secondary: "#4f515c"
+  light-text-tertiary: "#585b66"
+  light-accent: "#0053e2"
+  light-accent-hover: "#0045bf"
+  light-accent-soft: "#e5eeff"
+  light-on-accent: "#ffffff"
+  light-primary: "#0053e2"
+  light-primary-hover: "#0045bf"
+  light-primary-soft: "#e5eeff"
+  light-on-primary: "#ffffff"
+  light-info: "#0053e2"
+  light-info-hover: "#0045bf"
+  light-info-soft: "#e5eeff"
+  light-danger: "#b82735"
+  light-danger-hover: "#991d29"
   light-danger-soft: "rgba(255, 59, 48, 0.1)"
   light-on-danger: "#ffffff"
-  light-status-online: "#45ad5b"
+  light-gray-soft: "#e6e8ef"
+  light-seg-thumb: "#ffffff"
+  light-status-online: "#217a40"
   light-warning: "#e88808"
   light-phase-drying: "#007aff"
   light-phase-maillard: "#b45309"
   light-phase-development: "#ff3b30"
   light-phase-cooling: "#8e8e93"
-  light-chart-grid: "#e1e0db"
-  light-chart-tick: "#54565b"
-  light-chart-legend: "#252629"
+  light-chart-grid: "#e1e4ec"
+  light-chart-tick: "#4f515c"
+  light-chart-legend: "#151515"
   light-chart-temp: "#9c4a16"
   light-chart-setpoint: "#1473e6"
   light-chart-target: "#8e8e93"
@@ -106,373 +144,92 @@ colors:
   light-editor-curve: "#6b7280"
   light-editor-node: "#d97706"
   light-editor-node-hover: "#1d1d1f"
-  light-bg: "#eeedea"
-  light-bg-elevated: "#faf9f6"
-  light-surface: "#fdfcf9"
-  light-surface-2: "#f4f3f0"
-  light-surface-3: "#e5e4e0"
-  light-canvas: "#fdfcf9"
-  light-rail: "#e3e2de"
-  light-control-bg: "#f4f3ef"
-  light-text: "#252629"
-  light-text-secondary: "#54565b"
-  light-text-tertiary: "#5e6064"
-  light-accent: "#245abd"
-  light-accent-hover: "#194697"
-  light-accent-soft: "#dce5f4"
-  light-on-accent: "#ffffff"
-  light-border: "#7d7f83"
-  light-separator: "#d4d3ce"
-  light-seg-thumb: "#fdfcf9"
-  light-fill: "#e5e4e0"
-  light-fill-strong: "#e5e4e0"
-  light-gray-soft: "#e5e4e0"
-  light-info: "#245abd"
-  light-info-hover: "#194697"
-  light-info-soft: "#dce5f4"
-  classic-dark-bg: "#101a2b"
-  classic-dark-bg-elevated: "#17243a"
-  classic-dark-surface: "#1d2c43"
-  classic-dark-surface-2: "#263750"
-  classic-dark-surface-3: "#30435f"
-  classic-dark-canvas: "#132137"
-  classic-dark-rail: "#142745"
-  classic-dark-control-bg: "#263750"
-  classic-dark-text: "#f1f6ff"
-  classic-dark-text-secondary: "#bdcde5"
-  classic-dark-text-tertiary: "#acbfdc"
-  classic-dark-accent: "#92bbff"
-  classic-dark-accent-hover: "#b7d2ff"
-  classic-dark-accent-soft: "#2b4567"
-  classic-dark-on-accent: "#10213b"
-  classic-dark-border: "#6c84a3"
-  classic-dark-separator: "#374d6b"
-  classic-dark-chart-grid: "#2a3c56"
-  classic-dark-chart-tick: "#bdcde5"
-  classic-dark-chart-legend: "#f1f6ff"
-  classic-dark-seg-thumb: "#435d81"
-  classic-light-bg: "#eaf0fa"
-  classic-light-bg-elevated: "#f4f7fd"
-  classic-light-surface: "#ffffff"
-  classic-light-surface-2: "#f3f6fc"
-  classic-light-surface-3: "#dce5f3"
-  classic-light-canvas: "#fcfdff"
-  classic-light-rail: "#d9e5f7"
-  classic-light-control-bg: "#e7edf7"
-  classic-light-text: "#14243c"
-  classic-light-text-secondary: "#435873"
-  classic-light-text-tertiary: "#4e6380"
-  classic-light-accent: "#175fc3"
-  classic-light-accent-hover: "#124b9d"
-  classic-light-accent-soft: "#d5e4fb"
-  classic-light-on-accent: "#ffffff"
-  classic-light-border: "#667c99"
-  classic-light-separator: "#c6d2e4"
-  classic-light-chart-grid: "#dbe3ef"
-  classic-light-chart-tick: "#435873"
-  classic-light-chart-legend: "#14243c"
-  classic-light-seg-thumb: "#ffffff"
-  sage-dark-bg: "#182019"
-  sage-dark-bg-elevated: "#202b20"
-  sage-dark-surface: "#28372a"
-  sage-dark-surface-2: "#344836"
-  sage-dark-surface-3: "#40563c"
-  sage-dark-canvas: "#202d21"
-  sage-dark-rail: "#202e1b"
-  sage-dark-control-bg: "#344836"
-  sage-dark-text: "#eff9ed"
-  sage-dark-text-secondary: "#c2d4ba"
-  sage-dark-text-tertiary: "#b4cbab"
-  sage-dark-accent: "#b1d98b"
-  sage-dark-accent-hover: "#cbeaa6"
-  sage-dark-accent-soft: "#374d2b"
-  sage-dark-on-accent: "#182512"
-  sage-dark-border: "#829775"
-  sage-dark-separator: "#44573b"
-  sage-dark-chart-grid: "#35462f"
-  sage-dark-chart-tick: "#c2d4ba"
-  sage-dark-chart-legend: "#eff9ed"
-  sage-dark-seg-thumb: "#526f47"
-  sage-light-bg: "#e8eddc"
-  sage-light-bg-elevated: "#f2f5e7"
-  sage-light-surface: "#f8faef"
-  sage-light-surface-2: "#f0f4e6"
-  sage-light-surface-3: "#d9e3c7"
-  sage-light-canvas: "#fbfcf6"
-  sage-light-rail: "#d3dec2"
-  sage-light-control-bg: "#e0e8d1"
-  sage-light-text: "#24321c"
-  sage-light-text-secondary: "#4a5b38"
-  sage-light-text-tertiary: "#52623e"
-  sage-light-accent: "#426126"
-  sage-light-accent-hover: "#30491a"
-  sage-light-accent-soft: "#d0e2b7"
-  sage-light-on-accent: "#ffffff"
-  sage-light-border: "#6c7c57"
-  sage-light-separator: "#c5d0b1"
-  sage-light-chart-grid: "#dce4cf"
-  sage-light-chart-tick: "#4a5b38"
-  sage-light-chart-legend: "#24321c"
-  sage-light-seg-thumb: "#f8faef"
-  sand-dark-bg: "#261b12"
-  sand-dark-bg-elevated: "#302319"
-  sand-dark-surface: "#3c2c1f"
-  sand-dark-surface-2: "#483526"
-  sand-dark-surface-3: "#57412e"
-  sand-dark-canvas: "#2e2118"
-  sand-dark-rail: "#342218"
-  sand-dark-control-bg: "#4c3828"
-  sand-dark-text: "#fff4e0"
-  sand-dark-text-secondary: "#e0c6a4"
-  sand-dark-text-tertiary: "#d1b390"
-  sand-dark-accent: "#efbd78"
-  sand-dark-accent-hover: "#ffdbab"
-  sand-dark-accent-soft: "#5a4023"
-  sand-dark-on-accent: "#30200f"
-  sand-dark-border: "#a68b68"
-  sand-dark-separator: "#614b33"
-  sand-dark-chart-grid: "#4a3927"
-  sand-dark-chart-tick: "#e0c6a4"
-  sand-dark-chart-legend: "#fff4e0"
-  sand-dark-seg-thumb: "#6d5339"
-  sand-light-bg: "#f2e7d2"
-  sand-light-bg-elevated: "#fcf5e6"
-  sand-light-surface: "#fffaf0"
-  sand-light-surface-2: "#f9efd9"
-  sand-light-surface-3: "#e8d7b8"
-  sand-light-canvas: "#fffdf5"
-  sand-light-rail: "#e6d3b0"
-  sand-light-control-bg: "#efdfc2"
-  sand-light-text: "#382718"
-  sand-light-text-secondary: "#695239"
-  sand-light-text-tertiary: "#70583e"
-  sand-light-accent: "#805022"
-  sand-light-accent-hover: "#673d17"
-  sand-light-accent-soft: "#edd2a7"
-  sand-light-on-accent: "#ffffff"
-  sand-light-border: "#94764e"
-  sand-light-separator: "#d4bf9b"
-  sand-light-chart-grid: "#e6d9bf"
-  sand-light-chart-tick: "#695239"
-  sand-light-chart-legend: "#382718"
-  sand-light-seg-thumb: "#fffaf0"
-  ocean-dark-bg: "#091d27"
-  ocean-dark-bg-elevated: "#0d2935"
-  ocean-dark-surface: "#113441"
-  ocean-dark-surface-2: "#194451"
-  ocean-dark-surface-3: "#225563"
-  ocean-dark-canvas: "#0a2732"
-  ocean-dark-rail: "#082e40"
-  ocean-dark-control-bg: "#194451"
-  ocean-dark-text: "#e4fbff"
-  ocean-dark-text-secondary: "#aad5df"
-  ocean-dark-text-tertiary: "#9bc8d3"
-  ocean-dark-accent: "#6dded8"
-  ocean-dark-accent-hover: "#a6f5ee"
-  ocean-dark-accent-soft: "#1d4e53"
-  ocean-dark-on-accent: "#07302e"
-  ocean-dark-border: "#709eac"
-  ocean-dark-separator: "#2b5a68"
-  ocean-dark-chart-grid: "#1d4655"
-  ocean-dark-chart-tick: "#aad5df"
-  ocean-dark-chart-legend: "#e4fbff"
-  ocean-dark-seg-thumb: "#356674"
-  ocean-light-bg: "#dfedf2"
-  ocean-light-bg-elevated: "#f0f8fa"
-  ocean-light-surface: "#f7fdff"
-  ocean-light-surface-2: "#eaf5f7"
-  ocean-light-surface-3: "#cce2e8"
-  ocean-light-canvas: "#ffffff"
-  ocean-light-rail: "#bad7e2"
-  ocean-light-control-bg: "#d9ebf0"
-  ocean-light-text: "#12333f"
-  ocean-light-text-secondary: "#365e6b"
-  ocean-light-text-tertiary: "#365d69"
-  ocean-light-accent: "#006b70"
-  ocean-light-accent-hover: "#005459"
-  ocean-light-accent-soft: "#b9e4e3"
-  ocean-light-on-accent: "#ffffff"
-  ocean-light-border: "#527f8e"
-  ocean-light-separator: "#afcdd6"
-  ocean-light-chart-grid: "#d2e5eb"
-  ocean-light-chart-tick: "#365e6b"
-  ocean-light-chart-legend: "#12333f"
-  ocean-light-seg-thumb: "#f7fdff"
-  plum-dark-bg: "#25192d"
-  plum-dark-bg-elevated: "#302138"
-  plum-dark-surface: "#3b2946"
-  plum-dark-surface-2: "#493353"
-  plum-dark-surface-3: "#573f61"
-  plum-dark-canvas: "#2c1e35"
-  plum-dark-rail: "#321e40"
-  plum-dark-control-bg: "#493353"
-  plum-dark-text: "#fff0ff"
-  plum-dark-text-secondary: "#dcc2e2"
-  plum-dark-text-tertiary: "#ceb1d7"
-  plum-dark-accent: "#e3a8e8"
-  plum-dark-accent-hover: "#f2ccf6"
-  plum-dark-accent-soft: "#5a3765"
-  plum-dark-on-accent: "#351d3c"
-  plum-dark-border: "#ac8ab9"
-  plum-dark-separator: "#61466c"
-  plum-dark-chart-grid: "#4d3659"
-  plum-dark-chart-tick: "#dcc2e2"
-  plum-dark-chart-legend: "#fff0ff"
-  plum-dark-seg-thumb: "#74517f"
-  plum-light-bg: "#eee4f0"
-  plum-light-bg-elevated: "#f8f1fa"
-  plum-light-surface: "#fffaff"
-  plum-light-surface-2: "#f5eaf7"
-  plum-light-surface-3: "#e4d0e8"
-  plum-light-canvas: "#fffbff"
-  plum-light-rail: "#dec7e4"
-  plum-light-control-bg: "#ebdcef"
-  plum-light-text: "#3c2444"
-  plum-light-text-secondary: "#684d71"
-  plum-light-text-tertiary: "#674a71"
-  plum-light-accent: "#85418e"
-  plum-light-accent-hover: "#6c3074"
-  plum-light-accent-soft: "#e9c9ed"
-  plum-light-on-accent: "#ffffff"
-  plum-light-border: "#8b6795"
-  plum-light-separator: "#d5bddc"
-  plum-light-chart-grid: "#e8d9ec"
-  plum-light-chart-tick: "#684d71"
-  plum-light-chart-legend: "#3c2444"
-  plum-light-seg-thumb: "#fffaff"
-  graphite-dark-bg: "#1b1c1e"
-  graphite-dark-bg-elevated: "#242528"
-  graphite-dark-surface: "#252628"
-  graphite-dark-surface-2: "#2c2d30"
-  graphite-dark-surface-3: "#35363a"
-  graphite-dark-canvas: "#222325"
-  graphite-dark-rail: "#202123"
-  graphite-dark-control-bg: "#2c2d30"
-  graphite-dark-text: "#edeeec"
-  graphite-dark-text-secondary: "#c2c3c0"
-  graphite-dark-text-tertiary: "#b4b5b2"
-  graphite-dark-accent: "#92b5f6"
-  graphite-dark-accent-hover: "#b9cffa"
-  graphite-dark-accent-soft: "#303e55"
-  graphite-dark-on-accent: "#14233d"
-  graphite-dark-border: "#82858a"
-  graphite-dark-separator: "#3b3d41"
-  graphite-dark-chart-grid: "#38393d"
-  graphite-dark-chart-tick: "#c2c3c0"
-  graphite-dark-chart-legend: "#edeeec"
-  graphite-dark-seg-thumb: "#4a4c50"
-  graphite-light-bg: "#eeedea"
-  graphite-light-bg-elevated: "#faf9f6"
-  graphite-light-surface: "#fdfcf9"
-  graphite-light-surface-2: "#f4f3f0"
-  graphite-light-surface-3: "#e5e4e0"
-  graphite-light-canvas: "#fdfcf9"
-  graphite-light-rail: "#e3e2de"
-  graphite-light-control-bg: "#f4f3ef"
-  graphite-light-text: "#252629"
-  graphite-light-text-secondary: "#54565b"
-  graphite-light-text-tertiary: "#5e6064"
-  graphite-light-accent: "#245abd"
-  graphite-light-accent-hover: "#194697"
-  graphite-light-accent-soft: "#dce5f4"
-  graphite-light-on-accent: "#ffffff"
-  graphite-light-border: "#7d7f83"
-  graphite-light-separator: "#d4d3ce"
-  graphite-light-chart-grid: "#e1e0db"
-  graphite-light-chart-tick: "#54565b"
-  graphite-light-chart-legend: "#252629"
-  graphite-light-seg-thumb: "#fdfcf9"
+  light-primary-active: "#003a9e"
+  light-mc-text-color-main: "#151515"
+  light-mc-bg-color-panel: "#ffffff"
+  light-mc-bg-color-card: "#f2f3f7"
+  light-mc-button-border-color: "#787b87"
+  light-mc-color-b11: "#0053e2"
 typography:
   display:
-    fontFamily: "-apple-system, BlinkMacSystemFont, \"SF Pro Display\", \"PingFang SC\", \"Segoe UI\", \"Microsoft YaHei\", sans-serif"
+    fontFamily: "\"MiSans\", \"Segoe UI\", \"Microsoft YaHei\", sans-serif"
     fontSize: "34px"
-    fontWeight: 550
-    lineHeight: 1.15
-    letterSpacing: "-.025em"
-  delta:
-    fontFamily: "-apple-system, BlinkMacSystemFont, \"SF Pro Display\", \"PingFang SC\", \"Segoe UI\", \"Microsoft YaHei\", sans-serif"
-    fontSize: "30px"
-    fontWeight: 550
-    lineHeight: 1.15
-    letterSpacing: "-.025em"
-  display-compact:
-    fontFamily: "-apple-system, BlinkMacSystemFont, \"SF Pro Display\", \"PingFang SC\", \"Segoe UI\", \"Microsoft YaHei\", sans-serif"
-    fontSize: "30px"
-    fontWeight: 550
-    lineHeight: 1.15
-    letterSpacing: "-.025em"
-  delta-compact:
-    fontFamily: "-apple-system, BlinkMacSystemFont, \"SF Pro Display\", \"PingFang SC\", \"Segoe UI\", \"Microsoft YaHei\", sans-serif"
-    fontSize: "28px"
-    fontWeight: 550
-    lineHeight: 1.15
-    letterSpacing: "-.025em"
-  display-mobile:
-    fontFamily: "-apple-system, BlinkMacSystemFont, \"SF Pro Display\", \"PingFang SC\", \"Segoe UI\", \"Microsoft YaHei\", sans-serif"
-    fontSize: "32px"
-    fontWeight: 550
-    lineHeight: 1.15
-    letterSpacing: "-.025em"
-  headline:
-    fontFamily: "-apple-system, BlinkMacSystemFont, \"SF Pro Display\", \"SF Pro Text\", \"PingFang SC\", \"Hiragino Sans GB\", \"Noto Sans CJK SC\", \"Source Han Sans SC\", \"Microsoft YaHei UI\", \"Microsoft YaHei\", \"Segoe UI\", Roboto, sans-serif"
-    fontSize: "24px"
-    fontWeight: 700
-    lineHeight: 1
-    letterSpacing: "-.04em"
-  title:
-    fontFamily: "-apple-system, BlinkMacSystemFont, \"SF Pro Display\", \"SF Pro Text\", \"PingFang SC\", \"Hiragino Sans GB\", \"Noto Sans CJK SC\", \"Source Han Sans SC\", \"Microsoft YaHei UI\", \"Microsoft YaHei\", \"Segoe UI\", Roboto, sans-serif"
-    fontSize: "16px"
     fontWeight: 600
-  chat-title:
-    fontFamily: "-apple-system, BlinkMacSystemFont, \"SF Pro Display\", \"SF Pro Text\", \"PingFang SC\", \"Hiragino Sans GB\", \"Noto Sans CJK SC\", \"Source Han Sans SC\", \"Microsoft YaHei UI\", \"Microsoft YaHei\", \"Segoe UI\", Roboto, sans-serif"
-    fontSize: "15px"
+    lineHeight: 1.15
+    letterSpacing: "0"
+  delta:
+    fontFamily: "\"MiSans\", \"Segoe UI\", \"Microsoft YaHei\", sans-serif"
+    fontSize: "30px"
+    fontWeight: 600
+    lineHeight: 1.15
+    letterSpacing: "0"
+  display-compact:
+    fontFamily: "\"MiSans\", \"Segoe UI\", \"Microsoft YaHei\", sans-serif"
+    fontSize: "30px"
+    fontWeight: 600
+    lineHeight: 1.15
+    letterSpacing: "0"
+  display-tablet:
+    fontFamily: "\"MiSans\", \"Segoe UI\", \"Microsoft YaHei\", sans-serif"
+    fontSize: "28px"
+    fontWeight: 600
+    lineHeight: 1.15
+    letterSpacing: "0"
+  display-mobile:
+    fontFamily: "\"MiSans\", \"Segoe UI\", \"Microsoft YaHei\", sans-serif"
+    fontSize: "32px"
+    fontWeight: 600
+    lineHeight: 1.15
+    letterSpacing: "0"
+  headline:
+    fontFamily: "\"MiSans\", \"Segoe UI\", \"Microsoft YaHei\", sans-serif"
+    fontSize: "24px"
     fontWeight: 600
     lineHeight: 1.5
-  welcome:
-    fontFamily: "-apple-system, BlinkMacSystemFont, \"SF Pro Display\", \"SF Pro Text\", \"PingFang SC\", \"Hiragino Sans GB\", \"Noto Sans CJK SC\", \"Source Han Sans SC\", \"Microsoft YaHei UI\", \"Microsoft YaHei\", \"Segoe UI\", Roboto, sans-serif"
-    fontSize: "24px"
-    fontWeight: 550
-    letterSpacing: "-.025em"
-  welcome-mobile:
-    fontFamily: "-apple-system, BlinkMacSystemFont, \"SF Pro Display\", \"SF Pro Text\", \"PingFang SC\", \"Hiragino Sans GB\", \"Noto Sans CJK SC\", \"Source Han Sans SC\", \"Microsoft YaHei UI\", \"Microsoft YaHei\", \"Segoe UI\", Roboto, sans-serif"
-    fontSize: "22px"
-    fontWeight: 550
-    letterSpacing: "-.025em"
+  title:
+    fontFamily: "\"MiSans\", \"Segoe UI\", \"Microsoft YaHei\", sans-serif"
+    fontSize: "16px"
+    fontWeight: 600
+    lineHeight: 1.5
   body:
-    fontFamily: "-apple-system, BlinkMacSystemFont, \"SF Pro Display\", \"SF Pro Text\", \"PingFang SC\", \"Hiragino Sans GB\", \"Noto Sans CJK SC\", \"Source Han Sans SC\", \"Microsoft YaHei UI\", \"Microsoft YaHei\", \"Segoe UI\", Roboto, sans-serif"
+    fontFamily: "\"MiSans\", \"Segoe UI\", \"Microsoft YaHei\", sans-serif"
     fontSize: "14px"
+    fontWeight: 400
     lineHeight: 1.5
   reading:
-    fontFamily: "-apple-system, BlinkMacSystemFont, \"SF Pro Display\", \"SF Pro Text\", \"PingFang SC\", \"Hiragino Sans GB\", \"Noto Sans CJK SC\", \"Source Han Sans SC\", \"Microsoft YaHei UI\", \"Microsoft YaHei\", \"Segoe UI\", Roboto, sans-serif"
+    fontFamily: "\"MiSans\", \"Segoe UI\", \"Microsoft YaHei\", sans-serif"
     fontSize: "16px"
+    fontWeight: 400
     lineHeight: 1.8
   input-reading:
-    fontFamily: "-apple-system, BlinkMacSystemFont, \"SF Pro Display\", \"SF Pro Text\", \"PingFang SC\", \"Hiragino Sans GB\", \"Noto Sans CJK SC\", \"Source Han Sans SC\", \"Microsoft YaHei UI\", \"Microsoft YaHei\", \"Segoe UI\", Roboto, sans-serif"
+    fontFamily: "\"MiSans\", \"Segoe UI\", \"Microsoft YaHei\", sans-serif"
     fontSize: "16px"
+    fontWeight: 400
     lineHeight: 1.6
   label:
-    fontFamily: "-apple-system, BlinkMacSystemFont, \"SF Pro Display\", \"SF Pro Text\", \"PingFang SC\", \"Hiragino Sans GB\", \"Noto Sans CJK SC\", \"Source Han Sans SC\", \"Microsoft YaHei UI\", \"Microsoft YaHei\", \"Segoe UI\", Roboto, sans-serif"
-    fontSize: "13px"
-  legacy-annotation:
-    fontFamily: "-apple-system, BlinkMacSystemFont, \"SF Pro Display\", \"SF Pro Text\", \"PingFang SC\", \"Hiragino Sans GB\", \"Noto Sans CJK SC\", \"Source Han Sans SC\", \"Microsoft YaHei UI\", \"Microsoft YaHei\", \"Segoe UI\", Roboto, sans-serif"
+    fontFamily: "\"MiSans\", \"Segoe UI\", \"Microsoft YaHei\", sans-serif"
+    fontSize: "14px"
+    fontWeight: 400
+    lineHeight: 1.5
+  annotation:
+    fontFamily: "\"MiSans\", \"Segoe UI\", \"Microsoft YaHei\", sans-serif"
     fontSize: "12px"
   button:
-    fontFamily: "-apple-system, BlinkMacSystemFont, \"SF Pro Display\", \"SF Pro Text\", \"PingFang SC\", \"Hiragino Sans GB\", \"Noto Sans CJK SC\", \"Source Han Sans SC\", \"Microsoft YaHei UI\", \"Microsoft YaHei\", \"Segoe UI\", Roboto, sans-serif"
+    fontFamily: "\"MiSans\", \"Segoe UI\", \"Microsoft YaHei\", sans-serif"
     fontSize: "14px"
-    fontWeight: 620
+    fontWeight: 400
   number:
-    fontFamily: "-apple-system, BlinkMacSystemFont, \"SF Pro Display\", \"PingFang SC\", \"Segoe UI\", \"Microsoft YaHei\", sans-serif"
+    fontFamily: "\"MiSans\", \"Segoe UI\", \"Microsoft YaHei\", sans-serif"
     fontFeature: "\"tnum\""
 rounded:
-  sm: "10px"
-  md: "14px"
-  lg: "16px"
-  xl: "22px"
+  sm: "8px"
+  md: "12px"
+  lg: "12px"
+  xl: "16px"
   pill: "999px"
-  ai-field: "8px"
-  attachment-menu: "12px"
-  message-user: "16px 16px 4px 16px"
-  emergency-stop: "10px"
+  segment: "6px"
+  code: "4px"
+  message-user: "12px 12px 4px 12px"
 spacing:
   space-1: "4px"
   space-2: "8px"
@@ -482,220 +239,308 @@ spacing:
   space-8: "32px"
 components:
   button-primary:
-    backgroundColor: "{colors.dark-accent}"
-    textColor: "{colors.dark-on-accent}"
+    backgroundColor: "{colors.dark-primary}"
+    textColor: "{colors.dark-on-primary}"
     typography: "{typography.button}"
     rounded: "{rounded.sm}"
     padding: "0 14px"
     height: "44px"
   button-primary-hover:
-    backgroundColor: "{colors.dark-accent-hover}"
-  button-secondary:
-    backgroundColor: "{colors.dark-surface}"
+    backgroundColor: "{colors.dark-primary-hover}"
+    textColor: "{colors.dark-on-primary}"
+  button-primary-active:
+    backgroundColor: "{colors.dark-primary-active}"
+    textColor: "{colors.dark-on-primary}"
+  button-neutral:
+    backgroundColor: "{colors.dark-surface-2}"
     textColor: "{colors.dark-text}"
     typography: "{typography.button}"
     rounded: "{rounded.sm}"
     padding: "0 14px"
     height: "44px"
+  button-neutral-hover:
+    backgroundColor: "{colors.dark-surface-3}"
+    textColor: "{colors.dark-text}"
+  button-text:
+    backgroundColor: "transparent"
+    textColor: "{colors.dark-text-secondary}"
+    rounded: "{rounded.sm}"
+    size: "44px"
   button-danger:
     backgroundColor: "{colors.dark-danger-soft}"
     textColor: "{colors.dark-danger}"
     typography: "{typography.button}"
     rounded: "{rounded.sm}"
-    padding: "0 14px"
     height: "44px"
-  field-ai:
-    backgroundColor: "{colors.dark-control-bg}"
-    textColor: "{colors.dark-text}"
-    typography: "{typography.input-reading}"
-    rounded: "{rounded.ai-field}"
-    padding: "10px"
-    height: "44px"
-  nav-active:
-    backgroundColor: "{colors.dark-surface}"
-    textColor: "{colors.dark-text}"
-    typography: "{typography.label}"
-    rounded: "{rounded.sm}"
-    padding: "8px 0"
-    height: "72px"
-    width: "76px"
-  state-roasting:
-    backgroundColor: "{colors.dark-accent-soft}"
-    textColor: "{colors.dark-accent}"
-    rounded: "{rounded.pill}"
-    padding: "7px 10px"
-  card-settings:
-    backgroundColor: "{colors.dark-surface}"
-    textColor: "{colors.dark-text}"
-    rounded: "{rounded.lg}"
-    padding: "24px"
-  chat-shell:
-    backgroundColor: "{colors.dark-surface}"
-    textColor: "{colors.dark-text}"
-    rounded: "{rounded.lg}"
-    width: "520px"
-  emergency-stop:
+  button-safety:
     backgroundColor: "{colors.dark-danger}"
     textColor: "{colors.dark-on-danger}"
-    rounded: "{rounded.emergency-stop}"
+    rounded: "{rounded.sm}"
     height: "44px"
     width: "178px"
+  field:
+    backgroundColor: "{colors.dark-control-bg}"
+    textColor: "{colors.dark-text}"
+    typography: "{typography.body}"
+    rounded: "{rounded.sm}"
+    height: "44px"
+  navigation-active:
+    backgroundColor: "{colors.dark-accent-soft}"
+    textColor: "{colors.dark-accent}"
+    typography: "{typography.label}"
+    rounded: "{rounded.sm}"
+    padding: "12px"
+    height: "48px"
+  state-badge:
+    backgroundColor: "{colors.dark-accent-soft}"
+    textColor: "{colors.dark-accent}"
+    typography: "{typography.label}"
+    rounded: "{rounded.segment}"
+    padding: "8px 10px"
+  card:
+    backgroundColor: "{colors.dark-surface}"
+    textColor: "{colors.dark-text}"
+    rounded: "{rounded.md}"
+    padding: "24px"
+  ai-composer:
+    backgroundColor: "{colors.dark-surface-2}"
+    textColor: "{colors.dark-text}"
+    rounded: "{rounded.md}"
+    padding: "12px"
+  button-primary-light:
+    backgroundColor: "{colors.light-primary}"
+    textColor: "{colors.light-on-primary}"
+    typography: "{typography.button}"
+    rounded: "{rounded.sm}"
+    padding: "0 14px"
+    height: "44px"
+  button-primary-hover-light:
+    backgroundColor: "{colors.light-primary-hover}"
+    textColor: "{colors.light-on-primary}"
+  button-primary-active-light:
+    backgroundColor: "{colors.light-primary-active}"
+    textColor: "{colors.light-on-primary}"
+  button-neutral-light:
+    backgroundColor: "{colors.light-surface-2}"
+    textColor: "{colors.light-text}"
+    typography: "{typography.button}"
+    rounded: "{rounded.sm}"
+    padding: "0 14px"
+    height: "44px"
+  button-neutral-hover-light:
+    backgroundColor: "{colors.light-surface-3}"
+    textColor: "{colors.light-text}"
+  button-text-light:
+    backgroundColor: "transparent"
+    textColor: "{colors.light-text-secondary}"
+    rounded: "{rounded.sm}"
+    size: "44px"
+  button-danger-light:
+    backgroundColor: "{colors.light-danger-soft}"
+    textColor: "{colors.light-danger}"
+    typography: "{typography.button}"
+    rounded: "{rounded.sm}"
+    height: "44px"
+  button-safety-light:
+    backgroundColor: "{colors.light-danger}"
+    textColor: "{colors.light-on-danger}"
+    rounded: "{rounded.sm}"
+    height: "44px"
+    width: "178px"
+  field-light:
+    backgroundColor: "{colors.light-control-bg}"
+    textColor: "{colors.light-text}"
+    typography: "{typography.body}"
+    rounded: "{rounded.sm}"
+    height: "44px"
+  navigation-active-light:
+    backgroundColor: "{colors.light-accent-soft}"
+    textColor: "{colors.light-accent}"
+    typography: "{typography.label}"
+    rounded: "{rounded.sm}"
+    padding: "12px"
+    height: "48px"
+  state-badge-light:
+    backgroundColor: "{colors.light-accent-soft}"
+    textColor: "{colors.light-accent}"
+    typography: "{typography.label}"
+    rounded: "{rounded.segment}"
+    padding: "8px 10px"
+  card-light:
+    backgroundColor: "{colors.light-surface}"
+    textColor: "{colors.light-text}"
+    rounded: "{rounded.md}"
+    padding: "24px"
+  ai-composer-light:
+    backgroundColor: "{colors.light-surface-2}"
+    textColor: "{colors.light-text}"
+    rounded: "{rounded.md}"
+    padding: "12px"
 ---
 
 # Design System: Ganf's 咖啡烘焙机
 
 ## Overview
 
-**Creative North Star: "安静的烘焙工作区 · Quiet Roasting Workspace"**
+**Creative North Star: "Mhub 工作区"**
 
-石墨灰与暖白构成日常烘焙工作区，克制的蓝色标识重要动作、当前选择与键盘焦点。系统字体、稳定读数和清楚的任务分组让操作者先读曲线，再识别下一步。可操作按钮以细顶光、下沿和短按压行程呈现实体感；内容面保持平面。
+以用户指定的正式 Mhub 主程序／音频界面为视觉权威。黑白灰纯色表面承载内容，蓝色区分主要操作、当前选择和可见焦点。按钮平面、边界清楚，曲线与设备状态保持视觉中心。
 
-AI 对话沿用用户确认的 Codex 简约方向：阅读区与一个内嵌输入区主导界面，常用动作直接可达，账户、模型、历史和低频选项按需展开。专业功能完整保留，通过任务组和折叠详情逐步呈现。
+同一套展示层覆盖五个工作区、独立编辑器、AI 和动态弹层。以清楚的设备身份、稳定的读数、足够大的触控目标和渐进菜单组织专业功能；浏览、保存与应用的区分必须能从操作层级辨认。
 
-本规范从当前共享 Web 前端提取，覆盖浏览器、树莓派 kiosk 与 Tauri。配色以 desktop/tools/theme-palettes.mjs 及其生成的 theme.css 最终区块为源；布局和控件以两入口在 atlas.css 之后加载的 instrument.css 最终级联为准（缓存版本 3.29）。frontmatter 的 dark / light 记录默认石墨配色，其余配色使用各自前缀。已确认方向见 .impeccable/surfaces/roaster-static-index-html.md（Operate，code-led，seed:3329047aed8ff09d）。
+2026-10-26 的用户确认全面替换此前实体石墨方向与六配色。此文是已实现系统的记录；页面编排见 [.impeccable/surfaces/roaster-static-index-html.md](.impeccable/surfaces/roaster-static-index-html.md)，参考身份、源码哈希与适配证据见 [docs/design/mhub-source-map.md](docs/design/mhub-source-map.md)。前置数据是规范令牌，运行时仍以代码源为准。
 
 **Key Characteristics:**
-
-- 石墨灰、暖白与少量蓝色重点；六套完整配色共享同一结构。
-- 实体按钮与平面内容面分工明确，常用操作可见，复杂能力分组展开。
-- 曲线占主区域，读数使用等宽数字特性，图表和 DOM 共用语义颜色。
-- 简约聊天保留模型、账户、附件、上下文、历史与发送 / 停止能力。
-- 离线资源、可见焦点、减少动效及急停优先层次属于基础体验。
+- 黑白灰纯色面层与语义蓝色，只有浅色／深色／跟随系统。
+- 本地 MiSans、离线 Phosphor、正文与控件优先使用 14–16px。
+- 平面按钮、单一输入边界、稳定的实时曲线与安全区域。
+- 区域进入与退出可中断，快速操作始终服从最后一次意图。
 
 ## Colors
 
-默认配色是温暖的中性色工作区。frontmatter 记录实际复用颜色；背景、导航、画布、控件和文字随当前配色整体切换。
+浅色以白色面板与冷灰背景组织内容，深色以近黑背景与分级灰面层保持同样的结构。前置数据中的 dark-*／light-* 一一对应两主题颜色；auto 只解析系统明暗，不是第三套配色。首帧前应用主题，保留 roaster.theme 的 dark／light／auto，旧 roaster.palette 统一迁移为 mhub，并跨窗口同步。
 
 ### Primary
 
-- **克制蓝**：默认石墨配色的 accent、accent-hover、accent-soft 和 on-accent 用于重要动作、当前选择、下一事件及焦点。大面积背景继续使用中性面层。
-- **可选配色**：经典蓝（classic）、林间绿（sage）、暖沙色（sand）、深海青（ocean）、暮紫（plum）与石墨（graphite）均保留完整深浅外观。选择预览使用同源面层值，跟随当前深浅模式；它们不替代页面的语义变量。
+- **操作蓝**：primary、primary-hover、primary-active 与 on-primary 组成实色主操作；用于明确保存、主要流程动作和 AI 发送／停止。
+- **焦点蓝**：accent、accent-hover 与 accent-soft 用于链接、键盘焦点、当前任务、账户选择和下一事件；深色焦点蓝比实色操作蓝更亮。
+- **Mhub 语义别名**：mc-text-color-main → text、mc-bg-color-panel → surface、mc-bg-color-card → surface-2、mc-button-border-color → border、mc-color-b11 → primary。info 系列沿用 accent 系列；primary-soft 沿用 accent-soft。
 
 ### Neutral
 
-- **石墨面层与暖白面层**：bg 承载工作区；bg-elevated 承载顶部、底部和浮层；rail 承载导航；canvas 承载曲线；surface、surface-2、surface-3 与 control-bg 区分内容、输入和状态。
-- **文字与边界**：text 承载正文；text-secondary 用于说明、字段标签与输入占位；text-tertiary 用于较轻的辅助信息；border 与 separator 分开表达可识别边界和内容分隔。输入占位使用 text-secondary 且 opacity 为 1。
-- **数据语义**：温度为暖橙，设定值为蓝，RoR 为绿，目标曲线为灰；比较曲线、编辑节点、阶段和事件使用独立令牌。配色改变不重定义数据角色。
-- **安全语义**：danger、status-online 与 warning 分别表达危险、连接和警示；状态同时通过文字、图标或位置说明。
+- **背景与面板**：bg 承载工作区底色；rail／bg-elevated 承载设备侧栏、安全栏和浮层；surface／canvas 承载主要内容；surface-2／control-bg 承载中性控件，surface-3 承载悬停与次级填充。
+- **文字与边界**：text 是正文，text-secondary／text-tertiary 是辅助内容；border 是输入等需要明确辨认的外边界，separator 只划分区域。不要用低对比的分隔线替代输入边界。
+- **业务语义色**：danger／danger-soft／on-danger 区分软危险操作与实色急停；warning 和 status-online 表示警告与连接。chart-*、phase-*、event-*、delta-*、editor-* 保留温度、SV、ROR、目标、阶段、事件、偏差与编辑节点语义，不生成额外主题。
 
-**The One Accent Rule.** 一个工作区使用当前配色的一组强调色表示重要动作与选择；曲线、阶段、事件和危险状态保留各自语义。
+**The Source Rule.** 颜色与共享令牌只在 desktop/tools/theme-palettes.mjs 编辑，再生成 theme.css；mhub.css 是最终展示层。本文前置数据把源中的颜色别名展开为当前实值，不能反向建立第二套主题。
 
-**The Shared Semantic Color Rule.** 读数、图例与 canvas 对同一数据读取同一语义令牌；切换外观后重新取色，并以无动画方式更新图表。
-
-外观模式存于 roaster.theme（dark / light / auto），缺失或无效时跟随系统。配色单独存于 roaster.palette；默认或无效值使用 graphite。3.29 的一次性迁移把旧缺省值或 classic 改为 graphite，保留其他已选配色；迁移后仍可明确选择全部六套配色。theme.js 在首帧前设置外观与配色；主题事件保留 theme、mode、palette。
+**The Semantic Blue Rule.** 实色主要按钮使用 primary／on-primary，链接、焦点和选中内容使用 accent／accent-soft。深色主题中这两种蓝色承担不同对比任务，不能互换。
 
 ## Typography
 
-**Display Font:** 本地系统数字栈，对应 number；它通过 tabular-nums 与 tnum 稳定数字宽度，并非代码等宽字体。
+**Display Font:** MiSans，回退 Segoe UI、Microsoft YaHei、sans-serif。
+**Body Font:** 同一 MiSans 字体栈，字体随应用离线提供。
+**Label/Mono Font:** 同一字体栈，数据用 tabular-nums 与 tnum，不另引入装饰性等宽字体。
 
-**Body Font:** 本地系统无衬线栈，中文随系统回退；不加载联网字体。
-
-**Character:** 紧凑、清楚，以阅读和数据对齐形成层级。字号随用途和可用空间变化，不用装饰性大字或连续缩小文字压入面板。
+本地字重为 Regular（400）、Semibold（600）和 Bold（700），使用原字体字节与官方许可，见 roaster/static/assets/fonts/misans/NOTICE.md。离线 Phosphor 负责既有图标，图标必须有可理解的文字或可访问名称。
 
 ### Hierarchy
 
-- **Display**：主要温度等读数（34px / 550 / 1.15），偏差（30px）；较紧凑桌面为（30px / 28px），宽屏停靠后主读数为（30px），移动窄屏为（32px）。普通窄桌面四列读数仍保留源码的（28px）。
-- **Headline / Welcome**：管理页标题与聊天欢迎标题各有用途；欢迎标题（24px / 550），手机（22px），矮横屏（20px）。
-- **Title**：图表和分组标题以（16px）为主；简约聊天标题使用（15px / 600），阶段名称使用（20px）。
-- **Body / Reading**：普通正文与控件（14px）；聊天正文（16px / 1.8），输入（16px / 1.6）。聊天消息最大阅读宽度（72ch），用户消息不超过可用区域的（85%）。
-- **Label / Metadata**：导航、图例、事件按钮与消息署名使用（13px）的既有层级；读数标签、单位及命令区详情多为（14px）。原有局部辅助标注仍可为（12px），不能据此缩小正文、输入或关键操作。
+- **Display**：实时读数（34px／600／1.15），偏差读数（30px）；1024–1279px 紧凑读数为 30px，较窄布局为 28px，≤600px 的双列读数为 32px。数字不加入紧字距或装饰性发光。
+- **Headline**：工作区标题和 AI 欢迎标题（24px／600），手机 AI 欢迎标题为 22px。
+- **Title**：卡片标题、工作区上下文和 AI 面板标题（16px／600）；编辑画布标题为 18px，故障标题为 20px。
+- **Body / Label / Button**：常用正文、标签与按钮（14px），全局行高（1.5）；主要读文与 AI 消息（16px／1.8），AI 输入（16px／1.6），消息最大行长为 72ch。
+- **Annotation**：已有技术注释、图表刻度和辅助内容可保留 12px 下限；不得以此压缩主操作或正常正文。
 
-**The Stable Measurement Rule.** 数值使用数字字体栈和等宽数字特性，单位、坐标轴与数据角色持续可辨；实时变化不以发光或字号跳动表达。
+正文和控件不依赖全大写、英文眉题或密集微文案建立层级。字重、间距和语义颜色承担区分。
 
 ## Layout
 
-主应用桌面外壳由纵向导航（92px）、顶部栏（64px）和底部状态安全栏（64px）组成。烘焙区在剩余空间中布局：读数行在上方，主曲线与命令列在下方；命令列常规宽（296px），较紧凑桌面及宽屏聊天停靠场景使用（272px）。烘焙区常规内边距（20px 24px 24px），列间距（20px），较紧凑场景缩为（16px）。
+主程序为设备／任务侧栏、顶部上下文、可滚动工作区与底部安全栏。启动直接进入烘焙控制，五任务为烘焙控制、曲线管理、烘焙记录、原生工作台和设置。
 
-设置保留外观、AI 账户、设备连接、烘焙偏好四个任务组，每次只显示当前组。宽屏分类栏（168px）、栏间距（32px）、整体最大宽度（1120px）。账户列表与详情间距（32px），详情内使用（12–16px）的字段和操作节奏。空间不足时分类和账户列表改为横向或单列，内容允许换行与滚动。
+| 区域 | 当前尺寸与行为 |
+| --- | --- |
+| 主壳 | 侧栏 220px，头栏 56px，安全底栏 64px；内容使用 minmax(0,1fr) 避免长文本挤出布局 |
+| 紧凑任务栏 | 1024–1279px 为 72px；只显示有可访问名称的 24px 图标，隐藏设备详情和品牌文字 |
+| 窄屏任务栏 | ≤1023px 变为头栏下 52px 横向任务区，项目至少 80px 宽、48px 高，可横向滚动 |
+| 烘焙工作区 | 四个读数位于图表上方；顶行 100px，命令区 272px，常规区域间距 20px，外侧内距 20px 24px 24px |
+| 管理工作区 | 常规内距 24px；曲线／记录列表与详情为 260px + 弹性列；≤1023px 进入列表或详情单列流程 |
+| 设置 | 168px 任务导航 + 弹性内容，最大宽 1120px、间距 24px；≤700px 导航横排 |
+| AI 常规面板 | 520px 宽，顶部 68px、右侧 12px、底部 76px；≥1600px 时为工作区让出 544px，形成并排 |
+| AI 放大／紧凑 | 放大填充侧栏右侧、头栏与安全栏之间；≤1279px 默认同样填充此区域；独立编辑器保留四周 12px 浮层边距 |
+| 独立编辑器 | 保留指针画布和独立滚动节点区；≤1023px 节点区 300px；≤820px 画布与节点区纵向排列，页面允许纵向滚动 |
 
-视口宽度达到（1280px）时，普通聊天为宽（520px）的抽屉；仅在宽度达到（1600px）且未放大时为聊天保留（544px）工作区。放大聊天在当前工作区内展开，主应用保留顶部、导航和安全底栏。较窄桌面聊天占满可用工作区；宽度小于（1024px）时主导航转为横向，主应用行高为顶部（64px）、导航（52px）、内容与底部（64px）。编辑器沿用自己的画布、节点侧栏与模态对话几何。
-
-响应式以视口断点和实际工作区容器共同决定，包括用户 UI 缩放后的可用宽高。工作区宽度不超过（840px）时，读数、曲线与命令区堆叠，曲线行保留（430px）；不超过（540px）时改为两列读数与三列事件按钮。工作区高度不超过（540px）时，桌面曲线行保留至少（380px）并允许滚动。视口不超过（600px）时也使用两列读数、三列事件操作。
-
-矮横屏高度不超过（480px）且宽度至少（600px）时，聊天阅读区与输入区左右排列；已选上下文在输入区横向滚动并保留移除动作，阅读、输入、发送与底部安全入口持续可达。
+间距基元为 4／8／12／16／24／32px。容器宽度参与布局：工作区≤840px 时读数、图表、命令纵排；≤540px 时读数双列、事件三列。工作区高度≤540px 时可滚动，图表行至少 380px。≤600px 省略非关键头栏时间／全屏入口，并保留急停和触控操作。横向短屏（高度≤480px、宽度≥600px）AI 消息与输入分列，避免输入挤走阅读区。界面缩放应走相同自适应路径。
 
 ## Elevation & Depth
 
-内容面以色调、间距和分隔建立层次，设置分组、曲线预览与图表保持平面。可操作的标准控件使用有限的柔和阴影、细顶光和下沿；按下时下移（1px）并收拢阴影。菜单、历史和宽屏聊天抽屉使用独立浮层阴影。完整公式见侧车 extensions.shadows；主题深浅变化沿用实际语义变量。
+深度以纯色面层表达，卡片、按钮、数字与滑块没有装饰性阴影；不使用壁纸、模糊、磨砂、光晕或拟物高光。悬浮 AI、菜单、提示、普通对话和故障内容使用同一 pop 阴影；遮罩可使用背景与透明色混合，但不加背景模糊。
 
-急停的下沿厚度（3px）来自用户确认的实体按钮方向，只属于这一安全控件；不推广成内容卡片的硬偏移阴影。急停保留当前局部按压状态，不把它当作所有按钮的模板。输入区使用轻微内凹阴影，阅读区保持安静。面板不使用 backdrop-filter 或大面积模糊。
+### Shadow Vocabulary
 
-**The Tactile Action Rule.** 深度帮助识别可操作控件；内容面保持平面，标准按钮按压采用短距离位移。
+- **card / inset-top / thumb**：none；保持普通结构平面。
+- **pop-dark**：0 16px 48px rgba(0,0,0,.4)；深色浮层。
+- **pop-light**：0 16px 48px rgba(20,25,40,.16)；浅色浮层。
 
-**The Safety Above Workspace Rule.** 普通弹窗、聊天与图表全屏位于急停底栏之下，故障层位于其上；窄屏与横屏保留安全入口。
+**The Flat Surface Rule.** 普通卡片与按钮静止时没有投影、渐变或内凹高光；层级由纯色面层、间距与必要边界表达。只有悬浮面板、菜单、提示和对话层使用 pop 阴影。
 
-普通聊天、工作台与图表浮层位于（z-index 1010），安全底栏为（1020），故障层为（1100）；提示消息为（1200）且不接收指针，不能阻断安全操作。
+普通对话、AI 和菜单位于安全栏下方：工作台对话 z-index 1000，连接提示 1008，AI／设置／确认 1010；安全底栏 1020，故障层 1100。非交互提示可在 1200，但 pointer-events:none，不能遮挡或截获安全操作。
 
 ## Shapes
 
-共享主形状是控件小圆角（10px）、分组圆角（14px）和内容面圆角（16px）。普通聊天抽屉与输入区均为（16px）；普通字段保留（8px），附件菜单保留（12px）。急停使用（10px）。用户消息气泡为（16px 16px 4px 16px），保留下角的会话方向。
+- **常规控件**（8px）：主要／中性／危险按钮、普通输入、任务导航、曲线列表项、附件菜单。
+- **内容面板**（12px）：图表、命令区、预览、记录、设置卡片、编辑画布／节点区、普通对话与 AI 面板／输入外壳。
+- **大圆角令牌**（16px）：保留 radius-xl 供既有共享组件使用；不得用它覆盖已经明确为 8px 或 12px 的 Mhub 组件。
+- **嵌套状态**（6px）：分段控件内部选项和烘焙状态标记。
+- **微型内容**（4px）：消息内行内代码；用户消息采用 12px 12px 4px 12px 的折角，不能推广为普通卡片样式。
+- **圆形／胶囊**：仅用于连接点、滚动条、既有非交互提示与少量圆形图标入口；不将所有操作做成胶囊。
 
-独立连接或错误对话仍可沿用已有（22px）局部圆角；这不是当前桌面聊天的圆角。只读状态徽章保留 pill 形，发送 / 停止采用圆形图标按钮。边界读取 border / separator，当前选择可以增加强调色边界，不要求所有组件采用同一个圆角。
+面板默认用色阶与间距分隔。输入的 1px 外边界、分隔线和控件状态边界按用途保留，透明布局容器不因此被提升为可见卡片。
 
 ## Components
 
 ### Buttons
 
-清楚、可触、有实体按压反馈。标准按钮使用小圆角（10px）、控件字（14px）和至少（44px）的常规操作命中区域；主要开始按钮高（60px）。中性按钮以 surface 到 surface-2 的轻微渐变、text 与细分隔线呈现；主要动作使用 accent 与 on-accent，hover 使用 accent-hover。危险次动作读取 danger-soft 与 danger。焦点使用（2px）轮廓，普通区域外移（2–3px），聊天内可以内收。标准按钮和事件按钮按下位移（1px），禁用时取消阴影与位移并提供禁用状态。
+平面、直接、无位移的反馈。常用按钮至少 44px 高且 44px 宽，常规字为 14px／400、圆角 8px；主要下一步按钮至少 56px 高。主程序常规水平内距 14px，独立编辑器 13px，AI 操作按所在区域使用 12px。
 
-聊天头部图标和低频菜单项使用平面控件，发送 / 停止使用 text 与 surface 的中性对比圆形按钮。急停高（44px）、宽至少（178px），使用危险色、细顶光和实体下沿；其现有按下缩放（0.97）是局部实现，不替代标准控件的位移规则。
+Primary 使用 primary／on-primary，hover 与 active 使用各自令牌；Neutral 使用 surface-2、separator 边界，hover 使用 surface-3／border；文字与图标按钮使用透明底与 text-secondary。按钮状态只改变颜色、边界和透明度（150ms／ease），没有按压缩放和抬升。通用 disabled、aria-busy、aria-disabled 样式以 0.4 透明度和 not-allowed 光标表示不可用；具体控件的可用状态由原有控制器维护。键盘焦点为 2px accent 外环、偏移 3px。
+
+软危险按钮使用 danger-soft／danger；E-STOP 与故障复位使用 danger／on-danger 实色。安全按钮与故障层的行为由既有控制器管理，普通危险按钮不能借用其层级。E-STOP 的二次确认用固定轮廓，不添加脉动或缩放。
 
 ### Chips
 
-烘焙状态等只读徽章保持语义 pill，不承担点击。附件与已选上下文保留可识别名称和明确移除动作；它们是可操作内容，不能套用只读状态尺寸。聊天上下文在桌面可使用紧凑高度（36px），手机与矮横屏至少（44px）。
+烘焙状态采用 accent-soft 背景与 accent 文字、6px 圆角、8px 10px 内距。AI 上下文项为 14px、至少 44px 触控目标，长名称省略且仍保留语义；状态色不能代替文字含义。
 
 ### Cards / Containers
 
-设置分组为 surface、内容面圆角（16px）与平面层次；宽屏内边距（24px），手机（18px）。账户项与配色选项采用分组圆角（14px），选中态通过 accent-soft、文字与边界表达。命令区与图表为（16px）圆角，命令区按任务分节；事件详情默认折叠，事件按钮和完整事件值仍保留。列表预览、采用草稿和应用动作保持清楚的独立步骤。
+常规面板为 surface、12px 圆角和 24px 内距，无装饰阴影或额外外框。内容分组可用 separator。曲线列表项为透明底、8px 圆角、16px 内距，hover 使用 surface-2，预览选择使用 accent-soft。列表预览不等于应用曲线。
 
 ### Inputs / Fields
 
-普通字段使用 control-bg、text 和可识别边界；AI 字段的输入与正文保持（16px）。聊天只有一个内嵌输入区，外壳（16px）圆角、轻微内凹，内部 textarea 透明、圆角（8px）、最小高度（64px），允许扩展到（144px）。辅助文字与占位使用 text-secondary，焦点持续可见。错误、授权失效或目录加载失败显示具体文字和重试入口；提交状态不伪装成成功。
+普通输入为 control-bg、text、1px border、8px 圆角和至少 44px 高。独立字段焦点为 2px accent 外环、偏移 2px。搜索与单位数字输入只在外壳绘制边界；AI 输入外壳为 12px 圆角，textarea 使用透明底、零边框、16px／1.6，最小高度 64px、最大高度 144px。外壳 focus-within 接管焦点环，错误用清楚的文字与 danger 语义，不能只依赖颜色。
+
+**复合输入边界。** 搜索、单位数字与 AI 输入都由外壳承担唯一可见边界和 focus-within 焦点；内部输入透明且无边框，不叠加第二道边界。
 
 ### Navigation
 
-桌面纵向导航使用紧凑文字（13px）与图标，单项高至少（72px）；当前任务以 surface、text、有限按钮阴影和强调色图标共同标记。窄屏改为横向导航，单项高至少（48px）。设置分类保留明确选中态、tab / tabpanel 关系，以及方向键、Home、End 操作。
+常规任务入口至少 48px 高，内距 12px、间距 12px、14px 正文和 20px 图标。默认 text-secondary，hover 为 surface-2／text，当前任务为 accent-soft／accent 与 600 字重。紧凑侧栏图标明确 display:inline-block，不能被旧窄屏规则隐藏；横向任务模式保留文字。设备连接副本与底部状态同步。
 
-### Local AI Accounts & Conversation
+### AI Conversation
 
-桌面账户与历史固定保存在本机，不随设备地址改变归属。连接入口按本地模型、订阅登录、其他订阅与 API 分组；高级连接和参数按需展开。账户连接后自动保存，服务或官方客户端提供模型目录，模型变更显示持久化结果。恢复账户和会话不要求再次登录，也不在启动时自动打开授权页面。
+单一对话面板，头部用历史、新对话、更多、关闭等图标入口；账户／模型与附件靠近输入区，低频选项在有名称的菜单中。消息使用 16px／1.8、最大 72ch，助手正文无气泡底，用户消息以 surface-2 区分。输入只有一个外壳边界；当前任务在 AI 并排／放大／关闭之间保留。账户、模型与会话仅在本机保存，启动静默恢复，不重放登录弹窗。
 
-对话头部保留会话历史、新对话、更多选项和关闭；更多选项内提供放大、账户设置、重命名与删除。模型与账户选择由输入区的模型菜单展开，切换可见反馈并延续历史，不把选择器常驻头部。一个附件入口收纳文件 / 图片、曲线 / 记录与当前页面数据，输入区保留已选上下文和发送 / 停止状态。
+### Region Motion
 
-只有本页明确发起、且匹配已知登录标识的授权请求，才可以自动打开系统默认浏览器。恢复中的旧授权事件仅提供继续按钮；打开失败时保留重试、复制地址及独立设备码。授权失效、额度或目录失败如实呈现，不静默切换到另一计费服务。真实订阅授权留给用户实际使用，本规范不宣称真实账户或订阅验证完成。
+区域统一使用 200ms 与 cubic-bezier(.43,.77,.16,1)，离开时反转关键帧。七种类型与当前绑定如下：
 
-**The Explicit Adoption Rule.** 列表选择只预览，AI 只提供建议；采用进入草稿，保存与应用由操作者分别明确执行。
+| 类型 | 进入 | 当前绑定 |
+| --- | --- | --- |
+| sidebar | Y 100% → 0 | 首屏任务导航 |
+| header | Y -100% → 0 | 首屏侧栏产品身份 |
+| tab | X 100% → 0 | AI 面板打开／关闭 |
+| content | opacity 0 → 1、scale 1.25 → 1 | 曲线、记录、设置等管理工作区及普通弹层；含 canvas 的弹层跳过 |
+| mouseKey | X calc(-100% - 60px) → 0 | 可复用类型，当前没有页面绑定 |
+| footer | 视口底部之外 → 0 | 可复用类型，当前不绑定安全底栏 |
+| up | Y 20px → 0、opacity 0 → 1 | AI 菜单、附件菜单与设置任务内容 |
 
-### Charts, Safety & Offline Operation
+每批最多 5 项，requestIdleCallback 超时 40ms，回退调度 20ms。进入／退出返回 Promise，重复目标先取消旧动画；完成或取消时移除 WAAPI 效果，不把临时 transform 写回业务样式。页面隐藏暂停、返回恢复，减少动效直接完成视觉状态，主题切换仅临时使用 200ms 颜色过渡。离开工作区不可交互，快速切换与 AI 关闭后重开均守护最后意图。
 
-曲线编辑器保留画布、节点与助手分工；顶部工具按实际高度展开，节点属性区独立滚动，手机允许整个文档滚动。聊天占据模态工作区时暂时禁用背景编辑，关闭后焦点返回入口。图表保留一套真实图例，Pointer Events、指针捕获和编辑区域的触控契约维持不变。
-
-图表、读数和标签从同源语义变量取色；高频更新和拖动不启用常驻颜色过渡。主动主题切换才短暂启用过渡，约（280ms）后移除。标准实体控件反馈为（120ms）；减少动效时取消非必要过渡，状态仍即时可辨。
-
-急停在普通模态、全屏图表与聊天中保持可达，故障层提供错误文字和恢复路径。AI 不取得加热、SV、启停、E-STOP、串口或 GPIO 控制权。原生 .kpro / .klog 工作台保持离线、未知字段及原始字节保真，对未验证格式保留只读边界。
-
-资源使用本地字体、图标与脚本；树莓派性能约束继续禁止 backdrop-filter 与大于（2px）的模糊。当前外观证据包含 desktop/build/qa/instrument-v3.29/native 下的原生烘焙、浅深聊天与放大聊天截图，以及同轮浏览器四尺寸截图；界面证据不等同于真实订阅授权或硬件验证。此轮没有新增栅格资产。
+**稳定区域。** 安全底栏、实时读数、实时图表、原生工作台图表和编辑画布不参与区域位移或缩放。视觉退出不能延迟业务状态或覆盖用户后来的操作。
 
 ## Do's and Don'ts
 
 ### Do:
-
-- **Do** 以生成的 theme.css 语义变量和最后加载的 instrument.css 为当前实现依据，核对六种配色的深浅外观。
-- **Do** 使用石墨灰与暖白作为默认面层，把蓝色用于重要动作、选择与焦点。
-- **Do** 让标准可操作按钮保留细顶光、柔和阴影与（1px）按压行程，内容面保持平面。
-- **Do** 保持（16px）聊天阅读正文、（14px）控件与可读元数据，按实际工作区宽高响应 UI 缩放。
-- **Do** 通过任务组、命名菜单与折叠详情呈现复杂功能，保留模型、账户、附件、历史和上下文能力。
-- **Do** 在窄屏与横屏保留阅读、已选上下文及移除、输入、发送 / 停止与急停入口。
-- **Do** 恢复本机保存的账户和会话，只让本页明确发起的已知登录自动打开授权页面。
-- **Do** 区分源代码、浏览器、安全模拟器、原生窗口、真实订阅与硬件证据。
+- Do 使用共享语义变量和最终展示层，让五个工作区、独立编辑器、AI 与弹层保持一致。
+- Do 把主要操作、软危险操作、急停与故障复位按语义区分，并保持安全区域可达。
+- Do 保留常用触控目标至少 44px、正文与控件 14–16px、可见键盘焦点和减少动效。
+- Do 在 2048、1366、1024×640、375px 与 130% 缩放中检查读数、任务导航、AI、滚动和编辑流程。
+- Do 保留浏览／保存／应用分离、原生文件未知字段保真、指针编辑与撤销。
+- Do 静默恢复本机 AI 账户、模型和历史；只有本页明确发起且匹配的登录才打开系统默认浏览器。
 
 ### Don't:
-
-- **Don't** 把默认石墨配色改回大面积蓝底、纯黑白高对比或全屏单一强调色。
-- **Don't** 用当前强调色重定义温度、RoR、阶段、事件或危险状态。
-- **Don't** 把所有元数据写成（14px），或把所有组件强制成同一圆角；遵循用途和实际实现。
-- **Don't** 为聊天常驻头部增加账户与模型选择器，或把低频功能重新铺成永久工具栏。
-- **Don't** 将预览、采用草稿、保存或切换账户等同于应用当前执行曲线。
-- **Don't** 用聊天、普通模态或图表全屏遮住急停，或降低故障信息的优先级。
-- **Don't** 引入联网字体、图标 CDN、backdrop-filter、大面积模糊或内容卡片的硬偏移阴影。
-- **Don't** 将历史截图、旧检测告警或未完成的真实授权写成当前视觉要求或验证结论。
+- Don't 恢复旧六配色、暖白石墨实体按钮、壁纸、模糊或装饰性光晕。
+- Don't 把 primary 与 accent 合并，或用品牌蓝覆盖图表、事件、阶段和危险语义色。
+- Don't 给复合输入内外同时绘制边框或焦点环。
+- Don't 为安全栏、实时数据和可编辑画布增加区域位移或缩放，或把七种可复用类型都写成已绑定页面行为。
+- Don't 让 AI 直接控制加热、SV、E-STOP、串口／GPIO 或当前已应用曲线；AI 仅给出建议，采用／保存／应用由操作者明确执行。
+- Don't 将账户凭据、会话、运行数据、构建产物或本机截图证据加入 Git，也不能用 Windows／模拟器证据声称真实硬件或真实付费授权已经通过。

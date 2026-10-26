@@ -4,7 +4,7 @@ import {tmpdir} from 'node:os';
 import {join,resolve,sep} from 'node:path';
 import assert from 'node:assert/strict';
 import {chromium} from 'playwright';
-const dir=await mkdtemp(join(tmpdir(),'roaster-debug-test-')),out=resolve(process.env.ROASTER_QA_DIR||'../docs/qa/workspace-v3.26/native-dev');
+const dir=await mkdtemp(join(tmpdir(),'roaster-debug-test-')),out=resolve(process.env.ROASTER_QA_DIR||'build/qa/mhub-v3.30/dev-host');
 await mkdir(out,{recursive:true});let host,browser;const checks=[],errors=[];
 try {
   host=await startDevServer({port:0,freeze:true,dataDir:dir});
@@ -16,7 +16,7 @@ try {
   browser=await chromium.launch({channel:'msedge',headless:true});const page=await browser.newPage({viewport:{width:1366,height:800}});page.on('pageerror',error=>errors.push(error.message));
   await page.goto(origin);await page.locator('.connection-copy').filter({hasText:'安全模拟器'}).waitFor();assert.equal(await page.locator('#quick-profile-select option').count(),3);checks.push('real entry serves current HTML/CSS/JS and simulator WS with 3 profiles');
   const offline=await browser.newPage();
-  await offline.route('**/adapter-test',route=>route.fulfill({contentType:'text/html',body:'<html><head><link rel="stylesheet" href="/css/theme.css"><link rel="stylesheet" href="/css/atlas.css"></head><body><button data-tab="workbench" onclick="window.chosen=true">工作台</button><script>window.__TAURI_INTERNALS__={};localStorage.setItem("roaster.backendUrl","http://127.0.0.1:9");</script><script src="/js/tauri-adapter.js"></script></body></html>'}));
+  await offline.route('**/adapter-test',route=>route.fulfill({contentType:'text/html',body:'<html><head><link rel="stylesheet" href="/css/theme.css"><link rel="stylesheet" href="/css/mhub.css"></head><body><button data-tab="workbench" onclick="window.chosen=true">工作台</button><script>window.__TAURI_INTERNALS__={};localStorage.setItem("roaster.backendUrl","http://127.0.0.1:9");</script><script src="/js/tauri-adapter.js"></script></body></html>'}));
   await offline.goto(origin+'/adapter-test');await offline.locator('#backend-connection-notice').filter({hasText:'桌面安装包不包含控机 HTTP 服务'}).waitFor();await offline.locator('#backend-connection-notice button').filter({hasText:'打开离线工作台'}).click();assert.equal(await offline.evaluate(()=>window.chosen),true);await offline.close();checks.push('first-launch missing-backend explanation and offline workspace navigation');
   await page.locator('[data-tab=settings]').click();await page.getByRole('tab',{name:'AI 账户',exact:true}).click();await page.locator('.ai-config-form').waitFor();await page.waitForFunction(()=>document.querySelector('.ai-config-form h4'));assert.equal(await page.locator('.ai-status').filter({hasText:'not found'}).count(),0);
   const state=await page.evaluate(()=>window.RoasterChat.request('profiles.list'));assert.equal(state.length,0);const providers=await page.evaluate(()=>window.RoasterChat.request('providers'));assert.ok(providers.length>0);checks.push('real local AI service, providers/settings work without a key or fake preconfigured profile');

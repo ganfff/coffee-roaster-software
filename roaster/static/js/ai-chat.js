@@ -382,8 +382,9 @@
   }
   function closeTrays(){panel?.querySelectorAll('.ai-tray').forEach(n=>{n.hidden=true;const b=document.querySelector('[aria-controls="'+n.id+'"]');b?.setAttribute('aria-expanded','false');});}
   function toggleTray(id,trigger){const tray=$(id),open=tray.hidden;closeTrays();tray.hidden=!open;trigger.setAttribute('aria-expanded',String(open));if(open)tray.querySelector('input,select,button')?.focus();}
-  function show() {if(!panel)return;panel.hidden=false;$('ai-launcher').setAttribute('aria-expanded','true');syncEditorConversation();composer?.focus({preventScroll:true});}
-  function hide() {closeTrays();panel.hidden=true;syncEditorConversation();const launch=$('ai-launcher');launch.setAttribute('aria-expanded','false');(launch.offsetParent?launch:document.querySelector('.ai-settings-chat'))?.focus();}
+  let presentationRevision=0;
+  function show() {if(!panel)return;presentationRevision++;const opening=panel.hidden;panel.hidden=false;if(opening)window.RoasterMotion?.enter(panel,'tab');else window.RoasterMotion?.cancel(panel);$('ai-launcher').setAttribute('aria-expanded','true');syncEditorConversation();composer?.focus({preventScroll:true});}
+  function hide() {closeTrays();const revision=++presentationRevision;const launch=$('ai-launcher');launch.setAttribute('aria-expanded','false');const finish=()=>{if(revision!==presentationRevision)return;panel.hidden=true;syncEditorConversation();(launch.offsetParent?launch:document.querySelector('.ai-settings-chat'))?.focus();};if(window.RoasterMotion&&!panel.hidden)window.RoasterMotion.leave(panel,'tab').then(finish);else finish();}
   function renderQueued() {
     const target=$('ai-queued');if(!target)return;target.replaceChildren();
     const emptyContext=queuedContext&&queuedContext.kind==='chat'&&!Object.keys(queuedContext.context||{}).length;
@@ -635,7 +636,7 @@
     const modelButton=button('',()=>toggleTray('ai-model-options',modelButton),'ai-model-picker');modelButton.id='ai-model-picker';modelButton.setAttribute('aria-label','选择模型与账户');modelButton.setAttribute('aria-controls','ai-model-options');modelButton.setAttribute('aria-expanded','false');const modelName=el('span','选择模型');modelName.id='ai-model-name';modelButton.append(modelName,el('i',null,'ph ph-caret-down'));actions.append(attachments,modelButton,stopButton,sendButton);
     const inputShell=el('div',null,'ai-input-shell');inputShell.append(queued,picker,label,actions,input);inputArea.append(inputShell,info);
     panel.append(header,tools,more,historyBox,access,inline,clients,messages,inputArea);
-    const launch=$('ai-launcher')||button('AI 对话',()=>{});launch.id='ai-launcher';launch.classList.add('ai-launcher');launch.onclick=()=>{if(panel.hidden)show();else hide();};launch.setAttribute('aria-expanded','false');launch.setAttribute('aria-controls','ai-chat');
+    const launch=$('ai-launcher')||button('AI 对话',()=>{});launch.id='ai-launcher';launch.classList.add('ai-launcher');launch.onclick=()=>{if(panel.hidden||launch.getAttribute('aria-expanded')==='false')show();else hide();};launch.setAttribute('aria-expanded','false');launch.setAttribute('aria-controls','ai-chat');
     document.body.append(panel);if(!launch.parentElement){const topbar=document.querySelector('.header-right');if(topbar){launch.classList.add('ai-topbar-launcher');topbar.insertBefore(launch,topbar.children[1]||null);}else document.body.append(launch);}
     composer.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey&&!e.isComposing&&e.keyCode!==229){e.preventDefault();send().catch(fail);}});
     composer.addEventListener('paste',e=>{const files=[...(e.clipboardData?.files||[])];if(files.length){e.preventDefault();attach(files).catch(fail);}});

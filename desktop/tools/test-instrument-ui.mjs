@@ -8,7 +8,7 @@ import {join,resolve,sep} from 'node:path';
 import {tmpdir} from 'node:os';
 import assert from 'node:assert/strict';
 
-const out=resolve(process.env.ROASTER_QA_DIR||'build/qa/instrument-v3.29');
+const out=resolve(process.env.ROASTER_QA_DIR||'build/qa/mhub-v3.30/browser');
 const data=await mkdtemp(join(tmpdir(),'roaster-instrument-'));await mkdir(out,{recursive:true});
 const checks=[],errors=[],layouts=[];let service,host,browser,origin,loginCalls=0,opened=0;
 const faux=fauxProvider({provider:'openai',tokensPerSecond:800});
@@ -20,7 +20,12 @@ const factory=options=>(service=new AIService({...options,providerFactories:{ope
 const legacy=()=>{service.emit({id:'historical-login',type:'auth_notify',data:{url:origin+'/fixture-login'}});service.emit({id:'historical-login',type:'auth_done',data:{can_chat:true}});};
 async function ready(page){await page.waitForFunction(()=>window.RoasterChat&&document.querySelector('#ai-chat-profile')?.options.length>0);}
 async function choose(page,id){await page.getByRole('button',{name:'选择模型与账户',exact:true}).click();await page.locator('#ai-chat-profile').selectOption(id);await page.keyboard.press('Escape');}
-async function capture(page,name){await page.evaluate(()=>document.fonts.ready);await page.screenshot({path:join(out,name+'.png')});}
+async function capture(page,name){
+  if(name.startsWith('roast-'))await page.waitForFunction(()=>document.querySelector('#quick-profile-select')?.value&&document.querySelector('#delta-val')?.textContent!=='--'&&document.querySelector('#rpb-phase-label')?.textContent!=='待机');
+  await page.evaluate(()=>document.fonts.ready);
+  await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
+  await page.screenshot({path:join(out,name+'.png')});
+}
 async function bounds(page,label){const result=await page.evaluate(()=>{
   const rect=n=>{const r=n.getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height,right:r.right,bottom:r.bottom};};
   const visible=n=>n.getClientRects().length&&getComputedStyle(n).visibility!=='hidden';

@@ -1,6 +1,6 @@
 # Ganf's 咖啡烘焙机
 
-当前源码与免安装预览：**桌面 0.6.2 / Web 3.29**。包含烘焙控制、曲线与记录、原生 `.kpro/.klog` 工作台，以及本机 AI 对话与六套完整主题。当前界面采用石墨灰与暖白、实体按钮和分级对话菜单，已登录账户恢复时不会打开授权网页。
+当前源码与免安装预览：**桌面 0.7.0 / Web 3.30**。包含烘焙控制、曲线与记录、原生 `.kpro/.klog` 工作台，以及本机 AI 对话。当前界面采用 Mhub 黑白蓝深浅主题、平面按钮、设备任务侧栏与统一区域动画，已登录账户恢复时不会打开授权网页。
 
 | 目录 | 内容 | 入口 |
 | --- | --- | --- |
@@ -8,7 +8,7 @@
 | `desktop/` | Tauri 桌面壳、AI worker、打包与安全模拟器 | [开发与构建](desktop/README.md) |
 | `docs/` | 使用指南、当前验收、历史归档与维护记录 | [文档索引](docs/README.md) |
 | `scripts/` | 项目维护和生成物清理 | [目录约定](docs/project-structure.md) |
-| `dist/` | 本机安装包、ARM64 部署包和校验文件；不进入 Git | [交付记录](docs/qa/editor-session-v3.28.md) |
+| `dist/` | 本机安装包、ARM64 部署包和校验文件；不进入 Git | [交付记录](docs/qa/mhub-v3.30.md) |
 
 原生工作台提供编辑、ABC、参数、日志、比较、变换、合并及导出，内置离线说明中心。AI 提供多轮聊天、ChatGPT/Kimi Code 账户模型目录、官方 Claude Code 连接、API Key、自定义接口和可撤销候选；真实授权由用户实际使用时完成。使用见 [工作台指南](docs/guides/native-workbench.md)、[AI 配对与部署](docs/guides/ai-host-deployment.md)。
 
@@ -29,4 +29,4 @@ Set-Location ..
 
 Windows 只做源码、前端、模拟器和打包验证；不要启动真实串口、GPIO 或加热控制。设备操作只在已明确授权的目标设备上执行。AI 仅分析和提出候选，不控制设备。
 
-更新记录集中在 [UPDATE_LOG](roaster/UPDATE_LOG.md)，当前验证在 [v3.29 QA](docs/qa/instrument-v3.29.md)，整理记录在 [项目清理记录](docs/maintenance/2026-10-22-workspace-cleanup.md)。Flutter 历史实现位于独立分支 `feature/flutter-app`，不混入当前目录。
+更新记录集中在 [UPDATE_LOG](roaster/UPDATE_LOG.md)，当前验证在 [v3.30 QA](docs/qa/mhub-v3.30.md)，整理记录在 [项目清理记录](docs/maintenance/2026-10-22-workspace-cleanup.md)。Flutter 历史实现位于独立分支 `feature/flutter-app`，不混入当前目录。

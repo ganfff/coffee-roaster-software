@@ -1,6 +1,6 @@
 # RoasterDesktop
 
-当前版本 **0.6.2**，复用 `../roaster/static/` 的 Web 3.29。桌面通过 HTTP/WebSocket 连接设备后端，Rust 管理本机 AI 与独立原生文件引擎。
+当前版本 **0.7.0**，复用 `../roaster/static/` 的 Web 3.30。桌面通过 HTTP/WebSocket 连接设备后端，Rust 管理本机 AI 与独立原生文件引擎。
 
 日常调试优先双击根目录 **调试网页.cmd**，或运行 `npm run dev:web`；网页、API、WebSocket、离线工作台和本机 AI 会一起启动。原生窗口用 `npm run dev:sim`，无需安装。完整说明见 [免安装调试与打包](../docs/guides/debugging-and-packaging.md)。
 
@@ -25,6 +25,8 @@ npm run dev:sim -- --freeze
 安全模拟器支持 `--scenario=idle`、`--scenario=cooling`、`--scenario=error`；只绑定本机，不访问串口。真实设备地址在设置页的连接配置中填写。Windows 不启动真实硬件后端。
 
 ## 当前功能
+
+- Mhub 黑白蓝深浅主题、MiSans、平面按钮和200ms区域动画；所有工作区与编辑器共用同一套组件，支持减少动效、窄屏及130%缩放。
 
 - AI 对话在全局侧栏或放大视图使用，支持历史、停止、编辑重发、重新生成、附件和模型切换。设置按任务分组，提供账户登录与自动模型目录；本地模型为首选入口，其他订阅与 API 保留独立分组。
 - Windows 固定使用本机 AI，账户与会话不随设备连接地址切换；移除运行位置、配对与设备共享入口。支持本地模型以及保存在本机的订阅/API 配置。

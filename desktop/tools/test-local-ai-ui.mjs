@@ -10,7 +10,7 @@ import {tmpdir} from 'node:os';
 import assert from 'node:assert/strict';
 import http from 'node:http';
 
-const out=resolve(process.env.ROASTER_QA_DIR||'../docs/qa/local-ai-v3.27');await mkdir(out,{recursive:true});
+const out=resolve(process.env.ROASTER_QA_DIR||'build/qa/mhub-v3.30/themes');await mkdir(out,{recursive:true});
 const data=await mkdtemp(join(tmpdir(),'roaster-local-ui-'));
 const checks=[],errors=[],ratios=[];let host,browser,origin;
 const localModels=http.createServer((req,res)=>{assert.equal(req.headers.authorization,undefined);res.writeHead(200,{'Content-Type':'application/json'});res.end(JSON.stringify({data:[{id:'local-ui-model',name:'本地测试模型'}]}));});
@@ -48,24 +48,24 @@ try {
   await page.screenshot({path:join(out,'ai-api-desktop.png'),fullPage:true});
   for(const width of [1024,375]){await page.setViewportSize({width,height:width===1024?640:812});await page.locator('.ai-disclosure-body > button').scrollIntoViewIfNeeded();assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false);await page.screenshot({path:join(out,'ai-api-'+width+'.png')});}checks.push('nested AI settings wrap at 1024 and 375px without horizontal overflow');
   await page.setViewportSize({width:1366,height:800});await page.getByRole('tab',{name:'外观',exact:true}).click();
-  assert.equal(await page.locator('.palette-option').count(),6);
+  assert.equal(await page.locator('.palette-option').count(),0);assert.equal(await page.locator('#theme-seg [data-theme-mode]').count(),3);
   for(const id of Object.keys(palettes))for(const mode of ['light','dark']){
     await page.setViewportSize({width:1366,height:800});
     await page.evaluate(({id,mode})=>{window.RoasterTheme.setPalette(id);window.RoasterTheme.setMode(mode);},{id,mode});
     const pairs=await page.evaluate(()=>{
       const css=getComputedStyle(document.documentElement),read=name=>{const node=document.createElement('span');node.style.color=css.getPropertyValue('--'+name);document.body.append(node);const value=getComputedStyle(node).color;node.remove();return value;};
-      return {bg:read('bg'),surface:read('surface'),'surface-2':read('surface-2'),'surface-3':read('surface-3'),rail:read('rail'),control:read('control-bg'),text:read('text'),secondary:read('text-secondary'),tertiary:read('text-tertiary'),accent:read('accent'),hover:read('accent-hover'),soft:read('accent-soft'),on:read('on-accent'),border:read('border')};
+      return {bg:read('bg'),surface:read('surface'),'surface-2':read('surface-2'),'surface-3':read('surface-3'),rail:read('rail'),control:read('control-bg'),text:read('text'),secondary:read('text-secondary'),tertiary:read('text-tertiary'),accent:read('accent'),hover:read('accent-hover'),primary:read('primary'),primaryHover:read('primary-hover'),onPrimary:read('on-primary'),soft:read('accent-soft'),on:read('on-accent'),border:read('border')};
     });
     const result={id,mode,minText:Infinity,minControl:Infinity};
     for(const foreground of ['text','secondary','tertiary'])for(const background of ['bg','surface','surface-2','surface-3','rail','control']){const ratio=contrast(pairs[foreground],pairs[background]);result.minText=Math.min(result.minText,ratio);assert.ok(ratio>=4.5,`${id}/${mode} ${foreground} on ${background}: ${ratio}`);}
     for(const background of ['bg','surface','control','soft']){const ratio=contrast(pairs.accent,pairs[background]);result.minControl=Math.min(result.minControl,ratio);assert.ok(ratio>=3,`${id}/${mode} focus/action on ${background}: ${ratio}`);}
-    assert.ok(contrast(pairs.on,pairs.accent)>=4.5,id+' primary text');assert.ok(contrast(pairs.on,pairs.hover)>=4.5,id+' primary hover');assert.ok(contrast(pairs.border,pairs.control)>=3,id+' input boundary');ratios.push(result);
-    await page.locator('.palette-picker').scrollIntoViewIfNeeded();await page.screenshot({path:join(out,id+'-'+mode+'.png')});
+    assert.ok(contrast(pairs.onPrimary,pairs.primary)>=4.5,id+' primary text');assert.ok(contrast(pairs.onPrimary,pairs.primaryHover)>=4.5,id+' primary hover');assert.ok(contrast(pairs.border,pairs.control)>=3,id+' input boundary');ratios.push(result);
+    await page.locator('#theme-seg').scrollIntoViewIfNeeded();await page.screenshot({path:join(out,id+'-'+mode+'.png')});
     for(const tab of ['roast','profile','records','workbench','settings'])for(const width of [1366,1024,375]){
       await page.setViewportSize({width,height:width===1024?640:800});await page.locator('[data-tab='+tab+']').click();assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false,id+'/'+mode+'/'+tab+'/'+width);
     }
   }
-  checks.push('six full palettes × light/dark × five workspaces × three sizes: 180 overflow checks; text, actions, focus and input contrast computed');
-  await page.evaluate(()=>{window.RoasterTheme.setPalette('plum');window.RoasterTheme.setMode('auto');});await page.emulateMedia({colorScheme:'dark'});await page.waitForFunction(()=>document.documentElement.dataset.theme==='dark');await page.emulateMedia({colorScheme:'light'});await page.waitForFunction(()=>document.documentElement.dataset.theme==='light');await page.reload();assert.equal(await page.evaluate(()=>window.RoasterTheme.getPalette()),'plum');checks.push('palette persists and auto appearance responds to system changes');
+  checks.push('Mhub light/dark × five workspaces × three sizes: 30 overflow checks; text, actions, focus and input contrast computed');
+  await page.evaluate(()=>{window.RoasterTheme.setPalette('plum');window.RoasterTheme.setMode('auto');});await page.emulateMedia({colorScheme:'dark'});await page.waitForFunction(()=>document.documentElement.dataset.theme==='dark');await page.emulateMedia({colorScheme:'light'});await page.waitForFunction(()=>document.documentElement.dataset.theme==='light');await page.reload();assert.equal(await page.evaluate(()=>window.RoasterTheme.getPalette()),'mhub');checks.push('legacy palette normalizes to Mhub and auto appearance responds to system changes');
   assert.deepEqual(errors,[]);await writeFile(join(out,'ui-report.json'),JSON.stringify({checks,errors,ratios,scope:'actual Edge rendering; real AI service; deterministic OAuth; no real provider login or hardware'},null,2));console.log(JSON.stringify({checks:checks.length,palettes:ratios.length,errors,output:out}));
 }finally{await browser?.close();await host?.close();await new Promise(ok=>localModels.close(ok));await rm(data,{recursive:true,force:true});}

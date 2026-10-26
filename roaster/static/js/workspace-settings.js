@@ -20,21 +20,6 @@
       for(const id of ['ui-ror-alpha','ui-projection']){const row=document.getElementById(id)?.closest('.phase-input-row');if(row)curveCard.append(row);}
       grid.append(curveCard);
     }
-    const appearance=document.getElementById('theme-seg')?.closest('.settings-card');
-    if(appearance){
-      const title=document.createElement('h4');title.textContent='配色';appearance.append(title);
-      const palettes=document.createElement('div');palettes.className='palette-picker';palettes.setAttribute('role','group');palettes.setAttribute('aria-label','主题配色');
-      for(const {id,name:label,description} of window.RoasterTheme.palettes){
-        const button=document.createElement('button');button.type='button';button.className='palette-option';button.dataset.palette=id;
-        const preview=document.createElement('span');preview.className='palette-preview';preview.setAttribute('aria-hidden','true');
-        for(let i=0;i<3;i++)preview.append(document.createElement('span'));
-        const name=document.createElement('strong');name.textContent=label;
-        const detail=document.createElement('span');detail.className='palette-description';detail.textContent=description;
-        button.append(preview,name,detail);button.onclick=()=>window.RoasterTheme.setPalette(id);palettes.append(button);
-      }
-      const sync=()=>palettes.querySelectorAll('button').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.palette===window.RoasterTheme.getPalette())));
-      window.addEventListener('roaster-themechange',sync);appearance.append(palettes);sync();
-    }
     if(!window.__TAURI_INTERNALS__){const note=document.createElement('section');note.className='settings-card';note.dataset.settingsGroup='device';const h=document.createElement('h3');h.textContent='设备连接';const p=document.createElement('p');p.textContent='设备由当前服务连接。连接状态始终显示在底部状态栏，AI 账户可以单独使用。';note.append(h,p);grid.append(note);}
     function select(group){
       for(const card of grid.children)card.hidden=card.dataset.settingsGroup!==group;

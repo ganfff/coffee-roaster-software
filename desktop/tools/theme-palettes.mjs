@@ -1,50 +1,223 @@
-// Full surface palettes. This is the editable source for the final theme.css block.
+// Mhub semantic theme source. See docs/design/mhub-source-map.md.
 import {readFile,writeFile} from 'node:fs/promises';
 import {fileURLToPath} from 'node:url';
-
-const roles=['bg','bg-elevated','surface','surface-2','surface-3','canvas','rail','control-bg','text','text-secondary','text-tertiary','accent','accent-hover','accent-soft','on-accent','border','separator','chart-grid','chart-tick','chart-legend','seg-thumb'];
-const colors={
-  classic:{
-    dark:['#101a2b','#17243a','#1d2c43','#263750','#30435f','#132137','#142745','#263750','#f1f6ff','#bdcde5','#acbfdc','#92bbff','#b7d2ff','#2b4567','#10213b','#6c84a3','#374d6b','#2a3c56','#bdcde5','#f1f6ff','#435d81'],
-    light:['#eaf0fa','#f4f7fd','#ffffff','#f3f6fc','#dce5f3','#fcfdff','#d9e5f7','#e7edf7','#14243c','#435873','#4e6380','#175fc3','#124b9d','#d5e4fb','#ffffff','#667c99','#c6d2e4','#dbe3ef','#435873','#14243c','#ffffff']
-  },
-  sage:{
-    dark:['#182019','#202b20','#28372a','#344836','#40563c','#202d21','#202e1b','#344836','#eff9ed','#c2d4ba','#b4cbab','#b1d98b','#cbeaa6','#374d2b','#182512','#829775','#44573b','#35462f','#c2d4ba','#eff9ed','#526f47'],
-    light:['#e8eddc','#f2f5e7','#f8faef','#f0f4e6','#d9e3c7','#fbfcf6','#d3dec2','#e0e8d1','#24321c','#4a5b38','#52623e','#426126','#30491a','#d0e2b7','#ffffff','#6c7c57','#c5d0b1','#dce4cf','#4a5b38','#24321c','#f8faef']
-  },
-  sand:{
-    dark:['#261b12','#302319','#3c2c1f','#483526','#57412e','#2e2118','#342218','#4c3828','#fff4e0','#e0c6a4','#d1b390','#efbd78','#ffdbab','#5a4023','#30200f','#a68b68','#614b33','#4a3927','#e0c6a4','#fff4e0','#6d5339'],
-    light:['#f2e7d2','#fcf5e6','#fffaf0','#f9efd9','#e8d7b8','#fffdf5','#e6d3b0','#efdfc2','#382718','#695239','#70583e','#805022','#673d17','#edd2a7','#ffffff','#94764e','#d4bf9b','#e6d9bf','#695239','#382718','#fffaf0']
-  },
-  ocean:{
-    dark:['#091d27','#0d2935','#113441','#194451','#225563','#0a2732','#082e40','#194451','#e4fbff','#aad5df','#9bc8d3','#6dded8','#a6f5ee','#1d4e53','#07302e','#709eac','#2b5a68','#1d4655','#aad5df','#e4fbff','#356674'],
-    light:['#dfedf2','#f0f8fa','#f7fdff','#eaf5f7','#cce2e8','#ffffff','#bad7e2','#d9ebf0','#12333f','#365e6b','#365d69','#006b70','#005459','#b9e4e3','#ffffff','#527f8e','#afcdd6','#d2e5eb','#365e6b','#12333f','#f7fdff']
-  },
-  plum:{
-    dark:['#25192d','#302138','#3b2946','#493353','#573f61','#2c1e35','#321e40','#493353','#fff0ff','#dcc2e2','#ceb1d7','#e3a8e8','#f2ccf6','#5a3765','#351d3c','#ac8ab9','#61466c','#4d3659','#dcc2e2','#fff0ff','#74517f'],
-    light:['#eee4f0','#f8f1fa','#fffaff','#f5eaf7','#e4d0e8','#fffbff','#dec7e4','#ebdcef','#3c2444','#684d71','#674a71','#85418e','#6c3074','#e9c9ed','#ffffff','#8b6795','#d5bddc','#e8d9ec','#684d71','#3c2444','#fffaff']
-  },
-  graphite:{
-    dark:['#1b1c1e','#242528','#252628','#2c2d30','#35363a','#222325','#202123','#2c2d30','#edeeec','#c2c3c0','#b4b5b2','#92b5f6','#b9cffa','#303e55','#14233d','#82858a','#3b3d41','#38393d','#c2c3c0','#edeeec','#4a4c50'],
-    light:['#eeedea','#faf9f6','#fdfcf9','#f4f3f0','#e5e4e0','#fdfcf9','#e3e2de','#f4f3ef','#252629','#54565b','#5e6064','#245abd','#194697','#dce5f4','#ffffff','#7d7f83','#d4d3ce','#e1e0db','#54565b','#252629','#fdfcf9']
+export const palettes={
+  "mhub": {
+    "dark": {
+      "space-1": "4px",
+      "space-2": "8px",
+      "space-3": "12px",
+      "space-4": "16px",
+      "space-6": "24px",
+      "space-8": "32px",
+      "font-small": "12px",
+      "font-body": "14px",
+      "font-reading": "16px",
+      "bg": "#0d0e10",
+      "bg-elevated": "#131416",
+      "surface": "#191a1d",
+      "surface-2": "#212225",
+      "surface-3": "#303134",
+      "canvas": "#191a1d",
+      "rail": "#131416",
+      "control-bg": "#212225",
+      "fill": "var(--surface-3)",
+      "fill-strong": "var(--border)",
+      "border": "#81848f",
+      "separator": "#35373e",
+      "text": "#ffffff",
+      "text-secondary": "#bfc1cb",
+      "text-tertiary": "#b1b4bf",
+      "accent": "#83b0ff",
+      "accent-hover": "#b6d1ff",
+      "accent-soft": "#20304b",
+      "on-accent": "#10213b",
+      "primary": "#226bee",
+      "primary-hover": "#1b5fdc",
+      "primary-soft": "var(--accent-soft)",
+      "on-primary": "#ffffff",
+      "info": "var(--accent)",
+      "info-hover": "var(--accent-hover)",
+      "info-soft": "var(--accent-soft)",
+      "danger": "#ff878d",
+      "danger-hover": "#ffabb0",
+      "danger-soft": "rgba(255, 69, 58, 0.13)",
+      "on-danger": "#301014",
+      "gray-soft": "var(--surface-3)",
+      "seg-thumb": "#303b50",
+      "status-online": "#72d69a",
+      "warning": "#ff9f0a",
+      "phase-drying": "#3b82f6",
+      "phase-maillard": "#f59e0b",
+      "phase-development": "#ff453a",
+      "phase-cooling": "#8e8e93",
+      "chart-grid": "#34363d",
+      "chart-tick": "#bfc1cb",
+      "chart-legend": "#ffffff",
+      "chart-temp": "#f2a366",
+      "chart-setpoint": "#4d9cff",
+      "chart-target": "#9e9e9e",
+      "chart-target-fill": "rgba(158, 158, 158, 0.06)",
+      "chart-ror": "#45b97c",
+      "chart-ror-fill": "rgba(69, 185, 124, 0.1)",
+      "chart-ror-preview": "#7ad8a5",
+      "chart-projection": "rgba(255, 138, 31, 0.48)",
+      "chart-y1-tick": "#62c98f",
+      "chart-compare-a": "#ff9800",
+      "chart-compare-b": "#e040fb",
+      "chart-event-label-bg": "rgba(10, 10, 10, 0.82)",
+      "chart-tooltip-bg": "rgba(24, 24, 27, 0.96)",
+      "chart-tooltip-border": "rgba(255, 255, 255, 0.1)",
+      "chart-tooltip-text": "#f5f5f7",
+      "event-charge": "#22c55e",
+      "event-yellowing": "#f59e0b",
+      "event-first-crack": "#ef4444",
+      "event-second-crack": "#a855f7",
+      "event-drop": "#3b82f6",
+      "event-tp": "#26a69a",
+      "delta-good": "#22c55e",
+      "delta-warn": "#f97316",
+      "delta-info": "#3b82f6",
+      "editor-curve": "#9ca3af",
+      "editor-node": "#f59e0b",
+      "editor-node-hover": "#ffffff",
+      "glow-pv": "none",
+      "glow-sv": "none",
+      "glow-ror": "none",
+      "shadow-card": "none",
+      "shadow-pop": "0 16px 48px rgba(0,0,0,.4)",
+      "shadow-inset-top": "none",
+      "shadow-thumb": "none",
+      "font-ui": "\"MiSans\", \"Segoe UI\", \"Microsoft YaHei\", sans-serif",
+      "font-mono": "\"MiSans\", \"Segoe UI\", \"Microsoft YaHei\", sans-serif",
+      "radius-sm": "8px",
+      "radius-md": "12px",
+      "radius-lg": "12px",
+      "radius-xl": "16px",
+      "radius-pill": "999px",
+      "ease-apple": "var(--ease-mhub)",
+      "ease-apple-fast": "var(--ease-mhub)",
+      "duration-fast": "150ms",
+      "duration-med": "200ms",
+      "ease-mhub": "cubic-bezier(.43,.77,.16,1)",
+      "primary-active": "#154fc1",
+      "mc-text-color-main": "var(--text)",
+      "mc-bg-color-panel": "var(--surface)",
+      "mc-bg-color-card": "var(--surface-2)",
+      "mc-button-border-color": "var(--border)",
+      "mc-color-b11": "var(--primary)"
+    },
+    "light": {
+      "space-1": "4px",
+      "space-2": "8px",
+      "space-3": "12px",
+      "space-4": "16px",
+      "space-6": "24px",
+      "space-8": "32px",
+      "font-small": "12px",
+      "font-body": "14px",
+      "font-reading": "16px",
+      "bg": "#f2f3f7",
+      "bg-elevated": "#ffffff",
+      "surface": "#ffffff",
+      "surface-2": "#f2f3f7",
+      "surface-3": "#e6e8ef",
+      "canvas": "#ffffff",
+      "rail": "#ffffff",
+      "control-bg": "#f2f3f7",
+      "fill": "var(--surface-3)",
+      "fill-strong": "var(--border)",
+      "border": "#787b87",
+      "separator": "#d8dbe5",
+      "text": "#151515",
+      "text-secondary": "#4f515c",
+      "text-tertiary": "#585b66",
+      "accent": "#0053e2",
+      "accent-hover": "#0045bf",
+      "accent-soft": "#e5eeff",
+      "on-accent": "#ffffff",
+      "primary": "#0053e2",
+      "primary-hover": "#0045bf",
+      "primary-soft": "var(--accent-soft)",
+      "on-primary": "#ffffff",
+      "info": "var(--accent)",
+      "info-hover": "var(--accent-hover)",
+      "info-soft": "var(--accent-soft)",
+      "danger": "#b82735",
+      "danger-hover": "#991d29",
+      "danger-soft": "rgba(255, 59, 48, 0.1)",
+      "on-danger": "#ffffff",
+      "gray-soft": "var(--surface-3)",
+      "seg-thumb": "#ffffff",
+      "status-online": "#217a40",
+      "warning": "#e88808",
+      "phase-drying": "#007aff",
+      "phase-maillard": "#b45309",
+      "phase-development": "#ff3b30",
+      "phase-cooling": "#8e8e93",
+      "chart-grid": "#e1e4ec",
+      "chart-tick": "#4f515c",
+      "chart-legend": "#151515",
+      "chart-temp": "#9c4a16",
+      "chart-setpoint": "#1473e6",
+      "chart-target": "#8e8e93",
+      "chart-target-fill": "rgba(120, 120, 128, 0.1)",
+      "chart-ror": "#247449",
+      "chart-ror-fill": "rgba(47, 157, 98, 0.09)",
+      "chart-ror-preview": "#69b98e",
+      "chart-projection": "rgba(244, 118, 22, 0.48)",
+      "chart-y1-tick": "#2f9d62",
+      "chart-compare-a": "#ef6c00",
+      "chart-compare-b": "#c026d3",
+      "chart-event-label-bg": "rgba(255, 255, 255, 0.92)",
+      "chart-tooltip-bg": "rgba(255, 255, 255, 0.97)",
+      "chart-tooltip-border": "rgba(0, 0, 0, 0.1)",
+      "chart-tooltip-text": "#1d1d1f",
+      "event-charge": "#16a34a",
+      "event-yellowing": "#d97706",
+      "event-first-crack": "#dc2626",
+      "event-second-crack": "#9333ea",
+      "event-drop": "#2563eb",
+      "event-tp": "#0d9488",
+      "delta-good": "#16a34a",
+      "delta-warn": "#ea580c",
+      "delta-info": "#2563eb",
+      "editor-curve": "#6b7280",
+      "editor-node": "#d97706",
+      "editor-node-hover": "#1d1d1f",
+      "glow-pv": "none",
+      "glow-sv": "none",
+      "glow-ror": "none",
+      "shadow-card": "none",
+      "shadow-pop": "0 16px 48px rgba(20,25,40,.16)",
+      "shadow-inset-top": "none",
+      "shadow-thumb": "none",
+      "font-ui": "\"MiSans\", \"Segoe UI\", \"Microsoft YaHei\", sans-serif",
+      "font-mono": "\"MiSans\", \"Segoe UI\", \"Microsoft YaHei\", sans-serif",
+      "radius-sm": "8px",
+      "radius-md": "12px",
+      "radius-lg": "12px",
+      "radius-xl": "16px",
+      "radius-pill": "999px",
+      "ease-apple": "var(--ease-mhub)",
+      "ease-apple-fast": "var(--ease-mhub)",
+      "duration-fast": "150ms",
+      "duration-med": "200ms",
+      "ease-mhub": "cubic-bezier(.43,.77,.16,1)",
+      "primary-active": "#003a9e",
+      "mc-text-color-main": "var(--text)",
+      "mc-bg-color-panel": "var(--surface)",
+      "mc-bg-color-card": "var(--surface-2)",
+      "mc-button-border-color": "var(--border)",
+      "mc-color-b11": "var(--primary)"
+    }
   }
 };
-export const palettes=Object.fromEntries(Object.entries(colors).map(([id,modes])=>[id,Object.fromEntries(Object.entries(modes).map(([mode,values])=>{if(values.length!==roles.length)throw Error('Incomplete palette '+id);return [mode,Object.fromEntries(roles.map((role,i)=>[role,values[i]]))];}))]));
-export const marker='/* Complete operating palettes — generated by desktop/tools/theme-palettes.mjs. */';
-export function stylesheet(){
-  return marker+'\n'+Object.entries(palettes).flatMap(([id,modes])=>Object.entries(modes).map(([mode,t])=>{
-    const root=`:root[data-palette=${id}]${mode==='light'?'[data-theme=light]':''}`;
-    const aliases={'fill':'var(--surface-3)','fill-strong':'var(--surface-3)','gray-soft':'var(--surface-3)','info':'var(--accent)','info-hover':'var(--accent-hover)','info-soft':'var(--accent-soft)'};
-    return root+' {\n'+Object.entries({...t,...aliases}).map(([role,value])=>`  --${role}: ${value};`).join('\n')+'\n}\n'+
-      `:root${mode==='light'?'[data-theme=light]':''} .palette-option[data-palette=${id}] { --palette-preview-bg:${t.bg}; --palette-preview-rail:${t.rail}; --palette-preview-surface:${t.surface}; --palette-preview-accent:${t.accent}; }`;
-  })).join('\n')+'\n';
-}
+export function stylesheet(){ return Object.entries(palettes.mhub).map(([mode,t])=>(mode==='dark'?':root':':root[data-theme=light]')+' {\n  color-scheme: '+mode+';\n'+Object.entries(t).map(([name,value])=>'  --'+name+': '+value+';').join('\n')+'\n}').join('\n'); }
+export const marker='/* Mhub semantic themes — generated by desktop/tools/theme-palettes.mjs. */';
 if(process.argv[1]&&fileURLToPath(import.meta.url)===process.argv[1]){
-  const file=new URL('../../roaster/static/css/theme.css',import.meta.url),source=await readFile(file,'utf8');
-  const old='/* Theme presets keep alarms and chart-series meanings stable. */';
-  const start=source.indexOf(source.includes(marker)?marker:old);
-  if(start<0)throw Error('Palette marker not found');
-  const next=source.slice(0,start)+stylesheet();
-  if(process.argv.includes('--check')){if(source.replace(/\r\n/g,'\n')!==next.replace(/\r\n/g,'\n'))throw Error('Run node tools/theme-palettes.mjs to update theme.css');console.log('Six complete light/dark palettes match the source.');}
-  else {await writeFile(file,next);console.log('Generated six complete light/dark palettes.');}
-}
+const file=new URL('../../roaster/static/css/theme.css',import.meta.url),source=await readFile(file,'utf8');
+const index=source.indexOf(marker);if(index<0)throw Error('Mhub theme marker not found');
+const next=source.slice(0,index)+marker+'\n'+stylesheet()+'\n';
+if(process.argv.includes('--check')){if(source.replace(/\r\n/g,'\n')!==next.replace(/\r\n/g,'\n'))throw Error('Regenerate theme.css with tools/theme-palettes.mjs');console.log('Mhub light/dark themes match the source.');}
+else{await writeFile(file,next);console.log('Generated Mhub light/dark themes.');}}

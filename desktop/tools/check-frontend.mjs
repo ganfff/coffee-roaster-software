@@ -6,9 +6,9 @@ import { fileURLToPath } from 'node:url';
 const here = dirname(fileURLToPath(import.meta.url));
 const root = resolve(here, '..', '..');
 const staticRoot = resolve(root, 'roaster', 'static');
-const jsFiles = ['theme.js', 'utils.js', 'tauri-adapter.js', 'app.js', 'editor.js', 'ai.js', 'ai-bridge.js', 'workbench.js', 'workbench-pdf.js', 'ai-chat.js', 'workbench-help.js', 'atlas.js', 'workspace-settings.js']
+const jsFiles = ['theme.js', 'utils.js', 'tauri-adapter.js', 'app.js', 'editor.js', 'ai.js', 'ai-bridge.js', 'workbench.js', 'workbench-pdf.js', 'ai-chat.js', 'workbench-help.js', 'atlas.js', 'workspace-settings.js', 'mhub-motion.js', 'mhub-ui.js']
   .map(name => resolve(staticRoot, 'js', name));
-const cssFiles = ['theme.css', 'style.css', 'editor.css', 'ai.css', 'workbench.css', 'atlas.css', 'instrument.css']
+const cssFiles = ['theme.css', 'style.css', 'editor.css', 'ai.css', 'workbench.css', 'mhub.css']
   .map(name => resolve(staticRoot, 'css', name));
 const htmlFiles = [resolve(staticRoot, 'index.html'), resolve(staticRoot, 'editor.html')];
 const failures = [];
@@ -60,7 +60,13 @@ const [indexHtml, editorHtml, themeJs, appJs, editorJs, tauriAdapter, styleCss, 
 
 for (const [name, html] of [['index.html', indexHtml], ['editor.html', editorHtml]]) {
   check(!html.includes('?v=3.20'), `${name}: stale v3.20 cache key`);
-  check(html.indexOf('js/theme.js?v=3.29') >= 0 && html.indexOf('js/theme.js?v=3.29') < html.indexOf('css/theme.css?v=3.29'), `${name}: current theme.js must load before theme.css`);
+  check(html.indexOf('js/theme.js?v=3.30') >= 0 && html.indexOf('js/theme.js?v=3.30') < html.indexOf('css/theme.css?v=3.30'), `${name}: current theme.js must load before theme.css`);
+}
+
+for (const html of [indexHtml, editorHtml]) {
+  check(html.includes('css/mhub.css?v=3.30'), 'Mhub components must load in both entries');
+  check(html.includes('js/mhub-motion.js?v=3.30') && html.includes('js/mhub-ui.js?v=3.30'), 'Mhub motion and bindings must load in both entries');
+  check(!/css\/(atlas|instrument)\.css/.test(html), 'Retired presentation sheets must not load');
 }
 
 const authoredSources = [indexHtml, editorHtml, appJs, editorJs, tauriAdapter, await readFile(resolve(staticRoot,'js/ai-chat.js'),'utf8')].join('\n');
@@ -71,7 +77,7 @@ check(!/#[0-9a-f]{3,8}\b|rgba?\(/i.test(stripComments(styleCss + '\n' + editorCs
 check(/#footer\s*\{[\s\S]*?z-index:\s*1020\b/.test(styleCss), 'Footer/E-STOP layer must remain z-index 1020');
 check(/touch-action:\s*none/.test(editorCss), 'Editor canvas must keep touch-action:none');
 check(/msg\.error\s*!=\s*null[\s\S]*?return;[\s\S]*?msg\.ok\s*===\s*true\)\s*return;/.test(appJs), 'WebSocket {error}/{ok} replies must short-circuit');
-check(/return\s+'auto';/.test(themeJs), 'First-launch theme must default to auto');
+check(/memoryMode = 'auto'/.test(themeJs), 'First-launch theme must default to auto');
 
 const usedIcons = [...new Set([...authoredSources.matchAll(/\bph-([a-z0-9-]+)/g)].map(match => match[1]))];
 const missingIcons = usedIcons.filter(name => !iconCss.includes(`.ph.ph-${name}:before`));

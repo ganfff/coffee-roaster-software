@@ -1566,6 +1566,7 @@
     glider.style.transform = 'translateX(' + btn.offsetLeft + 'px)';
   }
 
+  const workspaceExits = new WeakMap();
   function activateWorkspace(name, options = {}) {
     const btn = document.querySelector('.tab-btn[data-tab="' + name + '"]');
     const content = document.getElementById('tab-' + name);
@@ -1575,7 +1576,32 @@
       item.classList.toggle('active', active);
       item.setAttribute('aria-selected', active ? 'true' : 'false');
     });
-    document.querySelectorAll('.tab-content').forEach(item => item.classList.toggle('active', item === content));
+    const outgoing = document.querySelector('.tab-content.active');
+    const changed = outgoing !== content;
+    document.querySelectorAll('.tab-content').forEach(item => {
+      if (item !== content) window.RoasterMotion?.cancel(item);
+      item.classList.toggle('active', item === content);
+    });
+    content.classList.remove('mhub-leaving');
+    workspaceExits.delete(content);
+    content.inert = false;
+    content.removeAttribute('aria-hidden');
+    if (changed && outgoing && !['tab-roast', 'tab-workbench'].includes(outgoing.id) && window.RoasterMotion) {
+      outgoing.classList.add('mhub-leaving');
+      outgoing.inert = true;
+      outgoing.setAttribute('aria-hidden', 'true');
+      const exit = {};
+      workspaceExits.set(outgoing, exit);
+      window.RoasterMotion.leave(outgoing, 'content').then(() => {
+        if (workspaceExits.get(outgoing) === exit && !outgoing.classList.contains('active')) {
+          workspaceExits.delete(outgoing);
+          outgoing.classList.remove('mhub-leaving');
+          outgoing.inert = false;
+          outgoing.removeAttribute('aria-hidden');
+        }
+      });
+    }
+    if (changed && name !== 'roast' && name !== 'workbench') window.RoasterMotion?.enter(content, 'content');
     document.body.dataset.view = name;
     const pageTitle = document.getElementById('workspace-title');
     if (pageTitle) pageTitle.textContent = btn.textContent.trim();

@@ -1,181 +1,57 @@
-/* theme.js — 深色 / 浅色主题切换
- *
- * 加载时机:必须在 <head> 内、样式表之前以普通 <script src> 引入
- * (Tauri CSP script-src 'self' 禁止内联脚本),从而在首次绘制前
- * 把 data-theme 写到 <html>,避免主题闪烁(FOUC)。
- *
- * 契约:
- * - localStorage 键 'roaster.theme' ∈ 'dark' | 'light' | 'auto'(默认 'auto',
- *   首次使用跟随系统 prefers-color-scheme)
- * - 解析后的实际主题写在 <html data-theme="dark|light">,CSS 依此分支
- * - 主题变化时派发 window 事件 'roaster-themechange',
- *   detail = { theme: 'dark'|'light', mode: 'dark'|'light'|'auto' }
- *   app.js / editor.js 用它给 Chart.js 重新上色并 update('none')
- * - 切换瞬间给 <html> 加 .theme-animating(约 280ms),启用颜色过渡动画,
- *   结束后移除;prefers-reduced-motion 时跳过
- */
+/* Mhub appearance. Runs before CSS; the saved mode survives the palette upgrade. */
 (function () {
   'use strict';
-
-  var STORAGE_KEY = 'roaster.theme';
-  var PALETTE_KEY = 'roaster.palette';
-  var PALETTES = ['classic', 'sage', 'sand', 'ocean', 'plum', 'graphite'];
-  var MODES = ['dark', 'light', 'auto'];
-  var mq = null;
-  var animTimer = null;
-
+  var KEY = 'roaster.theme', PALETTE = 'roaster.palette';
+  var modes = ['dark', 'light', 'auto'], memoryMode = 'auto', timer;
+  var system = window.matchMedia('(prefers-color-scheme: light)');
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
   function readMode() {
-    try {
-      var v = localStorage.getItem(STORAGE_KEY);
-      if (v === 'dark' || v === 'light' || v === 'auto') return v;
-    } catch (e) { /* 隐私模式等场景读不到存储,按默认处理 */ }
-    return 'auto';
+    try { var value = localStorage.getItem(KEY); if (modes.indexOf(value) !== -1) memoryMode = value; } catch (_) {}
+    return memoryMode;
   }
-
-  function resolve(mode) {
-    if (mode === 'auto') {
-      try {
-        mq = mq || window.matchMedia('(prefers-color-scheme: light)');
-        return mq.matches ? 'light' : 'dark';
-      } catch (e) { return 'dark'; }
-    }
-    return mode;
+  function resolve(mode) { return mode === 'auto' ? (system.matches ? 'light' : 'dark') : mode; }
+  function getPalette() { return 'mhub'; }
+  function sync() {
+    var mode = readMode();
+    document.querySelectorAll('[data-theme-mode]').forEach(function (button) {
+      var active = button.dataset.themeMode === mode;
+      button.classList.toggle('active', active);
+      button.setAttribute('aria-pressed', String(active));
+    });
+    var quick = document.getElementById('btn-theme');
+    if (quick) quick.setAttribute('aria-label', resolve(mode) === 'dark' ? '切换浅色主题' : '切换深色主题');
   }
-
-  /* 立即应用(无动画),供首次加载与系统主题变化使用 */
-  function applySilent(mode) {
-    var theme = resolve(mode);
-    var root = document.documentElement;
-    if (root.getAttribute('data-theme') !== theme) {
-      root.setAttribute('data-theme', theme);
-    }
+  function apply(mode, notify) {
+    var theme = resolve(mode), root = document.documentElement;
+    root.dataset.theme = theme; root.dataset.palette = 'mhub'; root.setAttribute('theme-mode', theme); sync();
+    if (notify) window.dispatchEvent(new CustomEvent('roaster-themechange', {detail: {theme: theme, mode: mode, palette: 'mhub'}}));
     return theme;
   }
-
-  function dispatch(theme, mode) {
-    try {
-      window.dispatchEvent(new CustomEvent('roaster-themechange', {
-        detail: { theme: theme, mode: mode, palette: getPalette() }
-      }));
-    } catch (e) { /* CustomEvent 不可用时静默降级,仅 CSS 主题生效 */ }
-  }
-
-  /* 用户主动切换:带过渡动画 */
-  function setMode(mode, opts) {
-    if (MODES.indexOf(mode) === -1) return;
-    if (mode === readMode()) return; // 重复点击当前模式:零副作用早退
-    try { localStorage.setItem(STORAGE_KEY, mode); } catch (e) { /* 忽略 */ }
-    var root = document.documentElement;
-    var theme = resolve(mode);
-
-    var reduced = false;
-    try { reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) { /* 忽略 */ }
-
-    if (!reduced && !(opts && opts.silent)) {
-      root.classList.add('theme-animating');
-      if (animTimer) clearTimeout(animTimer);
-      animTimer = setTimeout(function () {
-        root.classList.remove('theme-animating');
-        animTimer = null;
-      }, 280);
+  function clearTransition() { clearTimeout(timer); document.documentElement.classList.remove('theme-animating'); }
+  function setMode(mode, options) {
+    if (modes.indexOf(mode) === -1 || mode === readMode()) return;
+    memoryMode = mode; try { localStorage.setItem(KEY, mode); } catch (_) {}
+    clearTransition();
+    if (!reduced.matches && !options?.silent) {
+      document.documentElement.classList.add('theme-animating'); timer = setTimeout(clearTransition, 200);
     }
-
-    applySilent(mode);
-    syncSegUI(mode);
-    dispatch(theme, mode);
+    apply(mode, true);
   }
-
-  function getMode() { return readMode(); }
-  function getTheme() { return resolve(readMode()); }
-  function getPalette() {
-    try {
-      var value = localStorage.getItem(PALETTE_KEY);
-      if (!localStorage.getItem('roaster.appearance.3.29')) {
-        if (!value || value === 'classic') {value = 'graphite';localStorage.setItem(PALETTE_KEY, value);}
-        localStorage.setItem('roaster.appearance.3.29', '1');
-      }
-      if (PALETTES.indexOf(value) !== -1) return value;
-    } catch (e) {}
-    return 'graphite';
+  // Legacy callers remain supported; every old palette resolves to the new basis.
+  function setPalette() { try { localStorage.setItem(PALETTE, 'mhub'); } catch (_) {} document.documentElement.dataset.palette = 'mhub'; }
+  setPalette(); apply(readMode(), false);
+  function listen(query, handler) { if (query.addEventListener) query.addEventListener('change', handler); else query.addListener(handler); }
+  listen(system, function () { if (readMode() === 'auto') apply('auto', true); });
+  listen(reduced, function () { if (reduced.matches) clearTransition(); });
+  window.addEventListener('storage', function (event) { if (event.key === KEY) { memoryMode = 'auto'; apply(readMode(), true); } });
+  function init() {
+    document.getElementById('btn-theme')?.addEventListener('click', function () { setMode(resolve(readMode()) === 'dark' ? 'light' : 'dark'); });
+    document.getElementById('theme-seg')?.addEventListener('click', function (event) { var button = event.target.closest('[data-theme-mode]'); if (button) setMode(button.dataset.themeMode); });
+    sync();
   }
-  function setPalette(value) {
-    if (PALETTES.indexOf(value) === -1) return;
-    try { localStorage.setItem(PALETTE_KEY, value); } catch (e) {}
-    document.documentElement.setAttribute('data-palette', value);
-    dispatch(getTheme(), getMode());
-  }
-
-  /* 设置页三段选择器与头部快捷按钮的状态同步 */
-  function syncSegUI(mode) {
-    var seg = document.getElementById('theme-seg');
-    if (seg) {
-      var btns = seg.querySelectorAll('button[data-theme-mode]');
-      for (var i = 0; i < btns.length; i++) {
-        btns[i].classList.toggle('active', btns[i].getAttribute('data-theme-mode') === mode);
-      }
-    }
-  }
-
-  function onSystemChange() {
-    if (readMode() !== 'auto') return;
-    var theme = applySilent('auto');
-    dispatch(theme, 'auto');
-  }
-
-  function initUI() {
-    // 跟随系统模式下的系统主题监听
-    try {
-      mq = mq || window.matchMedia('(prefers-color-scheme: light)');
-      if (mq.addEventListener) mq.addEventListener('change', onSystemChange);
-      else if (mq.addListener) mq.addListener(onSystemChange);
-    } catch (e) { /* 忽略 */ }
-
-    // 头部快捷切换:dark <-> light(显式选择,脱离 auto)
-    var quick = document.getElementById('btn-theme');
-    if (quick) {
-      quick.addEventListener('click', function () {
-        setMode(getTheme() === 'dark' ? 'light' : 'dark');
-      });
-    }
-
-    // 设置页:跟随系统 / 深色 / 浅色
-    var seg = document.getElementById('theme-seg');
-    if (seg) {
-      seg.addEventListener('click', function (ev) {
-        var btn = ev.target && ev.target.closest ? ev.target.closest('button[data-theme-mode]') : null;
-        if (!btn) return;
-        setMode(btn.getAttribute('data-theme-mode'));
-      });
-    }
-
-    syncSegUI(readMode());
-  }
-
-  // 1) 脚本在 <head> 同步执行:立刻落主题,防闪烁
-  applySilent(readMode());
-  document.documentElement.setAttribute('data-palette', getPalette());
-
-  // 2) DOM 就绪后再接控件
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initUI);
-  } else {
-    initUI();
-  }
-
-  // 3) 对外 API(供 app.js / editor.js / 调试)
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
   window.RoasterTheme = {
-    palettes: [
-      {id:'classic',name:'经典蓝',description:'清透冷白与钴蓝'},
-      {id:'sage',name:'林间绿',description:'苔绿底色与松针绿'},
-      {id:'sand',name:'暖沙色',description:'奶油纸色与烘焙棕'},
-      {id:'ocean',name:'深海青',description:'海蓝面层与青色'},
-      {id:'plum',name:'暮紫',description:'雾紫面层与莓紫色'},
-      {id:'graphite',name:'石墨',description:'石墨灰与暖白，克制的蓝色重点'}
-    ],
-    getMode: getMode,
-    getTheme: getTheme,
-    setMode: setMode,
-    getPalette: getPalette,
-    setPalette: setPalette
+    palettes: [{id: 'mhub', name: 'Mhub', description: '黑白灰面层与蓝色重点'}],
+    getMode: readMode, getTheme: function () { return resolve(readMode()); }, setMode: setMode, getPalette: getPalette, setPalette: setPalette
   };
 })();
