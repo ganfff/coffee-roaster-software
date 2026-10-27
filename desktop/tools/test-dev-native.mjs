@@ -15,7 +15,7 @@ try {
   for(;;){try{if((await fetch(endpoint+'/json/version')).ok)break;}catch{}if(Date.now()>end)throw Error('native CDP timeout');await new Promise(ok=>setTimeout(ok,150));}
   browser=await chromium.connectOverCDP(endpoint);const context=browser.contexts()[0],page=context.pages()[0]||await context.waitForEvent('page');page.on('pageerror',error=>errors.push(error.message));
   await page.waitForFunction(()=>window.__TAURI_INTERNALS__&&window.ROASTER_DEBUG&&window.RoasterChat);
-  assert.equal(new URL(page.url()).hostname,'127.0.0.1');await page.locator('.connection-copy').filter({hasText:'安全模拟器'}).waitFor();checks.push('actual dev WebView loads live source via HTTP and safe simulator WS');
+  assert.equal(new URL(page.url()).hostname,'127.0.0.1');await page.locator('.connection-copy').filter({hasText:'模拟器'}).waitFor();checks.push('actual dev WebView loads live source via HTTP and safe simulator WS');
   await page.locator('[data-tab=settings]').click();await page.getByRole('tab',{name:'AI 账户',exact:true}).click();await page.waitForFunction(()=>document.querySelector('.ai-config-form h4'));checks.push('real Rust AI pairing/RPC loads the real debug AI providers');
   await page.screenshot({path:join(out,'native-settings.png')});
   await page.locator('[data-tab=workbench]').click();await page.locator('#wb-new').click();await page.waitForFunction(()=>window.RoasterWorkbench.getSnapshot()?.document?.kind==='profile');checks.push('actual Rust offline worker creates native profile in dev mode');

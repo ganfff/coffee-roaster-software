@@ -1,6 +1,8 @@
 import asyncio
 import logging
 import crcmod
+import time
+import math
 from datetime import datetime
 
 
@@ -23,6 +25,11 @@ class AsyncTC4SCommunicator:
         self.reader = None
         self.writer = None
         self.connected = False
+        self.responding = False
+        self.last_seen = None
+        self.last_error = ""
+        self._last_success = 0.0
+        self.resolve_port = None
 
         # 寄存器地址
         self.registers = {
@@ -66,6 +73,13 @@ class AsyncTC4SCommunicator:
 
     async def connect(self) -> bool:
         """连接串口"""
+        if self.connected:
+            return True
+        if self.resolve_port:
+            self.port = self.resolve_port() or ""
+        if not self.port:
+            self.last_error = "请选择串口，或插入 USB-RS485 适配器"
+            return False
         try:
             self.reader, self.writer = await serial_asyncio.open_serial_connection(
                 url=self.port,
@@ -75,14 +89,22 @@ class AsyncTC4SCommunicator:
                 stopbits=serial_asyncio.serial.STOPBITS_ONE,
             )
             self.connected = True
+            self.responding = False
+            self.last_error = "等待 TC4S 响应"
             return True
         except Exception as e:
+            self.last_error = str(e)
             logger.warning("连接失败: %s", e)
             return False
+
+    @property
+    def ready(self):
+        return self.connected and self.responding and time.monotonic() - self._last_success < 5
 
     async def disconnect(self):
         """断开连接"""
         self.connected = False
+        self.responding = False
         self._stop_event.set()
         if self._monitor_task and not self._monitor_task.done():
             self._monitor_task.cancel()
@@ -148,11 +170,17 @@ class AsyncTC4SCommunicator:
                     self.writer.write(data)
                     await self.writer.drain()
                     await asyncio.sleep(0.05)
-                    response = await asyncio.wait_for(self.reader.read(100), timeout=0.5)
+                    header = await asyncio.wait_for(self.reader.readexactly(3), timeout=0.6)
+                    remaining = 2 if header[1] & 0x80 else (5 if data[1] == 0x06 else header[2] + 2)
+                    if remaining > 252:
+                        raise ValueError('TC4S 响应长度无效')
+                    response = header + await asyncio.wait_for(self.reader.readexactly(remaining), timeout=0.6)
 
-                if response:
+                if response and response[-2:] == self.calculate_crc(response[:-2]) and response[0] == self.slave_id and response[1] == data[1]:
                     return response
+                self.last_error = 'TC4S 响应站号、功能码或 CRC 无效'
             except Exception as e:
+                self.last_error = str(e) or 'TC4S 响应超时'
                 logger.warning("发送错误 (尝试 %s/3): %s", attempt, e)
 
             # 等待后重试
@@ -177,7 +205,7 @@ class AsyncTC4SCommunicator:
 
         response = await self.send_command(bytes(request))
 
-        if not response or len(response) < 5:
+        if not response or len(response) != count * 2 + 5 or response[2] != count * 2:
             return None
 
         # 验证CRC
@@ -221,7 +249,7 @@ class AsyncTC4SCommunicator:
         """读取当前温度"""
         data = await self.read_register(addr, 1)
         if data and len(data) == 2:
-            value = (data[0] << 8) | data[1]
+            value = int.from_bytes(data, 'big', signed=True)
             return float(value)
         return None
 
@@ -229,13 +257,15 @@ class AsyncTC4SCommunicator:
         """读取设定温度"""
         data = await self.read_register(self.registers['sv'], 1)
         if data and len(data) == 2:
-            value = (data[0] << 8) | data[1]
+            value = int.from_bytes(data, 'big', signed=True)
             return float(value)
         return None
 
     async def set_sv(self, temperature: float) -> bool:
         """设置目标温度"""
         try:
+            if not math.isfinite(float(temperature)) or not 0 <= float(temperature) <= 300:
+                return False
             temp_int = int(temperature)
             success = await self.write_register(self.registers['sv'], temp_int)
             return success
@@ -259,10 +289,6 @@ class AsyncTC4SCommunicator:
     async def get_all_data(self):
         """获取所有数据"""
         pv = await self.read_pv(self.registers['pv'])
-        if pv is None:
-            addr, value = await self.auto_find_pv_address()
-            if addr is not None:
-                pv = value
 
         sv = await self.read_sv()
 
@@ -337,18 +363,34 @@ class AsyncTC4SCommunicator:
     async def _monitor_loop(self, interval: float):
         """监控循环"""
         consecutive_failures = 0
-        while not self._stop_event.is_set() and self.connected:
+        while not self._stop_event.is_set():
             try:
+                if not self.connected:
+                    if not await self.connect():
+                        await asyncio.sleep(2)
+                        continue
                 data = await self.get_all_data()
                 if data['pv'] is None or data['sv'] is None:
                     consecutive_failures += 1
                     if consecutive_failures >= 3:
                         self.connected = False
+                        self.responding = False
                         self._notify_status("disconnected", "连续通信失败")
-                        self._create_logged_task(self._reconnect_loop(), "TC4S重连循环")
-                        return
+                        if self.writer:
+                            self.writer.close()
+                            try:
+                                await self.writer.wait_closed()
+                            except Exception:
+                                pass
+                            self.writer = self.reader = None
+                        consecutive_failures = 0
+                        await asyncio.sleep(2)
                 else:
                     consecutive_failures = 0
+                    self.responding = True
+                    self._last_success = time.monotonic()
+                    self.last_seen = data['timestamp']
+                    self.last_error = ''
                     for cb in self._data_callbacks:
                         try:
                             if asyncio.iscoroutinefunction(cb):

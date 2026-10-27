@@ -111,6 +111,7 @@ function makeState(time = elapsed) {
     events: visibleEvents,
     event_stats: { segment_times: segmentTimes, segment_ratios: segmentRatios },
     connected: stateName !== 'ERROR', error_reason: errorReason,
+    connection: {mode:'simulator',port:'',baudrate:9600,slave_id:1,connected:stateName!=='ERROR',transport_open:true,status:'connected',error:'',last_seen:new Date().toISOString()},
     lookahead_used: 1.4, lookahead_offset: 0,
     current_phase: currentPhase(time),
     phase_lookahead_config: { drying: 1, maillard: 0.5, development: 1 },
@@ -143,6 +144,10 @@ function resetIdle() {
 const server = http.createServer(async (request, response) => {
   const url = new URL(request.url, `http://${request.headers.host || `localhost:${port}`}`);
   if (request.method === 'OPTIONS') return json(response, 204, {});
+  if (url.pathname === '/api/v1/connection') {
+    if(request.method==='POST')return json(response,409,{detail:'此为隔离验收服务，请使用正常设备入口切换真实串口'});
+    return json(response,200,{...makeState().connection,settings:{mode:'simulator',port:'',baudrate:9600,slave_id:1},ports:[]});
+  }
   if (url.pathname === '/api/v1/workbench' && request.method==='POST') {
     try {return json(response,200,await workbenchRequest(JSON.parse(await readBody(request))));}
     catch(error){return json(response,422,{detail:error.message});}

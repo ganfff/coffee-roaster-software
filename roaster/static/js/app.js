@@ -26,12 +26,10 @@
   let selectedRecords = new Set();
   let selectedProfileId = null;
   const NEXT_EVENT_SEQUENCE = [
-    { type: 'yellowing', label: '记录转黄' },
-    { type: 'first_crack', label: '记录一爆' },
-    { type: 'first_crack_end', label: '记录一爆结束' },
-    { type: 'second_crack', label: '记录二爆' },
-    { type: 'second_crack_end', label: '记录二爆结束' },
-    { type: 'drop', label: '记录出豆' },
+    { type: 'yellowing', label: 'CC' },
+    { type: 'first_crack', label: 'FC' },
+    { type: 'second_crack', label: 'SC' },
+    { type: 'drop', label: 'End' },
   ];
 
   // 急停按钮双击确认状态
@@ -802,7 +800,7 @@
 
     setTextIfChanged(document.getElementById('pv-val'), msg.pv != null ? msg.pv.toFixed(1) : '--');
     setTextIfChanged(document.getElementById('sv-val'), msg.sv != null ? msg.sv.toFixed(1) : '--');
-    setTextIfChanged(document.getElementById('ror-val'), msg.ror != null ? msg.ror.toFixed(1) : '--');
+    setTextIfChanged(document.getElementById('ror-val'), msg.pv != null && msg.ror != null ? msg.ror.toFixed(1) : '--');
 
     // 目标偏差（Artisan 风格 ahead/behind 读数）
     const deltaEl = document.getElementById('delta-val');
@@ -1169,7 +1167,8 @@
     if (!copy) return;
     const wsOnline = document.getElementById('conn-status-ws')?.classList.contains('online');
     const tc4sOnline = document.getElementById('conn-status-tc4s')?.classList.contains('online');
-    setTextIfChanged(copy, window.ROASTER_DEBUG ? (wsOnline ? '安全模拟器 · 样例数据' : '调试服务正在重连') : (wsOnline && tc4sOnline ? '控制系统已连接' : (wsOnline ? '后端已连接，等待 TC4S' : '等待连接')));
+    if (window.RoasterDevice) { window.RoasterDevice.setWebSocketOnline(wsOnline); return; }
+    setTextIfChanged(copy, wsOnline && tc4sOnline ? 'TC4S 已连接' : wsOnline ? '等待 TC4S' : '未连接');
   }
 
   /**
@@ -1495,12 +1494,12 @@
   function eventLabel(type) {
     const map = {
       charge: '入豆',
-      yellowing: '转黄',
-      first_crack: '一爆开始',
+      yellowing: 'CC · 转黄',
+      first_crack: 'FC · 一爆',
       first_crack_end: '一爆结束',
-      second_crack: '二爆开始',
+      second_crack: 'SC · 二爆',
       second_crack_end: '二爆结束',
-      drop: '出豆'
+      drop: 'End · 出豆'
     };
     return map[type] || type;
   }
@@ -1510,29 +1509,17 @@
    * 这里仅更新按钮文案和 data-event，真正写入仍必须由用户点击触发。
    */
   function updateNextEventControl(msg) {
-    const btn = document.getElementById('btn-next-event');
-    if (!btn) return;
     document.querySelectorAll('#event-actions-bar .event-action-btn').forEach(el => el.classList.remove('next'));
     if (!msg || msg.state !== 'ROASTING') {
-      btn.hidden = true;
-      delete btn.dataset.event;
       return;
     }
 
     const recorded = new Set((Array.isArray(msg.events) ? msg.events : []).map(event => event.type));
     const next = NEXT_EVENT_SEQUENCE.find(event => !recorded.has(event.type));
     if (!next) {
-      btn.hidden = true;
-      delete btn.dataset.event;
       return;
     }
 
-    btn.hidden = false;
-    btn.dataset.event = next.type;
-    const label = btn.querySelector('.next-event-copy strong');
-    const hint = document.getElementById('next-event-eta');
-    setTextIfChanged(label, next.label);
-    setTextIfChanged(hint, `${stateLabel(msg.state)} · 点击后写入`);
     const timelineBtn = document.querySelector(`#event-actions-bar [data-event="${next.type}"]`);
     if (timelineBtn) timelineBtn.classList.add('next');
   }
@@ -2189,14 +2176,6 @@
       if (!profileId) { alert('请先选择一条曲线'); return; }
       sendCmd('start', { profile_id: profileId });
     });
-
-    const nextEventBtn = document.getElementById('btn-next-event');
-    if (nextEventBtn) {
-      bindTouchClick(nextEventBtn, () => {
-        if (lastState !== 'ROASTING' || !nextEventBtn.dataset.event) return;
-        sendCmd('event', { type: nextEventBtn.dataset.event });
-      });
-    }
 
     // 急停按钮：双击确认机制，按钮位于底部状态栏
     const eStopBtn = document.getElementById('btn-e-stop');
@@ -2903,6 +2882,7 @@
     // 主题切换 → 图表原地换色(theme.js 在 <head> 已把首帧主题写到 <html>)
     window.addEventListener('roaster-themechange', applyChartTheme);
     initAutomationUI();
+    await window.RoasterConnectionReady;
     connectWS();
     await loadProfiles();
     const initialWorkspace = new URLSearchParams(location.search).get('workspace');

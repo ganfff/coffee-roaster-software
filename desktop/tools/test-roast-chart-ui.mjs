@@ -44,10 +44,10 @@ try {
       const layout=await page.evaluate(()=>{
         const box=s=>{const r=document.querySelector(s).getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height,right:r.right,bottom:r.bottom};};
         const b=document.querySelector('#btn-e-stop'),r=b.getBoundingClientRect();
-        return {overflow:document.documentElement.scrollWidth>innerWidth+1,bar:box('#event-actions-bar'),chart:box('#charts-panel'),buttons:[...document.querySelectorAll('.event-action-btn')].map(b=>({height:b.getBoundingClientRect().height,clipped:b.querySelector('.event-name').scrollWidth>b.querySelector('.event-name').clientWidth+1})),stop:b.contains(document.elementFromPoint(r.x+r.width/2,r.y+r.height/2))};
+        return {overflow:document.documentElement.scrollWidth>innerWidth+1,bar:box('#event-actions-bar'),controls:box('#controls-panel'),inControls:document.querySelector('#controls-panel').contains(document.querySelector('#event-actions-bar')),chart:box('#charts-panel'),buttons:[...document.querySelectorAll('.event-action-btn')].map(b=>({height:b.getBoundingClientRect().height,clipped:b.querySelector('.event-name').scrollWidth>b.querySelector('.event-name').clientWidth+1})),stop:b.contains(document.elementFromPoint(r.x+r.width/2,r.y+r.height/2))};
       });
       assert.equal(layout.overflow,false);assert.equal(layout.stop,true);
-      assert.ok(layout.bar.bottom<=layout.chart.bottom+1);
+      assert.ok(layout.inControls&&layout.bar.bottom<=layout.controls.bottom+1);
       assert.ok(layout.buttons.every(b=>b.height>=44&&b.height<=45&&!b.clipped));
       assert.ok(layout.bar.height<=(width===375?100:54));
       layouts.push({width,height,mode,...layout});

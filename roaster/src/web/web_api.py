@@ -1,9 +1,13 @@
 import json
 import asyncio
 import logging
+import os
+from pathlib import Path
+import sys
+import secrets
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect, HTTPException, Response, Query
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect, HTTPException, Response, Query, Request
 from src.ai.api import NonAiCORSMiddleware, router as ai_router, close_host as close_ai_host
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import PlainTextResponse, JSONResponse, FileResponse
@@ -18,6 +22,8 @@ from src.services.data_manager import (
 from src.core.models import RoastProfile, RoastContext, CupFeedback
 from src.core.analysis import validate_candidate
 from src.workbench.engine import dispatch as workbench_dispatch
+from src.services.device_runtime import ConnectionSettings, serial_ports
+from src.web.device_origin import DeviceOriginMiddleware
 
 
 class ConnectionManager:
@@ -53,17 +59,22 @@ manager = ConnectionManager()
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    dm: DataManager = app.state.dm
-    await dm.init_db()
-    controller: RoasterController = app.state.controller
-    await controller.connect_hardware()
-    controller.set_broadcast_callback(manager.broadcast)
+    runtime = getattr(app.state, "runtime", None)
+    if runtime:
+        await runtime.start(manager.broadcast)
+    else:
+        await app.state.dm.init_db()
+        app.state.controller.set_broadcast_callback(manager.broadcast)
+        await app.state.controller.connect_hardware()
     try:
         yield
     finally:
         # Hardware shutdown must never wait for or be skipped by optional AI cleanup.
         try:
-            await controller.disconnect_hardware()
+            if runtime:
+                await runtime.stop()
+            else:
+                await app.state.controller.disconnect_hardware()
         finally:
             try:
                 await close_ai_host(app)
@@ -80,20 +91,60 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+app.add_middleware(DeviceOriginMiddleware)
 app.include_router(ai_router)
 
 # 静态文件服务（/static 前缀，历史兼容）
-app.mount("/static", StaticFiles(directory="static"), name="static")
+STATIC_ROOT = Path(getattr(sys, "_MEIPASS", Path(__file__).resolve().parents[2])) / "static"
+app.mount("/static", StaticFiles(directory=str(STATIC_ROOT)), name="static")
 
 
 @app.get("/")
 async def root():
-    return FileResponse("static/index.html")
+    return FileResponse(STATIC_ROOT / "index.html")
 
 
 @app.get("/editor.html")
 async def editor_page():
-    return FileResponse("static/editor.html")
+    return FileResponse(STATIC_ROOT / "editor.html")
+
+
+@app.get("/api/v1/runtime/health")
+async def runtime_health():
+    return {"application":"ganf-roaster","version":"0.8.0","mode":app.state.controller.connection_info()["mode"]}
+
+
+@app.get("/api/v1/connection")
+async def connection_status():
+    runtime = getattr(app.state,"runtime",None)
+    return runtime.status() if runtime else {**app.state.controller.connection_info(),"ports":serial_ports()}
+
+
+@app.post("/api/v1/connection")
+async def configure_connection(payload: ConnectionSettings):
+    runtime = getattr(app.state,"runtime",None)
+    if not runtime:
+        raise HTTPException(503,"当前服务不支持设备设置，请更新控制服务")
+    try:
+        return await runtime.configure(payload.model_dump())
+    except RuntimeError as exc:
+        raise HTTPException(409,str(exc))
+
+
+@app.post("/api/v1/runtime/shutdown")
+async def runtime_shutdown(request: Request):
+    token = getattr(app.state,"shutdown_token","")
+    if not token or not secrets.compare_digest(request.headers.get("x-roaster-runtime",""), token) or request.client.host not in ("127.0.0.1","::1"):
+        raise HTTPException(403,"此操作仅供所属桌面进程使用")
+    async with app.state.controller._state_lock:
+        if app.state.controller.state.value != "IDLE":
+            raise HTTPException(409,"请先 End 并保存或放弃本锅，再退出软件")
+        app.state.controller._connection_changing = True
+    async def stop_server():
+        await asyncio.sleep(0.1)
+        app.state.server.should_exit = True
+    asyncio.create_task(stop_server())
+    return {"stopped":True}
 
 
 @app.post("/api/v1/workbench")
@@ -135,7 +186,7 @@ async def websocket_endpoint(websocket: WebSocket):
     try:
         while True:
             data = await websocket.receive_json()
-            await _handle_ws_command(data, controller, websocket)
+            await _handle_ws_command(data, app.state.controller, websocket)
     except WebSocketDisconnect:
         manager.disconnect(websocket)
     except Exception:
@@ -402,4 +453,4 @@ async def api_record_context(session_id: str, payload: dict):
 
 # 根路径静态托管（兜底，必须最后注册）：让页面能用相对路径引用 css/js，
 # 这样同一份前端既能被 FastAPI 托管，也能直接打进 Tauri 桌面壳。
-app.mount("/", StaticFiles(directory="static"), name="root_static")
+app.mount("/", StaticFiles(directory=str(STATIC_ROOT)), name="root_static")

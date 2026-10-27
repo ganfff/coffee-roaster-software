@@ -543,11 +543,8 @@ fn key(value: &str) -> String {
     format!("{:016x}", hash.finish())
 }
 fn dir(app: &tauri::AppHandle) -> Result<std::path::PathBuf, String> {
-    let path = app
-        .path()
-        .app_data_dir()
-        .map_err(|e| e.to_string())?
-        .join("ai");
+    let path = std::env::var_os("ROASTER_APP_DATA_DIR").map(std::path::PathBuf::from)
+        .unwrap_or(app.path().app_data_dir().map_err(|e|e.to_string())?).join("ai");
     fs::create_dir_all(&path).map_err(|e| e.to_string())?;
     Ok(path)
 }

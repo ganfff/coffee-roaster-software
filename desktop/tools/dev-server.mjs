@@ -8,6 +8,7 @@ import {resolve, dirname, extname, sep, join} from 'node:path';
 import {fileURLToPath, pathToFileURL} from 'node:url';
 import {WebSocketServer, WebSocket} from 'ws';
 import {AIService} from '../ai/service-core.mjs';
+import {workbenchPython} from './python-runtime.mjs';
 
 const root=resolve(dirname(fileURLToPath(import.meta.url)),'../..');
 export const defaultDataDir=resolve(process.env.LOCALAPPDATA || process.env.XDG_STATE_HOME || join(process.env.HOME || root,'.local/state'),'RoasterDesktop/dev-web');
@@ -26,13 +27,21 @@ async function masterKey(dir) {
 const json=(res,status,value)=>{res.writeHead(status,{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store'});res.end(JSON.stringify(value));};
 async function body(req) {let size=0;const chunks=[];for await(const chunk of req){size+=chunk.length;if(size>24*1024*1024)throw Error('请求不能超过24MiB');chunks.push(chunk);}return chunks.length?JSON.parse(Buffer.concat(chunks).toString('utf8')):{};}
 
-export async function startDevServer({port=18180,scenario='idle',freeze=false,dataDir=defaultDataDir,serviceFactory=options=>new AIService(options)}={}) {
-  const aiSockets=new Set(),controlSockets=new Set(),events=[],token=randomBytes(32).toString('base64url'),shutdownToken=randomBytes(32).toString('base64url'),code=String(randomInt(10000000,100000000));
-  let cursor=0,origin,simOrigin,closed=false,server,service;
-  const simulator=spawn(process.execPath,[resolve(root,'desktop/tools/roaster-simulator.mjs'),'--scenario='+scenario,...(freeze?['--freeze']:[])],{cwd:resolve(root,'desktop'),env:{...process.env,ROASTER_SIM_PORT:'0'},windowsHide:true,stdio:['ignore','pipe','pipe']});
-  const close=async()=>{if(closed)return;closed=true;for(const socket of [...aiSockets,...controlSockets])socket.terminate();server?.close();server?.closeAllConnections();simulator.kill();await service?.shutdown();};
+export async function startDevServer({port=18180,scenario='idle',freeze=false,device=false,dataDir=defaultDataDir,serviceFactory=options=>new AIService(options)}={}) {
+  const aiSockets=new Set(),controlSockets=new Set(),events=[],token=randomBytes(32).toString('base64url'),shutdownToken=randomBytes(32).toString('base64url'),deviceToken=randomBytes(32).toString('base64url'),code=String(randomInt(10000000,100000000));
+  let cursor=0,origin,simOrigin,closed=false,deviceStopping=false,server,service;
+  const simulator=device
+    ?spawn(workbenchPython(),[resolve(root,'roaster/device_main.py'),'--port','0','--data-dir',resolve(dataDir,'device'),'--shutdown-token',deviceToken],{cwd:resolve(root,'roaster'),env:process.env,windowsHide:true,stdio:['ignore','pipe','pipe']})
+    :spawn(process.execPath,[resolve(root,'desktop/tools/roaster-simulator.mjs'),'--scenario='+scenario,...(freeze?['--freeze']:[])],{cwd:resolve(root,'desktop'),env:{...process.env,ROASTER_SIM_PORT:'0'},windowsHide:true,stdio:['ignore','pipe','pipe']});
+  const stopDevice=async()=>{
+    if(!device||!simOrigin||deviceStopping||simulator.exitCode!==null)return;
+    const response=await fetch(simOrigin+'/api/v1/runtime/shutdown',{method:'POST',headers:{'x-roaster-runtime':deviceToken},signal:AbortSignal.timeout(5000)});
+    if(!response.ok)throw Error((await response.json()).detail||'请先结束本锅再关闭调试服务');
+    deviceStopping=true;
+  };
+  const close=async()=>{if(closed)return;await stopDevice();closed=true;for(const socket of [...aiSockets,...controlSockets])socket.terminate();server?.close();server?.closeAllConnections();if(!device)simulator.kill();await service?.shutdown();};
   try {
-    simOrigin=await new Promise((ok,no)=>{const timer=setTimeout(()=>no(Error('安全模拟器启动超时')),15000);simulator.stdout.on('data',chunk=>{const match=/ready at (http:\/\/127\.0\.0\.1:\d+)/.exec(String(chunk));if(match){clearTimeout(timer);ok(match[1]);}});simulator.once('error',error=>{clearTimeout(timer);no(error);});simulator.once('exit',()=>{clearTimeout(timer);no(Error('安全模拟器启动失败'));});});
+    simOrigin=await new Promise((ok,no)=>{let logs='';const timer=setTimeout(()=>no(Error('控制服务启动超时：'+logs.slice(-1200))),20000);for(const stream of [simulator.stdout,simulator.stderr])stream.on('data',chunk=>{logs+=String(chunk);const match=/(?:ready at|Uvicorn running on) (http:\/\/127\.0\.0\.1:\d+)/.exec(String(chunk));if(match){clearTimeout(timer);ok(match[1]);}});simulator.once('error',error=>{clearTimeout(timer);no(error);});simulator.once('exit',()=>{clearTimeout(timer);no(Error('控制服务启动失败：'+logs.slice(-1200)));});});
     await mkdir(dataDir,{recursive:true});
     service=serviceFactory({emit:event=>{const item={cursor:++cursor,event};events.push(item);if(events.length>2000)events.shift();for(const ws of aiSockets)if(ws.readyState===1)ws.send(JSON.stringify({cursor,events:[event]}));}});
     await service.initialize({data_dir:resolve(dataDir,'ai'),master_key:await masterKey(dataDir)});
@@ -43,9 +52,9 @@ export async function startDevServer({port=18180,scenario='idle',freeze=false,da
       if(!sameOrigin(req))return json(res,403,{detail:'调试服务只接受当前本机地址的同源请求'});
       const url=new URL(req.url,origin),path=url.pathname;
       try {
-        if(path==='/__debug__/health')return json(res,200,{mode:'safe-simulator',origin,project:root,pid:process.pid,ai:true,scenario});
-        if(path==='/__debug__/shutdown'&&req.method==='POST') {if(req.headers['x-roaster-debug']!==shutdownToken)return json(res,403,{detail:'无效调试会话'});json(res,200,{stopped:true});setTimeout(()=>void close(),50);return;}
-        if(path==='/__debug__/context.js') {res.writeHead(200,{'Content-Type':'text/javascript; charset=utf-8'});return res.end('window.ROASTER_DEBUG='+JSON.stringify({backend:origin,pairingCode:code,mode:'safe-simulator'})+';');}
+        if(path==='/__debug__/health')return json(res,200,{mode:device?'device':'safe-simulator',origin,project:root,pid:process.pid,ai:true,scenario});
+        if(path==='/__debug__/shutdown'&&req.method==='POST') {if(req.headers['x-roaster-debug']!==shutdownToken)return json(res,403,{detail:'无效调试会话'});await stopDevice();json(res,200,{stopped:true});setTimeout(()=>void close().catch(error=>console.error(error.message)),50);return;}
+        if(path==='/__debug__/context.js') {res.writeHead(200,{'Content-Type':'text/javascript; charset=utf-8'});return res.end('window.ROASTER_DEBUG='+JSON.stringify({backend:origin,pairingCode:code,mode:device?'device':'safe-simulator'})+';');}
         if(path==='/api/v1/ai/status')return json(res,200,{ready:true,paired:authorized(req),debug:true});
         if(path==='/api/v1/ai/pair'&&req.method==='POST') {const input=await body(req);if(input.code!==code)return json(res,403,{detail:'调试会话配对码无效，请刷新当前调试页面'});res.setHeader('Set-Cookie',`roaster_dev=${token}; HttpOnly; SameSite=Strict; Path=/`);return json(res,200,{id:'local-debug',...(input.native?{token}:{})});}
         if(path.startsWith('/api/v1/ai/')) {
@@ -78,7 +87,7 @@ export async function startDevServer({port=18180,scenario='idle',freeze=false,da
       }else if(new URL(req.url,origin).pathname==='/ws')controlWs.handleUpgrade(req,socket,head,ws=>{
         controlSockets.add(ws);const upstream=new WebSocket(simOrigin.replace('http:','ws:')+'/ws');const queue=[];
         upstream.on('open',()=>{for(const bytes of queue)upstream.send(bytes);});upstream.on('message',bytes=>{if(ws.readyState===1)ws.send(bytes.toString());});
-        ws.on('message',bytes=>{if(upstream.readyState===1)upstream.send(bytes);else if(upstream.readyState===0&&queue.length<32)queue.push(bytes);});
+        ws.on('message',bytes=>{const message=bytes.toString();if(upstream.readyState===1)upstream.send(message);else if(upstream.readyState===0&&queue.length<32)queue.push(message);});
         ws.on('close',()=>{controlSockets.delete(ws);upstream.close();});ws.on('error',()=>upstream.close());upstream.on('error',()=>ws.close());upstream.on('close',()=>ws.close());
       });else socket.destroy();
     });
@@ -90,9 +99,9 @@ export async function startDevServer({port=18180,scenario='idle',freeze=false,da
 
 if(process.argv[1]&&import.meta.url===pathToFileURL(resolve(process.argv[1])).href){
   const args=process.argv.slice(2),value=(key,fallback)=>args.find(arg=>arg.startsWith(key+'='))?.slice(key.length+1)??fallback;
-  try{const host=await startDevServer({port:Number(value('--port',process.env.ROASTER_DEV_PORT||18180)),scenario:value('--scenario','idle'),freeze:args.includes('--freeze')});
+  try{const host=await startDevServer({port:Number(value('--port',process.env.ROASTER_DEV_PORT||18180)),scenario:value('--scenario','idle'),freeze:args.includes('--freeze'),device:!args.includes('--simulator')});
     const meta=join(host.dataDir,'server.json');await writeFile(meta,JSON.stringify({origin:host.origin,pid:process.pid,shutdownToken:host.shutdownToken,project:root}));
-    console.log('Roaster debug ready at '+host.origin+' — safe simulator, current source, local AI; no hardware access.');
-    let closing=false;const stop=async()=>{if(closing)return;closing=true;await host.close();await unlink(meta).catch(()=>{});};process.once('SIGINT',stop);process.once('SIGTERM',stop);host.server.on('close',()=>void unlink(meta).catch(()=>{}));
+    console.log('Roaster debug ready at '+host.origin);
+    let closing=false;const stop=async()=>{if(closing)return;closing=true;try{await host.close();await unlink(meta).catch(()=>{});}catch(error){closing=false;console.error(error.message);}};process.once('SIGINT',stop);process.once('SIGTERM',stop);host.server.on('close',()=>void unlink(meta).catch(()=>{}));
   }catch(error){console.error(error.code==='EADDRINUSE'?'调试端口已被占用；请关闭旧调试服务或使用 --port=其他端口。':error.message);process.exitCode=1;}
 }

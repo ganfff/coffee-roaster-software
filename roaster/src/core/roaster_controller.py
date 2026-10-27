@@ -108,14 +108,15 @@ class RoasterController:
     async def connect_hardware(self) -> bool:
         """连接 TC4S 硬件并启动监控轮询"""
         ok = await self.tc4s.connect()
-        if ok:
-            await self.tc4s.start_monitoring(
-                interval=self.config.get("poll_interval", 0.5)
-            )
+        await self.tc4s.start_monitoring(
+            interval=self.config.get("poll_interval", 0.5)
+        )
         return ok
 
     async def disconnect_hardware(self):
         """断开硬件连接，取消所有后台任务"""
+        if self.state == RoasterState.ROASTING:
+            await self.emergency_stop()
         await self.tc4s.stop_monitoring()
         await self.tc4s.disconnect()
 
@@ -343,6 +344,16 @@ class RoasterController:
         except Exception as e:
             logger.exception("广播错误: %s", e)
 
+    def connection_info(self):
+        tc4s = self.tc4s
+        ready = bool(getattr(tc4s, "ready", tc4s.connected))
+        mode = self.config.get("connection_mode", "device")
+        return {"mode":mode,"port":getattr(tc4s,"port","") or "",
+                "baudrate":getattr(tc4s,"baudrate",9600),"slave_id":getattr(tc4s,"slave_id",1),
+                "connected":ready,"transport_open":tc4s.connected,
+                "status":"connected" if ready else "connecting" if tc4s.connected else "disconnected",
+                "error":getattr(tc4s,"last_error", ""),"last_seen":getattr(tc4s,"last_seen",None)}
+
     def get_state_payload(self) -> dict:
         """组装当前状态为可序列化字典"""
         elapsed = self._get_elapsed_seconds()
@@ -365,7 +376,8 @@ class RoasterController:
             session_id=self.session_id,
             events=list(self.event_log),
             event_stats=self._calc_event_stats(),
-            connected=self.tc4s.connected,
+            connected=bool(getattr(self.tc4s, "ready", self.tc4s.connected)),
+            connection=self.connection_info(),
             error_reason=self.error_reason,
             lookahead_used=getattr(self, "current_lookahead", None),
             lookahead_offset=getattr(self, "_lookahead_offset", None),
@@ -376,6 +388,8 @@ class RoasterController:
     # --- 状态机动作 ---
 
     def _check_error_state(self, action_name: str):
+        if getattr(self, "_connection_changing", False):
+            raise RuntimeError("设备连接正在切换，请稍后重试")
         """如果当前处于 ERROR 状态，抛出异常阻止操作"""
         if self.state == RoasterState.ERROR:
             raise RuntimeError(
@@ -390,7 +404,7 @@ class RoasterController:
             self._check_error_state("start_roast")
             if self.state != RoasterState.IDLE:
                 raise RuntimeError("必须在待机状态下才能开始烘焙")
-            if not self.tc4s.connected:
+            if not bool(getattr(self.tc4s, "ready", self.tc4s.connected)):
                 raise RuntimeError("硬件未连接，无法开始烘焙")
             if profile_id:
                 profile = await self.dm.load_profile(profile_id)

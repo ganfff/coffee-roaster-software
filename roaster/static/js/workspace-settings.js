@@ -20,7 +20,6 @@
       for(const id of ['ui-ror-alpha','ui-projection']){const row=document.getElementById(id)?.closest('.phase-input-row');if(row)curveCard.append(row);}
       grid.append(curveCard);
     }
-    if(!window.__TAURI_INTERNALS__){const note=document.createElement('section');note.className='settings-card';note.dataset.settingsGroup='device';const h=document.createElement('h3');h.textContent='设备连接';const p=document.createElement('p');p.textContent='设备由当前服务连接。连接状态始终显示在底部状态栏，AI 账户可以单独使用。';note.append(h,p);grid.append(note);}
     function select(group){
       for(const card of grid.children)card.hidden=card.dataset.settingsGroup!==group;
       for(const button of nav.children){const active=button.dataset.group===group;button.setAttribute('aria-selected',String(active));button.tabIndex=active?0:-1;}

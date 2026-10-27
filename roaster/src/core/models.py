@@ -171,6 +171,7 @@ class RoasterStatus(BaseModel):
     events: List[RoastEvent]
     event_stats: dict
     connected: bool
+    connection: Optional[dict] = None
     error_reason: Optional[str] = None  # ERROR 状态时的错误原因描述
     lookahead_used: Optional[float] = None  # 实际使用的超前预测秒数（含自适应）
     lookahead_offset: Optional[float] = None  # 当前实际超前偏移秒数

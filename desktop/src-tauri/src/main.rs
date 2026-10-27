@@ -5,11 +5,14 @@
 mod ai;
 mod external;
 mod workbench;
+mod device;
 fn main() {
     tauri::Builder::default()
         .manage(ai::AiState::default())
         .manage(ai::AiServiceState::default())
+        .manage(device::DeviceState::default())
         .invoke_handler(tauri::generate_handler![
+            device::device_runtime,
             external::ai_open_external,
             workbench::workbench_request,
             workbench::workbench_save_file,
@@ -29,6 +32,9 @@ fn main() {
             ai::ai_remote_stop
         ])
         .on_window_event(|window, event| {
+            if let tauri::WindowEvent::CloseRequested { api, .. } = event {
+                device::request_close(window, api);
+            }
             if matches!(event, tauri::WindowEvent::Destroyed) {
                 use tauri::Manager;
                 let state = window.state::<ai::AiState>();

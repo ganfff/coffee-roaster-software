@@ -8,12 +8,22 @@ function Get-DebugHost {
         try {
             $taskMeta = Get-Content -LiteralPath $taskMetaPath -Raw | ConvertFrom-Json
             $taskHealth = Invoke-RestMethod ($taskMeta.origin + '/__debug__/health') -TimeoutSec 2
-            if ($taskHealth.mode -eq 'safe-simulator' -and $taskHealth.project -eq $taskRoot) { return $taskMeta }
+            if ($taskHealth.mode -in @('device','safe-simulator') -and $taskHealth.project -eq $taskRoot) { $taskMeta | Add-Member -NotePropertyName mode -NotePropertyValue $taskHealth.mode -Force; return $taskMeta }
         } catch { }
     }
     return $null
 }
 $taskHostInfo = Get-DebugHost
+if ($taskHostInfo -and $taskHostInfo.mode -eq 'safe-simulator') {
+    $taskState = Invoke-RestMethod ($taskHostInfo.origin + '/api/v1/status') -TimeoutSec 2
+    if ($taskState.state -ne 'IDLE') { throw 'End and save/discard the simulated pot before upgrading the debug service.' }
+    Invoke-RestMethod ($taskHostInfo.origin + '/__debug__/shutdown') -Method Post -Headers @{ 'X-Roaster-Debug' = $taskHostInfo.shutdownToken } | Out-Null
+    for ($taskWait = 0; $taskWait -lt 30; $taskWait++) {
+        Start-Sleep -Milliseconds 100
+        if (-not (Get-DebugHost)) { break }
+    }
+    $taskHostInfo = $null
+}
 if (-not $taskHostInfo) {
     if (-not (Test-Path -LiteralPath (Join-Path $taskRoot 'desktop\node_modules\ws'))) {
         throw 'Development dependencies missing. Run npm ci in desktop first.'
@@ -32,5 +42,5 @@ if (-not $taskHostInfo) {
     if (-not $taskHostInfo) { throw ('Debug server did not start. See ' + (Join-Path $taskData 'server-error.log')) }
 }
 Write-Output ('Debug page: ' + $taskHostInfo.origin)
-Write-Output 'Safe simulator. No serial ports or heaters. Refresh to load source changes.'
+Write-Output 'Device service ready. Configure the serial port in Settings > Device.'
 if (-not $NoBrowser) { Start-Process $taskHostInfo.origin }

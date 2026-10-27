@@ -24,7 +24,7 @@ try {
   for(;;){try{if((await fetch(endpoint+'/json/version')).ok)break;}catch{}if(child.exitCode!==null||Date.now()>deadline)throw Error('native WebView did not start: '+buildLog);await new Promise(ok=>setTimeout(ok,150));}
   browser=await chromium.connectOverCDP(endpoint);const context=browser.contexts()[0],page=context.pages()[0]||await context.waitForEvent('page');page.on('pageerror',e=>errors.push(e.message));
   await page.waitForFunction(()=>window.__TAURI_INTERNALS__&&window.ROASTER_DEBUG&&document.querySelector('#ai-chat-profile')?.options.length===1);
-  await page.locator('.connection-copy').filter({hasText:'安全模拟器'}).waitFor();
+  await page.locator('.connection-copy').filter({hasText:'模拟器'}).waitFor();
   assert.equal(await page.evaluate(()=>Chart.getChart(document.querySelector('#roast-chart')).options.plugins.eventLines.compactMarkers),true);
   assert.equal(await page.locator('#event-actions-bar').evaluate(n=>n.getBoundingClientRect().height<=54),true);
   await page.emulateMedia({reducedMotion:'reduce'});await page.waitForFunction(()=>document.querySelector('#rpb-phase-label').textContent!=='待机'&&document.querySelector('#delta-val').textContent!=='--');

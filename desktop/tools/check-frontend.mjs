@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 const here = dirname(fileURLToPath(import.meta.url));
 const root = resolve(here, '..', '..');
 const staticRoot = resolve(root, 'roaster', 'static');
-const jsFiles = ['theme.js', 'utils.js', 'tauri-adapter.js', 'app.js', 'editor.js', 'ai.js', 'ai-bridge.js', 'workbench.js', 'workbench-pdf.js', 'ai-chat.js', 'workbench-help.js', 'atlas.js', 'workspace-settings.js', 'mhub-motion.js', 'mhub-ui.js']
+const jsFiles = ['theme.js', 'utils.js', 'tauri-adapter.js', 'app.js', 'editor.js', 'ai.js', 'ai-bridge.js', 'workbench.js', 'workbench-pdf.js', 'ai-chat.js', 'workbench-help.js', 'atlas.js', 'workspace-settings.js', 'mhub-motion.js', 'mhub-ui.js', 'device-connection.js']
   .map(name => resolve(staticRoot, 'js', name));
 const cssFiles = ['theme.css', 'style.css', 'editor.css', 'ai.css', 'workbench.css', 'mhub.css']
   .map(name => resolve(staticRoot, 'css', name));
@@ -60,12 +60,12 @@ const [indexHtml, editorHtml, themeJs, appJs, editorJs, tauriAdapter, styleCss, 
 
 for (const [name, html] of [['index.html', indexHtml], ['editor.html', editorHtml]]) {
   check(!html.includes('?v=3.20'), `${name}: stale v3.20 cache key`);
-  check(html.indexOf('js/theme.js?v=3.30') >= 0 && html.indexOf('js/theme.js?v=3.30') < html.indexOf('css/theme.css?v=3.30'), `${name}: current theme.js must load before theme.css`);
+  check(html.indexOf('js/theme.js?v=3.31') >= 0 && html.indexOf('js/theme.js?v=3.31') < html.indexOf('css/theme.css?v=3.31'), `${name}: current theme.js must load before theme.css`);
 }
 
 for (const html of [indexHtml, editorHtml]) {
-  check(html.includes('css/mhub.css?v=3.30'), 'Mhub components must load in both entries');
-  check(html.includes('js/mhub-motion.js?v=3.30') && html.includes('js/mhub-ui.js?v=3.30'), 'Mhub motion and bindings must load in both entries');
+  check(html.includes('css/mhub.css?v=3.31'), 'Mhub components must load in both entries');
+  check(html.includes('js/mhub-motion.js?v=3.31') && html.includes('js/mhub-ui.js?v=3.31'), 'Mhub motion and bindings must load in both entries');
   check(!/css\/(atlas|instrument)\.css/.test(html), 'Retired presentation sheets must not load');
 }
 

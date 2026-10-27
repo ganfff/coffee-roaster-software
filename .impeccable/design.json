@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-27T02:05:06.533Z",
+  "generatedAt": "2026-10-27T04:29:26.486Z",
   "title": "Design System: Ganf's 咖啡烘焙机",
   "extensions": {
     "colorMeta": {
@@ -2324,13 +2324,46 @@
       "tension": 0,
       "timeAxis": "60s 刻度；分:秒；分钟边界结束。",
       "eventMarkers": "实际时间／温度交点；入豆／下豆半径 3px 点，其余 8×7px 小三角；无贯穿竖线或大标签。",
-      "eventActions": "至少 44×44px；14px 文字；6px 圆角；紧凑换行；title、可访问 badge 与详情展开保留时间／温度。",
-      "idle": "清空事件标记、事件按钮记录和阶段统计，不预填转黄等事件。"
+      "eventActions": "右侧操作台顶部、当前曲线选择之前；CC／FC／SC／End 四个文字操作；等分单排、间距 4px；至少 44×44px；14px 文字、6px 圆角；无图标或卡片底；title、可访问 badge 与详情展开保留时间／温度。",
+      "idle": "清空事件标记、事件按钮记录和阶段统计，不预填转黄等事件。",
+      "eventActionCodes": [
+        {
+          "code": "CC",
+          "event": "yellowing",
+          "meaning": "转黄"
+        },
+        {
+          "code": "FC",
+          "event": "first_crack",
+          "meaning": "一爆"
+        },
+        {
+          "code": "SC",
+          "event": "second_crack",
+          "meaning": "二爆"
+        },
+        {
+          "code": "End",
+          "event": "drop",
+          "meaning": "出豆并结束"
+        }
+      ],
+      "eventActionStates": "已记录项为 accent；下一项为 accent-soft；非烘焙状态禁用；不提供一爆／二爆结束操作。"
     },
     "aiConversation": {
       "entry": "每次从 AI 入口进入均创建新对话，清空旧消息和待发送内容。",
       "persistence": "本机账户和模型静默恢复；历史仅通过明确选择或候选曲线交接恢复。",
       "authorization": "仅本页明确发起且匹配的登录打开系统默认浏览器。"
+    },
+    "deviceConnection": {
+      "startup": "每次控制服务启动进入真实 TC4S 模式；只读取遥测，不写 SV 或自动开始烘焙。",
+      "status": "实际串口／模式与服务未连接、未连接、等待响应、已连接；合法 PV/SV 响应才就绪，无有效温度禁用开始。",
+      "settings": "真实设备／模拟器、实际串口刷新、波特率、站号与连接；控制服务地址放在展开项；沿用 14px 字号与 44px 控件。",
+      "switching": "仅待机时修改模式或串口参数；模拟器须明确选择并连接，模式不跨控制服务重启恢复；串口参数保留。",
+      "data": "真实与模拟曲线／记录隔离；Windows device/ 与本机 AI ai/ 分开，控制服务地址改变不迁移账户与历史。",
+      "process": "Windows 由 Rust 管理专属随机本机端口；有未处理的本锅时先 End 并保存或放弃，再关闭。",
+      "remote": "控制服务默认只监听本机；电脑通过已有认证 SSH 隧道访问树莓派。",
+      "copy": "不显示安全模拟器／样例数据常驻小注释。"
     }
   },
   "components": [
@@ -2413,6 +2446,14 @@
       "description": "单一外壳承担输入边界和焦点；模型、附件与发送邻近输入。",
       "html": "<div class=\"ds-composer\"><textarea aria-label=\"发给 AI 的消息\" placeholder=\"描述这次烘焙的问题\"></textarea><div class=\"ds-composer-actions\"><button class=\"ds-model\">选择模型</button><button class=\"ds-send\" aria-label=\"发送消息\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" aria-hidden=\"true\"><path d=\"M12 19V5m-6 6 6-6 6 6\"/></svg></button></div></div>",
       "css": ".ds-composer{padding:12px;border:1px solid var(--border,#81848f);border-radius:12px;background:var(--surface-2,#212225);font-family:var(--font-ui,MiSans),sans-serif;color:var(--text,#fff)}.ds-composer:focus-within{outline:2px solid var(--accent,#83b0ff);outline-offset:2px}.ds-composer textarea{display:block;width:100%;min-height:64px;max-height:144px;padding:8px;border:0;outline:0;box-shadow:none;resize:vertical;background:transparent;color:inherit;font-family:inherit;font-size:16px;line-height:1.6}.ds-composer textarea::placeholder{color:var(--text-secondary,#bfc1cb)}.ds-composer-actions{display:flex;justify-content:space-between;gap:6px;margin-top:8px}.ds-composer-actions button{min-height:44px;min-width:44px;border:0;border-radius:8px;font:inherit;font-size:14px;cursor:pointer;transition:color 150ms ease,background-color 150ms ease}.ds-model{padding:0 8px;background:transparent;color:var(--text-secondary,#bfc1cb)}.ds-model:hover{background:var(--surface-3,#303134)}.ds-send{display:grid;place-items:center;background:var(--primary,#226bee);color:var(--on-primary,#fff)}.ds-send:hover{background:var(--primary-hover,#1b5fdc)}.ds-send:active{background:var(--primary-active,#154fc1)}.ds-composer-actions button:focus-visible{outline:2px solid var(--accent,#83b0ff);outline-offset:3px}.ds-composer-actions button:disabled{opacity:.4;cursor:not-allowed}"
+    },
+    {
+      "name": "Roast Event Row",
+      "kind": "custom",
+      "refersTo": "roast-event-row",
+      "description": "右侧操作台顶部的 CC／FC／SC／End 四个文字操作；静态样例不连接设备。",
+      "html": "<div class=\"ds-roast-events\" role=\"group\" aria-label=\"烘焙标记\"><button class=\"ds-roast-event\" title=\"CC · 转黄\" aria-label=\"CC · 转黄\">CC</button><button class=\"ds-roast-event\" title=\"FC · 一爆\" aria-label=\"FC · 一爆\">FC</button><button class=\"ds-roast-event\" title=\"SC · 二爆\" aria-label=\"SC · 二爆\">SC</button><button class=\"ds-roast-event\" title=\"End · 出豆并结束\" aria-label=\"End · 出豆并结束\">End</button></div>",
+      "css": ".ds-roast-events{display:flex;flex-wrap:nowrap;gap:4px;width:100%;font-family:var(--font-ui,MiSans),sans-serif}.ds-roast-event{flex:1;min-width:44px;min-height:44px;padding:4px 10px;border:0;border-radius:6px;background:transparent;color:var(--text,#fff);font-family:inherit;font-size:14px;font-weight:400;cursor:pointer;transition:color 150ms ease,background-color 150ms ease,opacity 150ms ease}.ds-roast-event:hover:not(:disabled){background:var(--surface-2,#212225)}.ds-roast-event:focus-visible{outline:2px solid var(--accent,#83b0ff);outline-offset:3px}.ds-roast-event:active{transform:none}.ds-roast-event.ds-recorded{color:var(--accent,#83b0ff)}.ds-roast-event.ds-next:not(.ds-recorded){background:var(--accent-soft,#20304b)}.ds-roast-event:disabled{opacity:.4;cursor:not-allowed}"
     }
   ],
   "narrative": {
@@ -2444,6 +2485,11 @@
         "name": "The Actual Event Rule",
         "body": "事件只来自当前烘焙的实际记录；待机时清空事件标记、事件按钮记录和阶段统计，不预填转黄等事件。",
         "section": "components"
+      },
+      {
+        "name": "The Valid Telemetry Rule",
+        "body": "串口打开不等于设备就绪；只有合法 PV/SV 响应才显示已连接，无有效温度时禁用开始。模式与串口参数仅在待机时修改；启动或重连不写 SV、不自动开始烘焙。有未处理的本锅时，关闭本机控制服务须先 End 并保存或放弃记录。",
+        "section": "components"
       }
     ],
     "dos": [
@@ -2453,13 +2499,15 @@
       "Do 在 2048、1366、1024×640、375px 与 130% 缩放中检查读数、任务导航、AI、滚动和编辑流程。",
       "Do 保留浏览／保存／应用分离、原生文件未知字段保真、指针编辑与撤销。",
       "Do 静默恢复本机 AI 账户和模型；每次从 AI 入口进入创建新对话，历史通过明确选择或候选曲线交接恢复；只有本页明确发起且匹配的登录才打开系统默认浏览器。",
-      "Do 用细线和实际时间／温度上的小标记呈现主页曲线，事件操作保留至少 44px 触控目标。"
+      "Do 用细线和实际时间／温度上的小标记呈现主页曲线；CC／FC／SC／End 四个文字操作放在右侧操作台顶部，保持至少 44px 触控目标。",
+      "Do 默认进入真实设备模式，用实际串口和有效 PV/SV 响应显示连接状态；模式与连接参数仅在待机时修改。"
     ],
     "donts": [
       "Don't 恢复旧六配色、暖白石墨实体按钮、壁纸、模糊或装饰性光晕。",
       "Don't 把 primary 与 accent 合并，或用品牌蓝覆盖图表、事件、阶段和危险语义色。",
       "Don't 给复合输入内外同时绘制边框或焦点环。",
       "Don't 在待机时预填转黄等事件，或把图表参考推广为对 Mhub 工作区的全面替换。",
+      "Don't 把事件操作放回图表下方，增加一爆／二爆结束按钮，或显示安全模拟器／样例数据常驻小注释。",
       "Don't 为安全栏、实时数据和可编辑画布增加区域位移或缩放，或把七种可复用类型都写成已绑定页面行为。",
       "Don't 让 AI 直接控制加热、SV、E-STOP、串口／GPIO 或当前已应用曲线；AI 仅给出建议，采用／保存／应用由操作者明确执行。",
       "Don't 将账户凭据、会话、运行数据、构建产物或本机截图证据加入 Git，也不能用 Windows／模拟器证据声称真实硬件或真实付费授权已经通过。"

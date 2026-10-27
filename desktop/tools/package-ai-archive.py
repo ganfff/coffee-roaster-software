@@ -17,7 +17,7 @@ def create_archive(source: Path, output: Path) -> None:
         info.uid = info.gid = 0
         info.uname = info.gname = ""
         info.mtime = 0
-        info.mode = 0o755 if info.isdir() or name == "runtime/node/bin/node" else 0o777 if info.issym() else 0o644
+        info.mode = 0o755 if info.isdir() or name == "runtime/node/bin/node" or name.endswith(".sh") else 0o777 if info.issym() else 0o644
         return info
 
     with output.open("wb") as raw:

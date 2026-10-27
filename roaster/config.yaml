@@ -19,7 +19,7 @@ ror_window_sec: 15.0       # ROR 计算窗口（秒），建议 10~20。滑动�
 
 max_safe_temperature: 250.0   # 软件过温保护阈值（°C），超过此值强制关闭加热并进入 ERROR
 
-host: "0.0.0.0"
+host: "127.0.0.1"
 port: 8000
 
 predictive_control:

@@ -13,10 +13,10 @@ try {
   try {
     const meta=JSON.parse(await readFile(join(defaultDataDir,'server.json'),'utf8'));
     const health=await fetch(meta.origin+'/__debug__/health',{signal:AbortSignal.timeout(1500)}).then(r=>r.json());
-    if(health.mode==='safe-simulator'&&resolve(health.project)===resolve(desktopRoot,'..'))host={origin:meta.origin};
+    if(health.mode===(args.includes('--simulator')?'safe-simulator':'device')&&resolve(health.project)===resolve(desktopRoot,'..'))host={origin:meta.origin};
   } catch {}
-  if(!host){host=await startDevServer({port:Number(process.env.ROASTER_DEV_PORT||0),scenario,freeze:args.includes('--freeze')});ownsHost=true;}
-  console.log('免安装原生调试：'+host.origin+'（浏览器也可打开；安全模拟器）');
+  if(!host){host=await startDevServer({port:Number(process.env.ROASTER_DEV_PORT||0),scenario,freeze:args.includes('--freeze'),device:!args.includes('--simulator')});ownsHost=true;}
+  console.log('原生调试：'+host.origin);
   // Invoke the bundled runtime directly, independent of npm or a system Node PATH.
   for(const name of ['prepare-ai.mjs','prepare-workbench.mjs']){
     const preparation=spawn(process.execPath,[join(desktopRoot,'tools',name)],{cwd:desktopRoot,stdio:'inherit',windowsHide:true});

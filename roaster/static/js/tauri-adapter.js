@@ -1,255 +1,65 @@
-/**
- * Tauri 桌面壳适配层
- *
- * 作用：当前端运行在 Tauri WebView 内时，把页面里所有「同源相对路径」请求
- * （/api/...、/ws、window.open('/api/...')）重写到用户配置的后端地址，
- * 因为 Tauri 里页面来自 asset 协议（http://tauri.localhost），
- * 不代理的话 fetch 会打到不存在的本地服务上。
- *
- * 在普通浏览器里（FastAPI 直接托管页面时）本文件完全不起作用，零副作用。
- *
- * 后端地址存 localStorage['roaster.backendUrl']，默认 http://localhost:8000；
- * 编辑器页面会注入一个图标按钮，可随时修改后端地址（仅在 Tauri 内出现）。
- */
-
+/* Tauri uses an owned local device service or an explicitly selected LAN service. */
 (function () {
   'use strict';
-
-  // Tauri v2 会在 WebView 里注入 __TAURI_INTERNALS__；浏览器环境没有
-  var isTauri = typeof window !== 'undefined' && '__TAURI_INTERNALS__' in window;
-  var debug = window.ROASTER_DEBUG;
-  if (debug) document.documentElement.dataset.debug = 'simulator';
-  if (!isTauri && location.protocol !== 'file:') return;
-  if (location.protocol === 'file:') {
-    document.addEventListener('DOMContentLoaded', function () {
-      var message = document.createElement('div');message.className = 'backend-connection-notice';
-      message.textContent = '此页面需要 HTTP 服务。请双击项目根目录的「调试网页.cmd」，不要直接打开 HTML 文件。';
-      document.body.appendChild(message);
-    });
-    return;
+  const desktop='__TAURI_INTERNALS__' in window,debug=window.ROASTER_DEBUG;
+  const read=key=>{try{return localStorage.getItem(key)||'';}catch{return '';}};
+  const save=(key,value)=>{try{localStorage.setItem(key,value);}catch{}};
+  const clean=value=>String(value||'').trim().replace(/\/+$/,'');
+  let localBackend='http://127.0.0.1:18181',runtimeError='';
+  const previous=read('roaster.backendUrl'),explicitTarget=read('roaster.connectionTarget');
+  const remote=explicitTarget==='remote'||(!explicitTarget&&/^https?:\/\/(?!localhost(?=[:/]|$)|127\.0\.0\.1(?=[:/]|$))/.test(previous));
+  const getBackend=()=>debug?.backend||(remote?clean(previous):localBackend);
+  const originalFetch=window.fetch.bind(window);
+  window.RoasterConnectionReady=desktop&&!debug&&!remote
+    ?window.__TAURI_INTERNALS__.invoke('device_runtime').then(value=>{localBackend=value.url;window.ROASTER_BACKEND=getBackend();})
+      .catch(error=>{runtimeError=String(error?.message||error);})
+    :Promise.resolve();
+  if(debug)document.documentElement.dataset.debug=debug.mode==='safe-simulator'?'simulator':'device';
+  window.ROASTER_BACKEND=desktop?getBackend():location.origin;
+  function switchBackend(value){
+    const url=new URL(clean(value));
+    if(!['http:','https:'].includes(url.protocol)||url.username||url.password||url.pathname!=='/'||url.search||url.hash)throw Error('请输入控制服务的 http(s) 地址和端口');
+    if(!desktop||debug){location.assign(url.origin);return;}
+    save('roaster.backendUrl',url.origin);save('roaster.connectionTarget','remote');location.reload();
   }
-
-  var STORAGE_KEY = 'roaster.backendUrl';
-  var HISTORY_KEY = 'roaster.backendHistory';
-  var REAL_PRESET_KEY = 'roaster.realPresetUrl';
-  var SIMULATOR_URL = 'http://localhost:8000';
-  var DEFAULT_REAL_URL = 'http://raspberrypi.local:8000';
-  var DEFAULT_BACKEND = SIMULATOR_URL;
-
-  function lsGet(k) { try { return localStorage.getItem(k) || ''; } catch (e) { return ''; } }
-  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) { /* ignore */ } }
-
-  function normalizeUrl(v) {
-    return String(v || '').trim().replace(/\/+$/, '');
-  }
-
-  function getBackend() {
-    return (debug && debug.backend) || normalizeUrl(lsGet(STORAGE_KEY)) || DEFAULT_BACKEND;
-  }
-
-  function getRealPreset() {
-    return normalizeUrl(lsGet(REAL_PRESET_KEY)) || DEFAULT_REAL_URL;
-  }
-
-  function getHistory() {
-    try {
-      var h = JSON.parse(lsGet(HISTORY_KEY) || '[]');
-      return Array.isArray(h) ? h.filter(Boolean) : [];
-    } catch (e) { return []; }
-  }
-
-  function setBackend(url) {
-    url = normalizeUrl(url);
-    if (!url) return;
-    lsSet(STORAGE_KEY, url);
-    var h = [url].concat(getHistory().filter(function (e) { return e !== url; })).slice(0, 5);
-    lsSet(HISTORY_KEY, JSON.stringify(h));
-  }
-
-  /** 将以 / 开头的同源路径改写到后端地址；其余原样返回 */
-  function absolutize(url) {
-    if (typeof url === 'string' && url.charAt(0) === '/') {
-      return getBackend() + url;
+  function switchLocal(){if(!desktop||debug)return;save('roaster.connectionTarget','local');save('roaster.backendUrl','');location.reload();}
+  window.RoasterBackend={get url(){return desktop?getBackend():location.origin;},connect:switchBackend,local:switchLocal};
+  if(desktop){
+    const absolute=value=>typeof value==='string'&&value.startsWith('/')?getBackend()+value:value;
+    window.fetch=(input,init)=>window.RoasterConnectionReady.then(()=>originalFetch(absolute(input),init));
+    const OriginalWebSocket=window.WebSocket;
+    function DeviceWebSocket(value,protocols){
+      const url=new URL(value);
+      if(url.host===location.host){const backend=new URL(getBackend());url.host=backend.host;url.protocol=backend.protocol==='https:'?'wss:':'ws:';}
+      return protocols===undefined?new OriginalWebSocket(url.href):new OriginalWebSocket(url.href,protocols);
     }
-    return url;
+    for(const name of ['CONNECTING','OPEN','CLOSING','CLOSED'])DeviceWebSocket[name]=OriginalWebSocket[name];
+    DeviceWebSocket.prototype=OriginalWebSocket.prototype;window.WebSocket=DeviceWebSocket;
+    const originalOpen=window.open.bind(window);window.open=(value,...rest)=>originalOpen(absolute(value),...rest);
   }
-
-  // ---- 代理 fetch ----
-  var origFetch = window.fetch.bind(window);
-  window.fetch = function (input, init) {
-    if (typeof input === 'string') input = absolutize(input);
-    return origFetch(input, init);
-  };
-
-  // ---- 代理 WebSocket ----
-  // app.js 用 `${protocol}//${window.location.host}/ws` 构造地址，
-  // 在 Tauri 里 host 是 tauri.localhost，需要换成后端主机的 ws/wss 地址。
-  var OrigWebSocket = window.WebSocket;
-  function PatchedWebSocket(url, protocols) {
-    if (typeof url === 'string') {
-      try {
-        var u = new URL(url);
-        if ((u.protocol === 'ws:' || u.protocol === 'wss:') && u.host === window.location.host) {
-          var b = new URL(getBackend());
-          u.protocol = (b.protocol === 'https:') ? 'wss:' : 'ws:';
-          u.host = b.host;
-          url = u.toString();
-        }
-      } catch (e) { /* 非法 URL 交给原生构造器报错 */ }
+  async function mount(){
+    await window.RoasterConnectionReady;
+    const section=document.getElementById('backend-section');
+    if(section){
+      section.querySelector('#backend-current').textContent=window.RoasterBackend.url;
+      section.querySelector('#backend-custom').value=remote?previous:'';
+      const local=section.querySelector('#backend-preset-local');local.hidden=!desktop||!!debug;local.onclick=switchLocal;
+      section.querySelector('#backend-apply').onclick=()=>{try{switchBackend(section.querySelector('#backend-custom').value);}catch(error){document.getElementById('device-settings-status').textContent=error.message;}};
+    }else if(desktop){
+      const button=document.createElement('button');button.id='tauri-settings-btn';button.className='tauri-settings-btn';button.title='设备连接';button.setAttribute('aria-label','设备连接');button.innerHTML='<i class="ph ph-plugs-connected" aria-hidden="true"></i>';
+      button.onclick=()=>{location.href='index.html?settings=device';};document.body.append(button);
     }
-    // 用工厂写法返回真正的原生实例，保证 readyState/事件等完全一致
-    return protocols !== undefined ? new OrigWebSocket(url, protocols) : new OrigWebSocket(url);
-  }
-  PatchedWebSocket.CONNECTING = OrigWebSocket.CONNECTING;
-  PatchedWebSocket.OPEN = OrigWebSocket.OPEN;
-  PatchedWebSocket.CLOSING = OrigWebSocket.CLOSING;
-  PatchedWebSocket.CLOSED = OrigWebSocket.CLOSED;
-  PatchedWebSocket.prototype = OrigWebSocket.prototype;
-  window.WebSocket = PatchedWebSocket;
-
-  // ---- 代理 window.open（记录导出等）----
-  var origOpen = window.open ? window.open.bind(window) : null;
-  window.open = function (url, target, features) {
-    if (typeof url === 'string') url = absolutize(url);
-    if (origOpen) return origOpen(url, target, features);
-    window.location.href = url;
-    return null;
-  };
-
-  // ---- 后端设置 UI ----
-  // 主页面：接管原生「设置」tab 里的后端连接区（#backend-section）
-  // 编辑器页：没有设置 tab，退回浮动 ⚙ 弹窗
-  function applyAndReload(url) {
-    url = normalizeUrl(url);
-    if (!/^https?:\/\/.+/.test(url)) return;
-    setBackend(url);
-    window.location.reload();
-  }
-
-  function wireBackendSection(section) {
-    section.style.display = '';
-    var currentEl = section.querySelector('#backend-current');
-    var realInput = section.querySelector('#backend-real-preset');
-    var customInput = section.querySelector('#backend-custom');
-    if (currentEl) currentEl.textContent = getBackend();
-    if (realInput) realInput.value = getRealPreset();
-    if (customInput) customInput.value = getBackend();
-    if (debug) {
-      var note = document.createElement('p');note.textContent = '当前是安全模拟调试，地址由调试服务提供；不会修改正式设备地址。';section.appendChild(note);
-      section.querySelectorAll('button,input').forEach(function (control) { control.disabled = true; });
-    }
-
-    section.querySelector('#backend-preset-sim').addEventListener('click', function () {
-      applyAndReload(SIMULATOR_URL);
-    });
-    section.querySelector('#backend-preset-real').addEventListener('click', function () {
-      applyAndReload(getRealPreset());
-    });
-    section.querySelector('#backend-save-preset').addEventListener('click', function () {
-      var v = normalizeUrl(realInput.value);
-      if (/^https?:\/\/.+/.test(v)) {
-        lsSet(REAL_PRESET_KEY, v);
-        this.textContent = '已保存';
-        var btn = this;
-        setTimeout(function () { btn.textContent = '存预设'; }, 1200);
-      }
-    });
-    section.querySelector('#backend-apply').addEventListener('click', function () {
-      applyAndReload(customInput.value);
-    });
-
-    var histBox = section.querySelector('#backend-history');
-    var h = getHistory();
-    if (histBox && h.length) {
-      histBox.innerHTML = h.map(function (u) {
-        var cur = u === getBackend();
-        return '<button data-url="' + u.replace(/"/g, '&quot;') + '" class="ctrl-btn small backend-history-item' +
-          (cur ? ' active' : '') + '">' + u + '</button>';
-      }).join('');
-      histBox.querySelectorAll('button[data-url]').forEach(function (b) {
-        b.addEventListener('click', function () { applyAndReload(b.dataset.url); });
-      });
+    if(!desktop||debug)return;
+    try{
+      if(runtimeError)throw Error(runtimeError);
+      const response=await originalFetch(getBackend()+'/api/v1/status',{signal:AbortSignal.timeout(5000)});
+      if(!response.ok)throw Error('控制服务未就绪');
+    }catch(error){
+      const notice=document.createElement('section');notice.id='backend-connection-notice';notice.className='backend-connection-notice';notice.setAttribute('role','status');
+      const text=document.createElement('p');text.textContent='控制服务未连接：'+String(error.message||error);notice.append(text);
+      const settings=document.createElement('button');settings.className='ctrl-btn';settings.textContent='设备连接';settings.onclick=()=>{notice.remove();window.RoasterSettings?.open('device');};notice.append(settings);
+      const retry=document.createElement('button');retry.className='ctrl-btn';retry.textContent='重试';retry.onclick=()=>location.reload();notice.append(retry);document.body.append(notice);
     }
   }
-
-  function injectFloatingUI() {
-    if (document.getElementById('tauri-settings-btn')) return;
-
-    var btn = document.createElement('button');
-    btn.id = 'tauri-settings-btn';
-    btn.innerHTML = '<i class="ph ph-plugs-connected" aria-hidden="true"></i>';
-    btn.title = '后端连接设置（仅桌面版显示）';
-    btn.setAttribute('aria-label', '后端连接设置');
-    btn.className = 'tauri-settings-btn';
-
-    var overlay = document.createElement('div');
-    overlay.className = 'tauri-settings-overlay';
-    overlay.innerHTML =
-      '<div class="tauri-settings-dialog">' +
-      '<div class="tauri-settings-title"><i class="ph ph-plugs-connected" aria-hidden="true"></i><span>后端连接设置</span></div>' +
-      '<p>切换后将重新加载当前页面。</p>' +
-      '<input id="tauri-backend-input" type="text" spellcheck="false" aria-label="后端地址" />' +
-      '<div class="tauri-settings-actions">' +
-      '<button id="tauri-backend-cancel" class="tauri-dialog-button">取消</button>' +
-      '<button id="tauri-backend-save" class="tauri-dialog-button primary">保存并重连</button>' +
-      '</div></div>';
-
-    function openModal() {
-      overlay.querySelector('#tauri-backend-input').value = getBackend();
-      overlay.classList.add('open');
-    }
-    function closeModal() { overlay.classList.remove('open'); }
-
-    btn.addEventListener('click', openModal);
-    overlay.addEventListener('click', function (e) { if (e.target === overlay) closeModal(); });
-    overlay.querySelector('#tauri-backend-cancel').addEventListener('click', closeModal);
-    overlay.querySelector('#tauri-backend-save').addEventListener('click', function () {
-      var v = normalizeUrl(overlay.querySelector('#tauri-backend-input').value);
-      if (!/^https?:\/\/.+/.test(v)) {
-        overlay.querySelector('#tauri-backend-input').style.borderColor = 'var(--danger)';
-        return;
-      }
-      applyAndReload(v);
-    });
-
-    document.body.appendChild(btn);
-    document.body.appendChild(overlay);
-  }
-
-  function injectSettingsUI() {
-    var section = document.getElementById('backend-section');
-    if (section) {
-      wireBackendSection(section);
-    } else {
-      injectFloatingUI();
-    }
-    if (!debug) checkBackend();
-  }
-
-  async function checkBackend() {
-    var notice = document.getElementById('backend-connection-notice');
-    try {
-      var response = await origFetch(getBackend() + '/api/v1/status', { signal: AbortSignal.timeout(3000) });
-      if (!response.ok || !(await response.json()).state) throw Error('服务未就绪');
-      if (notice) notice.remove();
-    } catch (error) {
-      if (notice) return;
-      notice = document.createElement('section');notice.id = 'backend-connection-notice';notice.className = 'backend-connection-notice';notice.setAttribute('role', 'status');
-      var text = document.createElement('p');text.textContent = '设备后端未连接：' + getBackend() + '。桌面安装包不包含控机 HTTP 服务。曲线库与记录需要连接后端；离线工作台可直接使用。';notice.appendChild(text);
-      [['连接设置', 'settings'], ['打开离线工作台', 'workbench']].forEach(function (item) {
-        var button = document.createElement('button');button.className = 'ctrl-btn';button.textContent = item[0];
-        button.onclick = function () { notice.remove();var tab=document.querySelector('[data-tab="'+item[1]+'"]');if(tab)tab.click();else injectFloatingUI(); };notice.appendChild(button);
-      });
-      var retry = document.createElement('button');retry.className='ctrl-btn';retry.textContent='重新检查';retry.onclick=function(){notice.remove();checkBackend();};notice.appendChild(retry);document.body.appendChild(notice);
-    }
-  }
-
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', injectSettingsUI);
-  } else {
-    injectSettingsUI();
-  }
-
-  // 调试入口：控制台里可看当前生效的后端地址
-  window.ROASTER_BACKEND = getBackend();
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount);else mount();
 })();
