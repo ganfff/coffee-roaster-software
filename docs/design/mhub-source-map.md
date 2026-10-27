@@ -37,6 +37,19 @@
 - 原版按钮的8px圆角、实色／描边／中性／文字层级及150ms状态反馈被保留。原版40px高度与13px控件字，适配为至少44px触控目标和14–16px正文。
 - 旧 `roaster.palette` 归一为 `mhub`，`roaster.theme` 的 dark／light／auto 选择保留。主题在首帧前确定，跨窗口同步；主题事件仍包含 theme、mode、palette。图表使用现有无动画重新取色路径。
 
+## 主页曲线与事件细化（2026-10-27）
+
+本次只对主页图表和事件呈现采用用户指定的 Kaffelogic 参考，其他区域继续使用以上 Mhub 系统。已读取的真实界面参考位于 `D:\项目\kaffelogic逆向\analysis\validation\reference-gui\`：
+
+| 参考 | 采用的呈现规则 | 本项目对应实现 |
+| --- | --- | --- |
+| `08-real-log.png` | 细温度／目标线、实际曲线点位上的紧凑事件标记 | `app.js` 主页图表与 `eventLines.compactMarkers`；`theme-palettes.mjs` 深浅主题的 PV／SV／目标语义色 |
+| `11-real-profile-phases-ror-fan-zones.png` | 分钟刻度、绿色 ROR 与参考线、轻量网格 | `app.js` 主页坐标轴、ROR 无填充和参考点线；`index.html` 图例 |
+
+图下事件按钮使用至少 44×44px 的紧凑操作行，时间／温度保留在 title、可访问 badge 与详情展开中。待机不预填事件，历史记录页的标注方式继续由记录模块维护。参考截图不复制进仓库；这些图像提供呈现依据，不代表本项目已验证真实 Kaffelogic 设备。
+
+AI 入口统一创建新对话；本机账户／模型继续静默恢复，历史消息仅通过明确选择历史或候选曲线交接恢复。账户与硬件权限边界保持原有约束。
+
 ## 工程与资源边界
 
 这是现有原生 HTML／CSS／JavaScript 的可读适配实现，未恢复或声称拥有厂商原始 Vue 工程。厂商编译主包、产品图、图标字体、壁纸、Electron 外壳、账号与硬件 SDK、模拟桥接不进入本仓库。

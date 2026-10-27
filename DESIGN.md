@@ -43,9 +43,9 @@ colors:
   dark-chart-grid: "#34363d"
   dark-chart-tick: "#bfc1cb"
   dark-chart-legend: "#ffffff"
-  dark-chart-temp: "#f2a366"
-  dark-chart-setpoint: "#4d9cff"
-  dark-chart-target: "#9e9e9e"
+  dark-chart-temp: "#ff747b"
+  dark-chart-setpoint: "#a5b2c8"
+  dark-chart-target: "#8e9fff"
   dark-chart-target-fill: "rgba(158, 158, 158, 0.06)"
   dark-chart-ror: "#45b97c"
   dark-chart-ror-fill: "rgba(69, 185, 124, 0.1)"
@@ -117,9 +117,9 @@ colors:
   light-chart-grid: "#e1e4ec"
   light-chart-tick: "#4f515c"
   light-chart-legend: "#151515"
-  light-chart-temp: "#9c4a16"
-  light-chart-setpoint: "#1473e6"
-  light-chart-target: "#8e8e93"
+  light-chart-temp: "#cb3042"
+  light-chart-setpoint: "#63758b"
+  light-chart-target: "#514dde"
   light-chart-target-fill: "rgba(120, 120, 128, 0.1)"
   light-chart-ror: "#247449"
   light-chart-ror-fill: "rgba(47, 157, 98, 0.09)"
@@ -507,7 +507,15 @@ Primary 使用 primary／on-primary，hover 与 active 使用各自令牌；Neut
 
 ### AI Conversation
 
-单一对话面板，头部用历史、新对话、更多、关闭等图标入口；账户／模型与附件靠近输入区，低频选项在有名称的菜单中。消息使用 16px／1.8、最大 72ch，助手正文无气泡底，用户消息以 surface-2 区分。输入只有一个外壳边界；当前任务在 AI 并排／放大／关闭之间保留。账户、模型与会话仅在本机保存，启动静默恢复，不重放登录弹窗。
+单一对话面板，头部用历史、新对话、更多、关闭等图标入口；账户／模型与附件靠近输入区，低频选项在有名称的菜单中。消息使用 16px／1.8、最大 72ch，助手正文无气泡底，用户消息以 surface-2 区分。输入只有一个外壳边界；AI 并排／放大不改变当前工作区。每次通过 AI 入口进入均创建新对话，清空旧消息和待发送内容；旧对话仅经明确的历史选择或候选曲线交接恢复。账户、模型与历史仅在本机保存，账户和模型启动静默恢复，不重放登录弹窗。
+
+### Live Roast Chart / Events
+
+主页曲线与事件标记按用户指定的 Kaffelogic 记录图／配置图整理；图表以外继续使用 Mhub 的面层、导航、按钮和区域动效。参考身份见 docs/design/mhub-source-map.md。温度 PV 使用 1.5px 红色实线，曲线目标使用 1.5px 蓝色实线，设定 SV 使用 1px 灰蓝色短虚线（3／3），ROR 使用 1.25px 绿色实线且不填充，ROR 参考使用 1px 绿色点线（2／3）。主页曲线保持折线呈现（tension 0），无数据点装饰；分钟刻度以分:秒显示，横向只保留轻量温度网格。
+
+事件落在实际时间和温度交点：入豆／下豆为半径 3px 的点，其余为 8×7px 的小三角。不用贯穿图表的事件竖线或大标签。图下事件操作为可换行的紧凑行，触控目标至少 44×44px、文字 14px、圆角 6px；时间与温度保留在 title 和可访问的 badge 中，详细记录通过详情展开查看。
+
+**The Actual Event Rule.** 事件只来自当前烘焙的实际记录；待机时清空事件标记、事件按钮记录和阶段统计，不预填转黄等事件。
 
 ### Region Motion
 
@@ -535,12 +543,14 @@ Primary 使用 primary／on-primary，hover 与 active 使用各自令牌；Neut
 - Do 保留常用触控目标至少 44px、正文与控件 14–16px、可见键盘焦点和减少动效。
 - Do 在 2048、1366、1024×640、375px 与 130% 缩放中检查读数、任务导航、AI、滚动和编辑流程。
 - Do 保留浏览／保存／应用分离、原生文件未知字段保真、指针编辑与撤销。
-- Do 静默恢复本机 AI 账户、模型和历史；只有本页明确发起且匹配的登录才打开系统默认浏览器。
+- Do 静默恢复本机 AI 账户和模型；每次从 AI 入口进入创建新对话，历史通过明确选择或候选曲线交接恢复；只有本页明确发起且匹配的登录才打开系统默认浏览器。
+- Do 用细线和实际时间／温度上的小标记呈现主页曲线，事件操作保留至少 44px 触控目标。
 
 ### Don't:
 - Don't 恢复旧六配色、暖白石墨实体按钮、壁纸、模糊或装饰性光晕。
 - Don't 把 primary 与 accent 合并，或用品牌蓝覆盖图表、事件、阶段和危险语义色。
 - Don't 给复合输入内外同时绘制边框或焦点环。
+- Don't 在待机时预填转黄等事件，或把图表参考推广为对 Mhub 工作区的全面替换。
 - Don't 为安全栏、实时数据和可编辑画布增加区域位移或缩放，或把七种可复用类型都写成已绑定页面行为。
 - Don't 让 AI 直接控制加热、SV、E-STOP、串口／GPIO 或当前已应用曲线；AI 仅给出建议，采用／保存／应用由操作者明确执行。
 - Don't 将账户凭据、会话、运行数据、构建产物或本机截图证据加入 Git，也不能用 Windows／模拟器证据声称真实硬件或真实付费授权已经通过。

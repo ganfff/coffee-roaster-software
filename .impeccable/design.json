@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-26T08:28:09.267Z",
+  "generatedAt": "2026-10-27T02:05:06.533Z",
   "title": "Design System: Ganf's 咖啡烘焙机",
   "extensions": {
     "colorMeta": {
@@ -580,44 +580,44 @@
       },
       "dark-chart-temp": {
         "role": "semantic",
-        "displayName": "深色 · chart-temp",
+        "displayName": "深色 · PV 温度红",
         "tonalRamp": [
-          "oklch(15% 0.1216 57.44)",
-          "oklch(25% 0.1216 57.44)",
-          "oklch(35% 0.1216 57.44)",
-          "oklch(45% 0.1216 57.44)",
-          "oklch(55% 0.1216 57.44)",
-          "oklch(65% 0.1216 57.44)",
-          "oklch(80% 0.1216 57.44)",
-          "oklch(95% 0.1216 57.44)"
+          "oklch(15% 0.1696 19.22)",
+          "oklch(25% 0.1696 19.22)",
+          "oklch(35% 0.1696 19.22)",
+          "oklch(45% 0.1696 19.22)",
+          "oklch(55% 0.1696 19.22)",
+          "oklch(65% 0.1696 19.22)",
+          "oklch(80% 0.1696 19.22)",
+          "oklch(95% 0.1696 19.22)"
         ]
       },
       "dark-chart-setpoint": {
         "role": "semantic",
-        "displayName": "深色 · chart-setpoint",
+        "displayName": "深色 · SV 灰蓝",
         "tonalRamp": [
-          "oklch(15% 0.1657 255.39)",
-          "oklch(25% 0.1657 255.39)",
-          "oklch(35% 0.1657 255.39)",
-          "oklch(45% 0.1657 255.39)",
-          "oklch(55% 0.1657 255.39)",
-          "oklch(65% 0.1657 255.39)",
-          "oklch(80% 0.1657 255.39)",
-          "oklch(95% 0.1657 255.39)"
+          "oklch(15% 0.0348 261.01)",
+          "oklch(25% 0.0348 261.01)",
+          "oklch(35% 0.0348 261.01)",
+          "oklch(45% 0.0348 261.01)",
+          "oklch(55% 0.0348 261.01)",
+          "oklch(65% 0.0348 261.01)",
+          "oklch(80% 0.0348 261.01)",
+          "oklch(95% 0.0348 261.01)"
         ]
       },
       "dark-chart-target": {
         "role": "semantic",
-        "displayName": "深色 · chart-target",
+        "displayName": "深色 · 曲线目标蓝",
         "tonalRamp": [
-          "oklch(15% 0.0000 0.00)",
-          "oklch(25% 0.0000 0.00)",
-          "oklch(35% 0.0000 0.00)",
-          "oklch(45% 0.0000 0.00)",
-          "oklch(55% 0.0000 0.00)",
-          "oklch(65% 0.0000 0.00)",
-          "oklch(80% 0.0000 0.00)",
-          "oklch(95% 0.0000 0.00)"
+          "oklch(15% 0.1404 274.78)",
+          "oklch(25% 0.1404 274.78)",
+          "oklch(35% 0.1404 274.78)",
+          "oklch(45% 0.1404 274.78)",
+          "oklch(55% 0.1404 274.78)",
+          "oklch(65% 0.1404 274.78)",
+          "oklch(80% 0.1404 274.78)",
+          "oklch(95% 0.1404 274.78)"
         ]
       },
       "dark-chart-target-fill": {
@@ -1616,44 +1616,44 @@
       },
       "light-chart-temp": {
         "role": "semantic",
-        "displayName": "浅色 · chart-temp",
+        "displayName": "浅色 · PV 温度红",
         "tonalRamp": [
-          "oklch(15% 0.1253 48.07)",
-          "oklch(25% 0.1253 48.07)",
-          "oklch(35% 0.1253 48.07)",
-          "oklch(45% 0.1253 48.07)",
-          "oklch(55% 0.1253 48.07)",
-          "oklch(65% 0.1253 48.07)",
-          "oklch(80% 0.1253 48.07)",
-          "oklch(95% 0.1253 48.07)"
+          "oklch(15% 0.1901 20.11)",
+          "oklch(25% 0.1901 20.11)",
+          "oklch(35% 0.1901 20.11)",
+          "oklch(45% 0.1901 20.11)",
+          "oklch(55% 0.1901 20.11)",
+          "oklch(65% 0.1901 20.11)",
+          "oklch(80% 0.1901 20.11)",
+          "oklch(95% 0.1901 20.11)"
         ]
       },
       "light-chart-setpoint": {
         "role": "semantic",
-        "displayName": "浅色 · chart-setpoint",
+        "displayName": "浅色 · SV 灰蓝",
         "tonalRamp": [
-          "oklch(15% 0.1929 257.11)",
-          "oklch(25% 0.1929 257.11)",
-          "oklch(35% 0.1929 257.11)",
-          "oklch(45% 0.1929 257.11)",
-          "oklch(55% 0.1929 257.11)",
-          "oklch(65% 0.1929 257.11)",
-          "oklch(80% 0.1929 257.11)",
-          "oklch(95% 0.1929 257.11)"
+          "oklch(15% 0.0405 253.62)",
+          "oklch(25% 0.0405 253.62)",
+          "oklch(35% 0.0405 253.62)",
+          "oklch(45% 0.0405 253.62)",
+          "oklch(55% 0.0405 253.62)",
+          "oklch(65% 0.0405 253.62)",
+          "oklch(80% 0.0405 253.62)",
+          "oklch(95% 0.0405 253.62)"
         ]
       },
       "light-chart-target": {
         "role": "semantic",
-        "displayName": "浅色 · chart-target",
+        "displayName": "浅色 · 曲线目标蓝",
         "tonalRamp": [
-          "oklch(15% 0.0073 286.19)",
-          "oklch(25% 0.0073 286.19)",
-          "oklch(35% 0.0073 286.19)",
-          "oklch(45% 0.0073 286.19)",
-          "oklch(55% 0.0073 286.19)",
-          "oklch(65% 0.0073 286.19)",
-          "oklch(80% 0.0073 286.19)",
-          "oklch(95% 0.0073 286.19)"
+          "oklch(15% 0.2134 277.08)",
+          "oklch(25% 0.2134 277.08)",
+          "oklch(35% 0.2134 277.08)",
+          "oklch(45% 0.2134 277.08)",
+          "oklch(55% 0.2134 277.08)",
+          "oklch(65% 0.2134 277.08)",
+          "oklch(80% 0.2134 277.08)",
+          "oklch(95% 0.2134 277.08)"
         ]
       },
       "light-chart-target-fill": {
@@ -2274,7 +2274,64 @@
         "name": "ai-landscape",
         "value": "max-height:480px and min-width:600px"
       }
-    ]
+    ],
+    "chartPresentation": {
+      "scope": "主页实时曲线与紧凑事件标记；其余工作区沿用 Mhub。",
+      "reference": "docs/design/mhub-source-map.md",
+      "series": [
+        {
+          "name": "PV",
+          "colorToken": "chart-temp",
+          "borderWidth": 1.5,
+          "borderDash": [],
+          "fill": false
+        },
+        {
+          "name": "SV",
+          "colorToken": "chart-setpoint",
+          "borderWidth": 1,
+          "borderDash": [
+            3,
+            3
+          ],
+          "fill": false
+        },
+        {
+          "name": "曲线目标",
+          "colorToken": "chart-target",
+          "borderWidth": 1.5,
+          "borderDash": [],
+          "fill": false
+        },
+        {
+          "name": "ROR",
+          "colorToken": "chart-ror",
+          "borderWidth": 1.25,
+          "borderDash": [],
+          "fill": false
+        },
+        {
+          "name": "ROR 参考",
+          "colorToken": "chart-ror",
+          "borderWidth": 1,
+          "borderDash": [
+            2,
+            3
+          ],
+          "fill": false
+        }
+      ],
+      "tension": 0,
+      "timeAxis": "60s 刻度；分:秒；分钟边界结束。",
+      "eventMarkers": "实际时间／温度交点；入豆／下豆半径 3px 点，其余 8×7px 小三角；无贯穿竖线或大标签。",
+      "eventActions": "至少 44×44px；14px 文字；6px 圆角；紧凑换行；title、可访问 badge 与详情展开保留时间／温度。",
+      "idle": "清空事件标记、事件按钮记录和阶段统计，不预填转黄等事件。"
+    },
+    "aiConversation": {
+      "entry": "每次从 AI 入口进入均创建新对话，清空旧消息和待发送内容。",
+      "persistence": "本机账户和模型静默恢复；历史仅通过明确选择或候选曲线交接恢复。",
+      "authorization": "仅本页明确发起且匹配的登录打开系统默认浏览器。"
+    }
   },
   "components": [
     {
@@ -2382,6 +2439,11 @@
         "name": "The Flat Surface Rule",
         "body": "普通卡片与按钮静止时没有投影、渐变或内凹高光；层级由纯色面层、间距与必要边界表达。只有悬浮面板、菜单、提示和对话层使用 pop 阴影。",
         "section": "elevation"
+      },
+      {
+        "name": "The Actual Event Rule",
+        "body": "事件只来自当前烘焙的实际记录；待机时清空事件标记、事件按钮记录和阶段统计，不预填转黄等事件。",
+        "section": "components"
       }
     ],
     "dos": [
@@ -2390,12 +2452,14 @@
       "Do 保留常用触控目标至少 44px、正文与控件 14–16px、可见键盘焦点和减少动效。",
       "Do 在 2048、1366、1024×640、375px 与 130% 缩放中检查读数、任务导航、AI、滚动和编辑流程。",
       "Do 保留浏览／保存／应用分离、原生文件未知字段保真、指针编辑与撤销。",
-      "Do 静默恢复本机 AI 账户、模型和历史；只有本页明确发起且匹配的登录才打开系统默认浏览器。"
+      "Do 静默恢复本机 AI 账户和模型；每次从 AI 入口进入创建新对话，历史通过明确选择或候选曲线交接恢复；只有本页明确发起且匹配的登录才打开系统默认浏览器。",
+      "Do 用细线和实际时间／温度上的小标记呈现主页曲线，事件操作保留至少 44px 触控目标。"
     ],
     "donts": [
       "Don't 恢复旧六配色、暖白石墨实体按钮、壁纸、模糊或装饰性光晕。",
       "Don't 把 primary 与 accent 合并，或用品牌蓝覆盖图表、事件、阶段和危险语义色。",
       "Don't 给复合输入内外同时绘制边框或焦点环。",
+      "Don't 在待机时预填转黄等事件，或把图表参考推广为对 Mhub 工作区的全面替换。",
       "Don't 为安全栏、实时数据和可编辑画布增加区域位移或缩放，或把七种可复用类型都写成已绑定页面行为。",
       "Don't 让 AI 直接控制加热、SV、E-STOP、串口／GPIO 或当前已应用曲线；AI 仅给出建议，采用／保存／应用由操作者明确执行。",
       "Don't 将账户凭据、会话、运行数据、构建产物或本机截图证据加入 Git，也不能用 Windows／模拟器证据声称真实硬件或真实付费授权已经通过。"

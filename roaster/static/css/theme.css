@@ -177,9 +177,9 @@ input[type="number"], .ror-list, .node-item {
   --chart-grid: #34363d;
   --chart-tick: #bfc1cb;
   --chart-legend: #ffffff;
-  --chart-temp: #f2a366;
-  --chart-setpoint: #4d9cff;
-  --chart-target: #9e9e9e;
+  --chart-temp: #ff747b;
+  --chart-setpoint: #a5b2c8;
+  --chart-target: #8e9fff;
   --chart-target-fill: rgba(158, 158, 158, 0.06);
   --chart-ror: #45b97c;
   --chart-ror-fill: rgba(69, 185, 124, 0.1);
@@ -282,9 +282,9 @@ input[type="number"], .ror-list, .node-item {
   --chart-grid: #e1e4ec;
   --chart-tick: #4f515c;
   --chart-legend: #151515;
-  --chart-temp: #9c4a16;
-  --chart-setpoint: #1473e6;
-  --chart-target: #8e8e93;
+  --chart-temp: #cb3042;
+  --chart-setpoint: #63758b;
+  --chart-target: #514dde;
   --chart-target-fill: rgba(120, 120, 128, 0.1);
   --chart-ror: #247449;
   --chart-ror-fill: rgba(47, 157, 98, 0.09);

@@ -14,6 +14,7 @@
   let profiles = [], providers = [], conversations = [], conversation = null, activeRun = null;
   let selectedProfile = '', contextBinding = null, queuedAttachments = [], queuedContext = null;
   let selectionInitialized = false;
+  let chatReady, openingConversation = null, conversationRevision = 0;
   const restoredCatalogs = new Set();
   let currentRecord = null, connected = false, socket = null, reconnectTimer, generation = 0;
   let latestStatus = null, loginId = null, authBox, settingsStatus, abortEvents, nativeReady, eventCursor = 0;
@@ -94,7 +95,9 @@
     conversations = Array.isArray(conversations) ? conversations : conversations.conversations || [];
     connected = true; access.hidden = true;
     updateSelect(); renderHistory();
-    const saved = conversation?.id || localStorage.getItem(key('conversation')) || (desktop && localStorage.getItem('roaster.ai.local.'+backend()+'.conversation'));
+    // Only an explicit candidate handoff restores a conversation across pages.
+    const handoff = sessionStorage.getItem('roaster.ai.openCandidate') || sessionStorage.getItem('roaster.ai.openNativeCandidate');
+    const saved = conversation?.id || (handoff && (localStorage.getItem(key('conversation')) || (desktop && localStorage.getItem('roaster.ai.local.'+backend()+'.conversation'))));
     if (saved && conversations.some(c => c.id === saved)) await loadConversation(saved,{keepSelection:!!selectedProfile||!!conversation});
     setStatus(profiles.length ? (!activeProfile()?'请选择要使用的账户':activeProfile().can_chat === false ? accountState(activeProfile()) : 'AI 已就绪') : '连接一个 AI 账户，开始对话');
     if (!desktop) connectEvents();
@@ -106,7 +109,10 @@
     }
   }
   async function loadConversation(id,{keepSelection=false}={}) {
-    conversation = await rpc('conversations.get', {id});
+    const revision = keepSelection ? conversationRevision : ++conversationRevision;
+    const loaded = await rpc('conversations.get', {id});
+    if (revision !== conversationRevision) return;
+    conversation = loaded;
     localStorage.setItem(key('conversation'), id);
     if(!keepSelection)selectedProfile = conversation.profile_id || selectedProfile;
     const running = conversation.active_run || conversation.active_request || conversation.messages?.findLast(m=>m.role==='assistant'&&m.status==='streaming')?.run_id;
@@ -115,10 +121,15 @@
   }
   async function newConversation() {
     if (activeRun) throw Error('请先停止当前回复，再新建会话');
-    conversation = await rpc('conversations.create', {profile_id: selectedProfile, title: '新对话'});
+    const revision = ++conversationRevision;
+    const created = await rpc('conversations.create', {profile_id: selectedProfile, title: '新对话'});
+    if (revision !== conversationRevision) return;
+    conversation = created;
     localStorage.setItem(key('conversation'), conversation.id);
     contextBinding = null; queuedContext = null; queuedAttachments = [];
-    await refresh(); renderQueued();
+    composer.value = ''; delete composer.dataset.retryFrom;
+    renderMessages(); renderQueued();
+    await refresh();
   }
   function renderHistory() {
     if (!history) return; history.replaceChildren();
@@ -261,6 +272,7 @@
     if (queuedContext) return clone(queuedContext);
     if (contextBinding?.options) {
       const options = contextBinding.options, context = await options.getContext();
+      if (contextBinding.referenceRecord) context.reference_record = clone(contextBinding.referenceRecord);
       return {context, source:options.getSource?.() || null, kind:options.kind, draft:options.getDraft ? JSON.stringify(options.getDraft()) : null, locked_until:contextBinding.locked_until, options};
     }
     if ($('tab-workbench')?.classList.contains('active') && window.RoasterWorkbenchAI) {
@@ -280,6 +292,7 @@
     }catch{return {context:{},kind:'chat'};}
   }
   async function send(text, binding, retryFrom) {
+    if (panel.hidden && !await openNewConversation()) return;
     if (activeRun) throw Error('请先停止当前回复');
     if (!connected) { show(); access.hidden = false; throw Error('本机 AI 未连接，请在 AI 账户页点击重新连接'); }
     if (!selectedProfile) {openAccountSettings();throw Error('请先连接一个 AI 账户');}
@@ -294,16 +307,18 @@
     const savedOptions = selected.options; delete selected.options;
     const id = uid(), requestGeneration = generation;
     if (!conversation) { conversation = await rpc('conversations.create', {profile_id:selectedProfile,title:text.slice(0,32)||'文件分析'}); localStorage.setItem(key('conversation'),conversation.id); }
+    const requestConversationId = conversation.id, requestRevision = conversationRevision;
     runBindings.set(id,{...selected,options:savedOptions,requestHost:host,requestBackend:backend()});
     activeRun = id; transient.set(id,{conversation_id:conversation.id,text:'',artifacts:[]});
     show(); renderMessages(); setStatus('正在回复 · 可随时停止');
     try {
       const params = {id,conversation_id:conversation.id,revision:conversation.revision,profile_id:selectedProfile,prompt:text||'请分析选入的文件',context:selected.context||{},source:selected.source,kind:selected.kind||'chat',attachments:queuedAttachments.map(a=>a.id),locked_until:selected.locked_until,retry_from:retryFrom||composer.dataset.retryFrom};
       const response = await rpc('runs.start',params);
-      if (requestGeneration !== generation) return;
+      if (requestGeneration !== generation || requestRevision !== conversationRevision) return;
       activeRun = response.id || id;
       composer.value = ''; delete composer.dataset.retryFrom; queuedAttachments=[];queuedContext=null;renderQueued();
-      conversation = await rpc('conversations.get',{id:conversation.id}); renderMessages();
+      const loaded = await rpc('conversations.get',{id:requestConversationId});
+      if (requestRevision === conversationRevision) { conversation = loaded; renderMessages(); }
     } catch(error) {activeRun=null;transient.delete(id);renderMessages();throw error;}
   }
   async function cancelRun(id) {
@@ -363,7 +378,8 @@
       if(type==='error'&&item?.text) {item.text+='\n\n回复中断，可重试。';}
       else transient.delete(id);
       if(connected&&conversation?.id&&(!event.conversation_id||event.conversation_id===conversation.id)) {
-        try {conversation=await rpc('conversations.get',{id:conversation.id});renderMessages();conversations=await rpc('conversations.list');renderHistory();}catch{}
+        const revision=conversationRevision,id=conversation.id;
+        try {const loaded=await rpc('conversations.get',{id});if(revision===conversationRevision&&conversation?.id===id){conversation=loaded;renderMessages();}conversations=await rpc('conversations.list');renderHistory();}catch{}
       }
       renderMessages();
       if(type==='error')setStatus(typeof data==='string'?data:data?.message||'回复失败，可重试');
@@ -384,6 +400,24 @@
   function toggleTray(id,trigger){const tray=$(id),open=tray.hidden;closeTrays();tray.hidden=!open;trigger.setAttribute('aria-expanded',String(open));if(open)tray.querySelector('input,select,button')?.focus();}
   let presentationRevision=0;
   function show() {if(!panel)return;presentationRevision++;const opening=panel.hidden;panel.hidden=false;if(opening)window.RoasterMotion?.enter(panel,'tab');else window.RoasterMotion?.cancel(panel);$('ai-launcher').setAttribute('aria-expanded','true');syncEditorConversation();composer?.focus({preventScroll:true});}
+  function openNewConversation() {
+    if (openingConversation) return openingConversation;
+    openingConversation = (async () => {
+      await chatReady;
+      if (activeRun) await stop();
+      await newConversation();
+      closeTrays(); show();
+      return true;
+    })().catch(error => {
+      // An unavailable service must never expose the previous transcript as a new chat.
+      conversationRevision++; conversation = null;
+      contextBinding = null; queuedContext = null; queuedAttachments = [];
+      composer.value = ''; delete composer.dataset.retryFrom;
+      renderMessages(); renderQueued(); show(); fail(error);
+      return false;
+    }).finally(() => { openingConversation = null; });
+    return openingConversation;
+  }
   function hide() {closeTrays();const revision=++presentationRevision;const launch=$('ai-launcher');launch.setAttribute('aria-expanded','false');const finish=()=>{if(revision!==presentationRevision)return;panel.hidden=true;syncEditorConversation();(launch.offsetParent?launch:document.querySelector('.ai-settings-chat'))?.focus();};if(window.RoasterMotion&&!panel.hidden)window.RoasterMotion.leave(panel,'tab').then(finish);else finish();}
   function renderQueued() {
     const target=$('ai-queued');if(!target)return;target.replaceChildren();
@@ -512,7 +546,7 @@
     models.onchange=async()=>{models.disabled=true;try{await saveModel(p,models.value);await loadSettings();}catch(error){fail(error);}finally{models.disabled=false;}};
     const actions=el('div',null,'ai-actions');configForm.append(actions);
     if(p.mode==='subscription'&&(!p.authenticated||p.catalog_status==='auth_required'))actions.append(button(p.provider==='anthropic'?'连接官方 Claude Code':'登录账户',()=>loginAccount(p),'primary'));
-    else if(p.can_chat!==false)actions.append(button('开始对话',()=>{show();composer.focus();},'primary'));
+    else if(p.can_chat!==false)actions.append(button('开始对话',openNewConversation,'primary'));
     const reload=async()=>{settingsStatus.textContent='正在加载账户可用模型…';try{await rpc('models',{profile_id:p.id,refresh:true});}finally{await refresh();await loadSettings();}};
     if(p.authenticated||p.configured)actions.append(button(p.catalog_status==='error'?'重试加载模型':'刷新模型',reload));
     if(p.model&&p.configured){const test=button('检查对话',async()=>{test.disabled=true;settingsStatus.textContent='正在发送一条简短消息检查连接…';try{const result=await rpc('test',{profile_id:p.id});settingsStatus.textContent=result.text||'对话检查成功';}finally{test.disabled=false;}});test.title='发送一条简短消息，使用当前渠道额度';actions.append(test);}
@@ -571,7 +605,7 @@
     settingsCard=el('section',null,'settings-card settings-card-wide ai-settings');settingsCard.dataset.settingsGroup='ai';grid.prepend(settingsCard);
     const heading=el('div',null,'settings-card-heading'),icon=el('i',null,'ph ph-waveform');icon.setAttribute('aria-hidden','true');
     const title=el('div');title.append(el('h3','本机 AI'),el('p','账户配置与对话记录保存在本机。'));
-    const headingActions=el('div',null,'ai-settings-heading-actions');headingActions.append(button('AI 对话',show,'ai-settings-chat'),button('添加账户',addAccountView,'primary'));heading.append(icon,title,headingActions);settingsCard.append(heading);
+    const headingActions=el('div',null,'ai-settings-heading-actions');headingActions.append(button('AI 对话',openNewConversation,'ai-settings-chat'),button('添加账户',addAccountView,'primary'));heading.append(icon,title,headingActions);settingsCard.append(heading);
     const layout=el('div',null,'ai-accounts-layout');settingsCard.append(layout);
     const list=el('div',null,'ai-config-list');list.id='ai-config-list';list.setAttribute('aria-label','已连接账户');layout.append(list);
     const detail=el('div',null,'ai-account-detail');layout.append(detail);
@@ -593,17 +627,18 @@
       business('/api/v1/records?limit=50').then(records=>{for(const record of records)option(reference,record.session_id,record.display_name||record.session_id);}).catch(()=>{});
     }
     let requestId=null;
-    const result={panel:details,body,status,get busy(){return !!requestId&&activeRun===requestId;},invalidate(){if(requestId&&activeRun===requestId)stop().catch(fail);requestId=null;},async analyze(question){
+    const result={panel:details,body,status,get busy(){return !!requestId&&activeRun===requestId;},invalidate(){if(requestId&&activeRun===requestId)stop().catch(fail);requestId=null;},async analyze(question,{fresh=false}={}){
       const context=await options.getContext(),source=options.getSource?.()||null;
       if(reference?.value)context.reference_record=await business('/api/v1/records/'+encodeURIComponent(reference.value));
       const locked_until=lock?.value?Number(lock.value):null;
       if(locked_until!==null&&(!Number.isFinite(locked_until)||locked_until<0))throw Error('请输入有效的锁定秒数');
       const selected={context,source,kind:options.kind,draft:options.getDraft?JSON.stringify(options.getDraft()):null,options,locked_until};
-      contextBinding={options,locked_until};renderQueued();
+      if ((fresh || panel.hidden) && !await openNewConversation()) return;
+      contextBinding={options,locked_until,referenceRecord:context.reference_record};renderQueued();
       await send(question||prompt.value|| (options.kind==='design'?'按目标设计曲线，说明调整和资料缺口。':'分析当前快照，给出有数据依据的建议。'),selected);
       requestId=activeRun;
     }};
-    body.append(button(options.kind==='design'?'生成／调整曲线':'分析并回复',()=>result.analyze()),button('打开完整对话',()=>{contextBinding={options};show();renderQueued();composer.value=prompt.value;composer.focus();}));
+    body.append(button(options.kind==='design'?'生成／调整曲线':'分析并回复',()=>result.analyze(undefined,{fresh:true})),button('打开完整对话',async()=>{if(!await openNewConversation())return;contextBinding={options};renderQueued();composer.value=prompt.value;composer.focus();}));
     return result;
   }
   function mount() {
@@ -636,7 +671,7 @@
     const modelButton=button('',()=>toggleTray('ai-model-options',modelButton),'ai-model-picker');modelButton.id='ai-model-picker';modelButton.setAttribute('aria-label','选择模型与账户');modelButton.setAttribute('aria-controls','ai-model-options');modelButton.setAttribute('aria-expanded','false');const modelName=el('span','选择模型');modelName.id='ai-model-name';modelButton.append(modelName,el('i',null,'ph ph-caret-down'));actions.append(attachments,modelButton,stopButton,sendButton);
     const inputShell=el('div',null,'ai-input-shell');inputShell.append(queued,picker,label,actions,input);inputArea.append(inputShell,info);
     panel.append(header,tools,more,historyBox,access,inline,clients,messages,inputArea);
-    const launch=$('ai-launcher')||button('AI 对话',()=>{});launch.id='ai-launcher';launch.classList.add('ai-launcher');launch.onclick=()=>{if(panel.hidden||launch.getAttribute('aria-expanded')==='false')show();else hide();};launch.setAttribute('aria-expanded','false');launch.setAttribute('aria-controls','ai-chat');
+    const launch=$('ai-launcher')||button('AI 对话',()=>{});launch.id='ai-launcher';launch.classList.add('ai-launcher');launch.onclick=()=>{if(panel.hidden||launch.getAttribute('aria-expanded')==='false')openNewConversation();else hide();};launch.setAttribute('aria-expanded','false');launch.setAttribute('aria-controls','ai-chat');
     document.body.append(panel);if(!launch.parentElement){const topbar=document.querySelector('.header-right');if(topbar){launch.classList.add('ai-topbar-launcher');topbar.insertBefore(launch,topbar.children[1]||null);}else document.body.append(launch);}
     composer.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey&&!e.isComposing&&e.keyCode!==229){e.preventDefault();send().catch(fail);}});
     composer.addEventListener('paste',e=>{const files=[...(e.clipboardData?.files||[])];if(files.length){e.preventDefault();attach(files).catch(fail);}});
@@ -648,7 +683,7 @@
     function fitViewport(){const zoom=Number.parseFloat(getComputedStyle(document.body).zoom)||1;panel.style.setProperty('--ai-view-width',(innerWidth/zoom)+'px');syncEditorConversation();}
     fitViewport();window.addEventListener('resize',fitViewport);new MutationObserver(fitViewport).observe(document.body,{attributes:true,attributeFilter:['style']});
     mountSettings();renderMessages();renderQueued();
-    refresh().then(async()=>{
+    chatReady=refresh().then(async()=>{
       await loadSettings();
       const pending=sessionStorage.getItem('roaster.ai.openCandidate');
       if(pending&&window.RoasterEditor&&conversation){
@@ -675,8 +710,8 @@
   window.addEventListener('roaster-disconnected',()=>{if(runBindings.get(activeRun)?.kind==='live')stop().catch(fail);});
   window.addEventListener('roaster-record',event=>{currentRecord=event.detail;});
   if(desktop)document.addEventListener('click',event=>{const link=event.target.closest?.('.ai-chat a[href],.ai-settings a[href]');const url=link&&safeAuthUrl(link.href);if(url){event.preventDefault();native.invoke('ai_open_external',{url}).catch(fail);}});
-  window.addEventListener('roaster-ai-open',()=>{contextBinding=null;queuedContext=null;show();currentContext().then(value=>{queuedContext=value;renderQueued();}).catch(fail);});
+  window.addEventListener('roaster-ai-open',()=>{openNewConversation().then(async ready=>{if(!ready)return;queuedContext=await currentContext();renderQueued();}).catch(fail);});
   window.addEventListener('beforeunload',()=>{if(activeRun&&runBindings.get(activeRun)?.kind==='live')cancelRun(activeRun).catch(()=>{});});
-  window.RoasterChat={mountContext,open:show,request:rpc,send,refresh,attach,get current(){return conversation;},get host(){return host;}};
+  window.RoasterChat={mountContext,open:openNewConversation,request:rpc,send,refresh,attach,get current(){return conversation;},get host(){return host;}};
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount);else mount();
 })();

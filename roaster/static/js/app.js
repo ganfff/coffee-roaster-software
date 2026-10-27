@@ -97,7 +97,7 @@
     } catch (e) { /* 无音频设备时静默 */ }
   }
 
-  // ========== Chart.js 自定义插件：事件垂直线 ==========
+  // 主页使用 KL 记录图式小标记；历史记录继续保留原有标注方式。
   const eventLinesPlugin = {
     id: 'eventLines',
     afterDatasetsDraw(chart, args, options) {
@@ -108,6 +108,24 @@
       annotations.forEach(ann => {
         const xPos = x.getPixelForValue(ann.time);
         if (xPos < x.left || xPos > x.right) return;
+        if (options.compactMarkers) {
+          if (!Number.isFinite(ann.temperature)) return;
+          const yPos = y.getPixelForValue(ann.temperature);
+          if (yPos < y.top || yPos > y.bottom) return;
+          ctx.setLineDash([]);
+          ctx.fillStyle = ann.color || chartPalette.eventDefault;
+          ctx.beginPath();
+          if (ann.annType === 'charge' || ann.annType === 'drop') {
+            ctx.arc(xPos, yPos, 3, 0, Math.PI * 2);
+          } else {
+            ctx.moveTo(xPos, yPos);
+            ctx.lineTo(xPos - 4, yPos - 7);
+            ctx.lineTo(xPos + 4, yPos - 7);
+          }
+          ctx.closePath();
+          ctx.fill();
+          return;
+        }
         ctx.beginPath();
         ctx.setLineDash([5, 4]);
         ctx.lineWidth = 1.5;
@@ -148,7 +166,7 @@
       targetFill: cssVar('--chart-target-fill', 'rgba(158,158,158,0.06)'),
       ror: cssVar('--chart-ror', '#448aff'),
       rorFill: cssVar('--chart-ror-fill', 'rgba(68,138,255,0.12)'),
-      rorPreview: cssVar('--chart-ror-preview', '#82b1ff'),
+      rorPreview: cssVar('--chart-ror', '#448aff'),
       projection: cssVar('--chart-projection', 'rgba(0,230,118,0.45)'),
       y1Tick: cssVar('--chart-y1-tick', '#60a5fa'),
       compareA: cssVar('--chart-compare-a', '#ff9800'),
@@ -195,9 +213,9 @@
             data: [],
             borderColor: chartPalette.temp,
             backgroundColor: chartPalette.temp,
-            tension: 0.3,
+            tension: 0,
             pointRadius: 0,
-            borderWidth: 2.5,
+            borderWidth: 1.5,
             yAxisID: 'y',
           },
           {
@@ -205,10 +223,10 @@
             data: [],
             borderColor: chartPalette.setpoint,
             backgroundColor: chartPalette.setpoint,
-            borderDash: [6, 4],
-            tension: 0.3,
+            borderDash: [3, 3],
+            tension: 0,
             pointRadius: 0,
-            borderWidth: 2,
+            borderWidth: 1,
             yAxisID: 'y',
           },
           {
@@ -216,10 +234,10 @@
             data: [],
             borderColor: chartPalette.target,
             backgroundColor: chartPalette.targetFill,
-            borderDash: [8, 4],
-            tension: 0.3,
+            borderDash: [],
+            tension: 0,
             pointRadius: 0,
-            borderWidth: 2,
+            borderWidth: 1.5,
             fill: false,
             yAxisID: 'y',
           },
@@ -228,10 +246,10 @@
             data: [],
             borderColor: chartPalette.ror,
             backgroundColor: chartPalette.rorFill,
-            tension: 0.3,
+            tension: 0,
             pointRadius: 0,
-            borderWidth: 2,
-            fill: true,
+            borderWidth: 1.25,
+            fill: false,
             yAxisID: 'y1',
           },
           {
@@ -239,10 +257,10 @@
             data: [],
             borderColor: chartPalette.rorPreview,
             backgroundColor: 'transparent',
-            borderDash: [4, 4],
-            tension: 0.3,
+            borderDash: [2, 3],
+            tension: 0,
             pointRadius: 0,
-            borderWidth: 1.5,
+            borderWidth: 1,
             fill: false,
             yAxisID: 'y1',
           },
@@ -327,15 +345,18 @@
               }
             }
           },
-          eventLines: {}
+          eventLines: { compactMarkers: true }
         },
         scales: {
           x: {
             type: 'linear',
-            title: { display: true, text: '时间 (min)', color: chartPalette.tick, font: { size: 12 } },
-            grid: { color: chartPalette.grid },
+            min: 0,
+            title: { display: true, text: '时间 (分:秒)', color: chartPalette.tick, font: { size: 12 } },
+            grid: { color: chartPalette.grid, drawOnChartArea: false },
             ticks: {
               color: chartPalette.tick,
+              stepSize: 60,
+              maxRotation: 0,
               callback: function(value) {
                 const m = Math.floor(value / 60);
                 const s = Math.floor(value % 60);
@@ -348,10 +369,10 @@
             display: true,
             position: 'left',
             min: 0,
-            max: 300,
+            suggestedMax: 250,
             title: { display: true, text: '温度 (°C)', color: chartPalette.tick, font: { size: 12 } },
-            grid: { color: chartPalette.grid },
-            ticks: { color: chartPalette.tick }
+            grid: { color: chartPalette.grid, lineWidth: 0.5 },
+            ticks: { color: chartPalette.tick, stepSize: 50 }
           },
           y1: {
             type: 'linear',
@@ -692,9 +713,7 @@
     const profileROR = buildRORDataset(nodes || []);
     safeUpdateDataset(roastChart, 4, profileROR);
     const lastTime = interpolated.length ? interpolated[interpolated.length - 1].x : 600;
-    let suggestedMax = 600;
-    if (lastTime > 900) suggestedMax = 1200;
-    else if (lastTime > 600) suggestedMax = 900;
+    const suggestedMax = Math.ceil((lastTime + 30) / 60) * 60;
     roastChart.options.scales.x.suggestedMax = suggestedMax;
     // 当前曲线名进图例:dataset[2] label 动态显示,chart.update 后图例自动反映
     roastChart.data.datasets[2].label = name || '目标曲线';
@@ -711,13 +730,14 @@
 
     eventAnnotations = list.map(e => ({
       time: e.time,
+      temperature: e.temperature,
       label: eventLabel(e.type),
       color: eventColor(e.type),
       annType: e.type
     }));
     // 回温点（前端自动检测）一并标注
     if (tpTime != null) {
-      eventAnnotations.push({ time: tpTime, label: '回温点', color: eventColor('tp'), annType: 'tp' });
+      eventAnnotations.push({ time: tpTime, temperature: tpTemp, label: '回温点', color: eventColor('tp'), annType: 'tp' });
     }
     if (roastChart) roastChart.update('none');
   }
@@ -978,18 +998,15 @@
     updateProgress(msg);
     updateButtonVisibility(msg.state);
 
-    if (msg.events) {
-      updateEventAnnotations(msg.events);
-      updateEventTempsBar(msg.events);
-      updateDevelopmentInfo(msg.events, msg.elapsed || 0, msg.pv);
-    }
+    const sessionEvents = msg.state === 'IDLE' ? [] : (Array.isArray(msg.events) ? msg.events : []);
+    updateEventAnnotations(sessionEvents);
+    updateEventTempsBar(sessionEvents);
+    updateDevelopmentInfo(sessionEvents, msg.elapsed || 0, msg.pv);
     // 根据 state.events 同步事件按钮 active 高亮 + 时间温度 badge
-    syncEventActionsBar(msg.events || []);
+    syncEventActionsBar(sessionEvents);
     updateNextEventControl(msg);
 
-    if (msg.event_stats) {
-      updateSegmentBar(msg.event_stats);
-    }
+    updateSegmentBar(msg.state === 'IDLE' ? {} : (msg.event_stats || {}));
 
     // 回温点信息条
     setTextIfChanged(document.getElementById('tp-info'),
@@ -1551,9 +1568,11 @@
           : '--°';
         const txt = `${m}:${String(s).padStart(2, '0')} · ${tempStr}`;
         if (badge.textContent !== txt) badge.textContent = txt;
+        btn.title = `${eventLabel(type)} · ${txt}`;
       } else {
         if (btn.classList.contains('active')) btn.classList.remove('active');
         if (badge.textContent !== '') badge.textContent = '';
+        btn.title = `记录${eventLabel(type)}`;
       }
     });
   }

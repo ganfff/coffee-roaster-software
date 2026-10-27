@@ -73,38 +73,34 @@ const records = [
 
 let currentProfile = profiles[0];
 let stateName = scenario === 'idle' ? 'IDLE' : scenario === 'error' ? 'ERROR' : scenario === 'cooling' ? 'COOLING' : 'ROASTING';
-let elapsed = stateName === 'IDLE' ? 0 : 342;
+let elapsed = stateName === 'IDLE' ? 0 : stateName === 'COOLING' ? 620 : 342;
 let sessionId = 'sim-live-session';
 let errorReason = stateName === 'ERROR' ? '模拟器：TC4S 通信超时' : null;
-let liveEvents = [{ type: 'charge', time: 0, temperature: 197.2 }, { type: 'yellowing', time: 195, temperature: 145.1 }];
+let liveEvents = stateName === 'IDLE' ? [] : [{ type: 'charge', time: 0, temperature: 23.6 }, { type: 'yellowing', time: 195, temperature: 145.1 }];
 if (stateName === 'COOLING') liveEvents.push({ type: 'first_crack', time: 430, temperature: 196.2 }, { type: 'drop', time: 620, temperature: 213.4 });
 
 function currentPhase(time = elapsed) {
   if (stateName === 'IDLE') return 'idle';
   if (stateName === 'COOLING') return 'cooling';
-  if (time < 195) return 'drying';
-  if (time < 430) return 'maillard';
-  return 'development';
+  if (liveEvents.some(e => e.type === 'first_crack' && e.time <= time)) return 'development';
+  if (liveEvents.some(e => e.type === 'yellowing' && e.time <= time)) return 'maillard';
+  return 'drying';
 }
 
 function makeState(time = elapsed) {
   const sv = interpolate(currentProfile.nodes, time);
   const pv = sv - Math.max(1.1, 4.4 - time / 155) + Math.sin(time / 26) * 0.28;
   const ror = Math.max(3.2, 19.5 - time / 45) + Math.sin(time / 48) * 0.35;
-  const visibleEvents = liveEvents.filter(event => event.time <= time || stateName !== 'ROASTING');
+  const visibleEvents = stateName === 'IDLE' ? [] : liveEvents.filter(event => event.time <= time);
   const segmentTimes = {};
   const segmentRatios = {};
-  if (visibleEvents.some(event => event.type === 'yellowing')) {
-    segmentTimes['脱水期'] = 195;
-    segmentRatios['脱水期'] = 31.5;
-  }
-  if (visibleEvents.some(event => event.type === 'first_crack')) {
-    segmentTimes['梅纳期'] = 235;
-    segmentRatios['梅纳期'] = 37.9;
-  }
-  if (visibleEvents.some(event => event.type === 'drop')) {
-    segmentTimes['发展期'] = 190;
-    segmentRatios['发展期'] = 30.6;
+  const eventTime = type => visibleEvents.find(event => event.type === type)?.time;
+  const total = eventTime('drop') ?? currentProfile.nodes.at(-1).time;
+  for (const [label,start,end] of [['脱水期','charge','yellowing'],['梅纳期','yellowing','first_crack'],['发展期','first_crack','drop']]) {
+    if (eventTime(start) == null || eventTime(end) == null) continue;
+    const duration = Math.max(0,eventTime(end)-eventTime(start));
+    segmentTimes[label] = duration;
+    segmentRatios[label] = total > 0 ? Math.round(duration/total*1000)/10 : 0;
   }
   return {
     state: stateName,
@@ -217,7 +213,7 @@ const server = http.createServer(async (request, response) => {
   }
   if (url.pathname.startsWith('/api/v1/control/') && request.method === 'POST') {
     const action = url.pathname.split('/').at(-1);
-    if (action === 'start') { stateName = 'ROASTING'; elapsed = 0; liveEvents = [{ type: 'charge', time: 0, temperature: 197.2 }]; errorReason = null; sessionId = `sim-${Date.now()}`; }
+    if (action === 'start') { stateName = 'ROASTING'; elapsed = 0; liveEvents = [{ type: 'charge', time: 0, temperature: makeState(0).pv }]; errorReason = null; sessionId = `sim-${Date.now()}`; }
     if (action === 'end') stateName = 'COOLING';
     if (action === 'save_and_clear' || action === 'discard_and_clear') resetIdle();
     if (action === 'emergency_stop') { stateName = stateName === 'ERROR' ? 'IDLE' : 'ERROR'; errorReason = stateName === 'ERROR' ? '模拟器：已触发急停' : null; }
@@ -244,7 +240,7 @@ webSockets.on('connection', socket => {
     if (command === 'start') {
       const selected = profiles.find(profile => profile.id === message.profile_id);
       if (selected) currentProfile = selected;
-      stateName = 'ROASTING'; elapsed = 0; liveEvents = [{ type: 'charge', time: 0, temperature: 197.2 }]; errorReason = null; sessionId = `sim-${Date.now()}`;
+      stateName = 'ROASTING'; elapsed = 0; liveEvents = [{ type: 'charge', time: 0, temperature: makeState(0).pv }]; errorReason = null; sessionId = `sim-${Date.now()}`;
     } else if (command === 'event') {
       if (!liveEvents.some(event => event.type === message.type)) liveEvents.push({ type: message.type, time: elapsed, temperature: makeState().pv });
       if (message.type === 'drop') stateName = 'COOLING';
