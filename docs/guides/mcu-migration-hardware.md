@@ -39,6 +39,32 @@ S3 模组选择：
 
 ESP32-C6 的 Wi-Fi 6 / 802.15.4 不是本机现有需求；ESP32-P4 本体无 Wi-Fi/BLE。H7 的较强算力也不会直接改善本机这一路测温的质量，暂不作为首选。[C6](https://documentation.espressif.com/esp32-c6_datasheet_en.html)、[P4](https://docs.espressif.com/projects/esp-idf/en/stable/esp32p4/get-started/index.html)、[H743/753](https://www.st.com/en/microcontrollers-microprocessors/stm32h743-753.html)
 
+### ESP32、Raspberry Pi Zero 与 RP2040 的区别
+
+ESP32 是微控制器家族，RP2040 是树莓派推出的一颗微控制器；Raspberry Pi Zero 则是能运行 Linux 的单板电脑。RP2040 不属于 Zero 系列：Pico / Pico W 是搭载 RP2040 的开发板，Pico 2 / Pico 2 W 使用另一颗 RP2350。
+
+| 对比项 | ESP32-S3（本文主推型号） | Raspberry Pi Zero 2 W | RP2040 |
+| --- | --- | --- | --- |
+| 类型 | MCU，通常运行固件 / RTOS | 单板电脑，通常运行 Linux | MCU，通常运行固件 / RTOS |
+| 处理器 | 双核 LX7，最高 240 MHz | 四核 Cortex-A53，1 GHz，64 位 | 双核 Cortex-M0+，最高 133 MHz |
+| 内存 | 512 KB 内部 SRAM，模组可选 PSRAM | 512 MB SDRAM | 264 KB SRAM |
+| 程序存储 | Flash，模组通常已配好 | microSD 卡保存系统和文件 | 芯片需外接 Flash；Pico 板已配置 |
+| 无线 | 芯片集成 2.4 GHz Wi-Fi 和 BLE | 板载 2.4 GHz Wi-Fi、蓝牙 / BLE | 芯片没有无线；Pico W 通过另加 CYW43439 获得无线 |
+| 低层时序 | 定时器、PWM、捕获等；无线和 Flash 操作影响需管理 | 普通 Linux 用户态调度存在抖动，不能按 CPU 主频推定控制响应 | 定时器、PWM 与 PIO 可用于独立时序任务 |
+| 软件开发 | C/C++ / ESP-IDF，也可用 MicroPython | CPython、Node、Linux 服务等 | C/C++ / Pico SDK，也可用 MicroPython |
+| 现有项目复用 | 底层执行固件需重写，上位机适配接口 | 能延续 Linux/Python 架构，仍需目标机验证 | 底层执行固件需重写，上位机适配接口 |
+| 自画板取舍 | 使用无线模组比较直接 | 通常把 Zero 当作子板，另做接口底板 | 裸芯片需 Flash、供电等外围，若要无线还需额外器件 |
+
+芯片/板卡规格见 [S3](https://www.espressif.com/en/products/socs/esp32-s3)、[Zero 2 W](https://www.raspberrypi.com/products/raspberry-pi-zero-2-w/)、[RP2040](https://www.raspberrypi.com/products/rp2040/specifications/)、[RP2040 与 RP2350 芯片说明](https://www.raspberrypi.com/documentation/microcontrollers/microcontroller-chips.html)、[Pico W 无线实现](https://www.raspberrypi.com/news/new-functionality-bluetooth-for-pico-w/)。实时性和本项目适用性属于工程判断，MCU 也需要针对固件和外设做最坏响应时间验证。
+
+Zero 版本需区分：原版 **Zero** 是 1 GHz 单核、512 MB RAM、无板载 Wi-Fi/蓝牙；**Zero W** 保留相同级别 CPU/RAM并加入无线；**Zero 2 W** 升为四核 64 位 Cortex-A53，仍是 512 MB RAM。三者不是同一性能/架构的板子。[Zero](https://www.raspberrypi.com/products/raspberry-pi-zero/)、[Zero W](https://www.raspberrypi.com/products/raspberry-pi-zero-w/)、[Zero 家族官方对比](https://www.raspberrypi.com/documentation/computers/zero.html)
+
+本仓库现有树莓派包是 **Linux ARM64 + Python 3.11+，并内置 ARM64 Node**。原 Zero / Zero W 不能直接运行这份 ARM64 包；Zero 2 W 安装 64 位系统后架构方向匹配，但 512 MB 下完整后端、Node 与本地浏览器的内存和流畅度尚未实测。适合先使用无桌面的 Raspberry Pi OS Lite，把显示留在手机/电脑，验证基础设备服务；服务当前仅监听本机，远程访问沿用 SSH 隧道或另行实现配对鉴权，不直接开放控机端口。不承诺完整工作台和 AI 服务已可稳定运行。部署边界见 [真实设备连接与调试](real-device-setup.md)。
+
+对这台烘焙机：想尽量保留 Linux 软件架构，可评估 Zero 2 W 作为小型上位机；想最终让小板独立控制并直接提供 Wi-Fi/BLE，优先 S3；想采用 RP2040 做确定时序和有线控制也可行，但无线需另配。Pico W 是可用的成品无线开发板，其无线能力不意味着 RP2040 裸芯片自带无线。三种方案都仍需温度前端、SSR 驱动、风机接口和独立保护，不能把处理器板价当整套控制成本。
+
+MCU 上的 MicroPython 不等于现有 CPython/FastAPI/NumPy 运行环境；把 Python 脚本拷进去不会自动获得原有软件。Zero 能运行 Linux 也不代表它适合直接承担所有严格时序：硬件 PWM 可以独立输出，普通 Python GPIO 任务的最坏延迟仍取决于系统调度。当前可把 Zero 留在监视/记录一侧，把本地温控和故障动作放到 MCU。
+
 ## 3. 现有软件的实际迁移边界
 
 当前不是把一套现成的 MCU 功率控制代码换个平台：
