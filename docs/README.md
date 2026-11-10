@@ -2,6 +2,7 @@
 
 - [v3.31 / 桌面0.8.0 真实设备准备与验收](qa/device-v3.31.md)：四项标记、内置控制服务、串口、模式切换、交付包及验证边界。
 - [真实设备连接与调试](guides/real-device-setup.md)：电脑 USB-RS485 直连、树莓派部署和 SSH 隧道。
+- [浮动床热风机 MCU 选型与迁移](guides/mcu-migration-hardware.md)：ESP32-S3、现有 TC4S/SSR/PWM 风机复用、I/O 预算与分阶段硬件建议。
 - [v3.30 / 桌面0.7.0 Mhub升级](qa/mhub-v3.30.md)：统一主题、组件、区域动效、真实窗口和安装包。
 - [Mhub源码与资源对应](design/mhub-source-map.md)：正式分发身份、可读适配、字体和业务边界。
 
